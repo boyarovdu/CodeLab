@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsData.Faker", "SportsD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsData.Models", "SportsData.Models\SportsData.Models.csproj", "{407C39B7-C618-45FE-A3C6-03B1E2870024}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsData.Console", "SportsData.Console\SportsData.Console.csproj", "{67B3D2D8-1BC9-4ED5-8AF8-9D24D294F0B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakingSportsData.Console", "FakingSportsData.Console\FakingSportsData.Console.csproj", "{67B3D2D8-1BC9-4ED5-8AF8-9D24D294F0B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

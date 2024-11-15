@@ -8,7 +8,7 @@ namespace SportsData.Models
     {
         Guid Id { get; set; }
     }
-    
+
     public enum Side
     {
         Home,
@@ -53,6 +53,48 @@ namespace SportsData.Models
         CanBook,
         Booked,
         NotAvailable
+    }
+
+    [DataContract]
+    public record SportEvent : IEntity
+    {
+        [DataMember(Order = 1)] public Guid Id { get; set; }
+
+        [DataMember(Order = 2)] public string Name { get; set; }
+
+        [DataMember(Order = 3)] public string SportId { get; set; }
+
+        [DataMember(Order = 4)] public DateTime? StartTime { get; set; }
+
+        [DataMember(Order = 5)] public DateTime? EndTime { get; set; }
+
+        [DataMember(Order = 6)] public EventOutcome EventOutcome { get; set; }
+
+        [DataMember(Order = 7)] public SportsTeam HomeTeam { get; set; }
+
+        [DataMember(Order = 8)] public SportsTeam AwayTeam { get; set; }
+
+        [DataMember(Order = 9)] public Season Season { get; set; }
+
+        [DataMember(Order = 10)] public GamePhase GamePhase { get; set; }
+
+        [DataMember(Order = 11)] public LongTermEvent LongTermEvent { get; set; }
+
+        [DataMember(Order = 12)] public Fixture Fixture { get; set; }
+
+        [DataMember(Order = 13)] public IEnumerable<TimelineRecord> TimelineRecords { get; set; }
+
+        [DataMember(Order = 14)] public DelayedInfo DelayedInfo { get; set; }
+
+        [DataMember(Order = 15)] public EventStatusDetails StatusDetails { get; set; }
+
+        [DataMember(Order = 16)] public BookingStatus? BookingStatus { get; set; }
+
+        [DataMember(Order = 17)] public Location Location { get; set; }
+
+        [DataMember(Order = 18)] public EventConditions Conditions { get; set; }
+
+        [DataMember(Order = 19)] public IEnumerable<Competitor> Competitors { get; set; }
     }
 
     [DataContract]
@@ -537,47 +579,5 @@ namespace SportsData.Models
         [DataMember(Order = 10)] public Coach Coach { get; set; }
 
         [DataMember(Order = 11)] public Location Location { get; set; }
-    }
-
-    [DataContract]
-    public record SportEvent : IEntity
-    {
-        [DataMember(Order = 1)] public Guid Id { get; set; }
-
-        [DataMember(Order = 2)] public string Name { get; set; }
-
-        [DataMember(Order = 3)] public string SportId { get; set; }
-
-        [DataMember(Order = 4)] public DateTime? StartTime { get; set; }
-
-        [DataMember(Order = 5)] public DateTime? EndTime { get; set; }
-
-        [DataMember(Order = 6)] public EventOutcome EventOutcome { get; set; }
-
-        [DataMember(Order = 7)] public SportsTeam HomeTeam { get; set; }
-
-        [DataMember(Order = 8)] public SportsTeam AwayTeam { get; set; }
-
-        [DataMember(Order = 9)] public Season Season { get; set; }
-
-        [DataMember(Order = 10)] public GamePhase GamePhase { get; set; }
-
-        [DataMember(Order = 11)] public LongTermEvent LongTermEvent { get; set; }
-
-        [DataMember(Order = 12)] public Fixture Fixture { get; set; }
-
-        [DataMember(Order = 13)] public IEnumerable<TimelineRecord> TimelineRecords { get; set; }
-
-        [DataMember(Order = 14)] public DelayedInfo DelayedInfo { get; set; }
-
-        [DataMember(Order = 15)] public EventStatusDetails StatusDetails { get; set; }
-
-        [DataMember(Order = 16)] public BookingStatus? BookingStatus { get; set; }
-
-        [DataMember(Order = 17)] public Location Location { get; set; }
-
-        [DataMember(Order = 18)] public EventConditions Conditions { get; set; }
-
-        [DataMember(Order = 19)] public IEnumerable<Competitor> Competitors { get; set; }
     }
 }

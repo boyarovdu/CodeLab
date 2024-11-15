@@ -1,0 +1,947 @@
+{
+  "Id": "523e04a1-39e7-0f80-58f5-3143c0f9e471",
+  "Name": "Est fugiat est nihil voluptatibus autem et enim ducimus delectus.",
+  "SportId": "e336bb05-ca42-458b-b12e-248e0a22a3eb",
+  "StartTime": "2025-01-25T19:47:16.5833683+02:00",
+  "EndTime": "2025-08-17T15:12:24.6459823+03:00",
+  "EventOutcome": {
+    "Winner": "a7de6787-d7d0-23b4-b6ae-b4d30c737a35",
+    "EventStatus": 1,
+    "GameStatus": 0,
+    "EventResults": [
+      {
+        "Id": "c4b9e4f7-2c53-c9e2-f0c7-036550cfc9ab",
+        "Rank": 8,
+        "Score": 75,
+        "ScoreDecimal": 22.534907596332310,
+        "LeaguePoints": 92.529159350997610,
+        "Time": "4.02:37:44.5922549",
+        "TimeRank": 2,
+        "Status": "Interrupted",
+        "StatusDescription": "Omnis necessitatibus nemo magni accusamus blanditiis eveniet consequatur corporis.",
+        "Sprint": 3,
+        "SprintPoints": 8.037274816631413,
+        "SprintRank": 3,
+        "Climber": 10,
+        "ClimbingPoints": 1.299663357747868,
+        "ClimbingRank": 9,
+        "HomeTeamScore": 2.412375266088816,
+        "AwayTeamScore": 3.576901214599068,
+        "StatusCode": 7,
+        "StatusCodeDescription": "Temporibus amet repellendus et omnis rem quo earum."
+      },
+      {
+        "Id": "375df66f-c6eb-f5e6-0dd4-c8237f63a1b8",
+        "Rank": 1,
+        "Score": 18,
+        "ScoreDecimal": 79.183823469594040,
+        "LeaguePoints": 65.054518350935860,
+        "Time": "4.17:11:00.0357686",
+        "TimeRank": 11,
+        "Status": "Cancelled",
+        "StatusDescription": "Deleniti qui id mollitia ut qui vel a est quibusdam.",
+        "Sprint": 3,
+        "SprintPoints": 5.42445097798135,
+        "SprintRank": 1,
+        "Climber": 4,
+        "ClimbingPoints": 6.718904293271275,
+        "ClimbingRank": 15,
+        "HomeTeamScore": 4.545861745046688,
+        "AwayTeamScore": 2.581107087601992,
+        "StatusCode": 9,
+        "StatusCodeDescription": "Nam atque odio aut commodi nobis quas."
+      },
+      {
+        "Id": "b049aa65-7fc6-76ae-078b-e4517188f94a",
+        "Rank": 9,
+        "Score": 72,
+        "ScoreDecimal": 61.985926717449940,
+        "LeaguePoints": 44.585930972392390,
+        "Time": "4.07:33:01.3855075",
+        "TimeRank": 10,
+        "Status": "Postponed",
+        "StatusDescription": "Reprehenderit corporis eligendi consequuntur sequi dicta.",
+        "Sprint": 6,
+        "SprintPoints": 5.915830492135324,
+        "SprintRank": 8,
+        "Climber": 5,
+        "ClimbingPoints": 5.859590685095962,
+        "ClimbingRank": 16,
+        "HomeTeamScore": 2.211640693847128,
+        "AwayTeamScore": 4.97314076692876,
+        "StatusCode": 3,
+        "StatusCodeDescription": "Ut ipsam qui voluptatem libero consequatur alias nihil."
+      },
+      {
+        "Id": "1dcd94b8-f138-2126-e90d-e6b96969348c",
+        "Rank": 3,
+        "Score": 44,
+        "ScoreDecimal": 69.933898681615180,
+        "LeaguePoints": 51.657602610160810,
+        "Time": "5.12:54:26.3184046",
+        "TimeRank": 9,
+        "Status": "Live",
+        "StatusDescription": "Porro sit natus sed et in.",
+        "Sprint": 3,
+        "SprintPoints": 7.386940770050089,
+        "SprintRank": 5,
+        "Climber": 6,
+        "ClimbingPoints": 2.573277721710013,
+        "ClimbingRank": 14,
+        "HomeTeamScore": 1.628460082026084,
+        "AwayTeamScore": 4.056475320473908,
+        "StatusCode": 8,
+        "StatusCodeDescription": "Asperiores accusamus explicabo qui deserunt voluptates quis labore vero."
+      },
+      {
+        "Id": "ff54be4d-1482-d46a-2715-ac2a27b4642f",
+        "Rank": 1,
+        "Score": 45,
+        "ScoreDecimal": 46.472095502666020,
+        "LeaguePoints": 39.34434170302570,
+        "Time": "5.18:30:17.2771273",
+        "TimeRank": 5,
+        "Status": "Other",
+        "StatusDescription": "Voluptatum et neque eum hic quibusdam.",
+        "Sprint": 8,
+        "SprintPoints": 8.162500236626521,
+        "SprintRank": 6,
+        "Climber": 5,
+        "ClimbingPoints": 9.044192504385388,
+        "ClimbingRank": 19,
+        "HomeTeamScore": 3.310368739221356,
+        "AwayTeamScore": 2.92822704618460,
+        "StatusCode": 10,
+        "StatusCodeDescription": "Illo et sit reprehenderit."
+      }
+    ],
+    "Details": {
+      "Property1": "Rustic Plastic Cheese",
+      "Property2": "0"
+    }
+  },
+  "HomeTeam": {
+    "Id": "d2bbc0f8-0b5f-d2f3-03aa-6b132e51a20b",
+    "Name": "Grady - Huel",
+    "Country": "Lithuania",
+    "ShortName": "iua",
+    "IsVirtual": true,
+    "ExternalIds": {
+      "ProviderId1": 1416,
+      "ProviderId2": 3451,
+      "RotationNumber": 458,
+      "References": {
+        "RefKey1": "withdrawal",
+        "RefKey2": "Strategist"
+      }
+    },
+    "CountryCode": "LU",
+    "Players": [
+      {
+        "Id": "ca79e342-2bfb-9b45-7c67-e26783638c1a",
+        "Name": "Jules Fadel"
+      },
+      {
+        "Id": "a721e7a2-250a-3b30-df19-618d9e2bb018",
+        "Name": "Chauncey Rolfson"
+      },
+      {
+        "Id": "eadc8fb0-438e-ef98-88de-bcafceafc647",
+        "Name": "Madyson Koelpin"
+      },
+      {
+        "Id": "51adad87-9c7c-4419-0414-435110778f87",
+        "Name": "Peyton Altenwerth"
+      },
+      {
+        "Id": "896bf497-f403-b16c-c42d-a190e749f430",
+        "Name": "Nona Wyman"
+      }
+    ],
+    "SportsUniformVariations": [
+      {
+        "MainColor": "azure",
+        "Number": "41",
+        "SecondaryColor": "violet",
+        "Type": "Third",
+        "HasHorizantalStripes": false,
+        "HasSplit": true,
+        "HasSquares": true,
+        "HasVerticalStripes": false
+      },
+      {
+        "MainColor": "grey",
+        "Number": "68",
+        "SecondaryColor": "red",
+        "Type": "Third",
+        "HasHorizantalStripes": true,
+        "HasSplit": false,
+        "HasSquares": false,
+        "HasVerticalStripes": true
+      },
+      {
+        "MainColor": "olive",
+        "Number": "9",
+        "SecondaryColor": "ivory",
+        "Type": "AwayTeam",
+        "HasHorizantalStripes": true,
+        "HasSplit": false,
+        "HasSquares": false,
+        "HasVerticalStripes": false
+      }
+    ],
+    "Coach": {
+      "Id": "dac6183d-68a4-2e1d-334e-ec248fd50e43",
+      "CountryCode": "ML",
+      "Name": "Ken Hermann",
+      "Nationality": "Marshall Islands"
+    },
+    "Location": {
+      "Id": "e05fc9e4-dcf0-4e6f-8914-5f32c77bdc41",
+      "Name": "Auer Brook",
+      "City": "Port Cedrick",
+      "Country": "Pitcairn Islands",
+      "SeatsNumber": 15439,
+      "GeoData": "-7.9102,19.3762",
+      "CountryCode": "CH"
+    },
+    "Qualifier": "GNE"
+  },
+  "AwayTeam": {
+    "Id": "e3bf1c25-2313-c02a-6d8e-c51c85082041",
+    "Name": "Ratke, Rogahn and Miller",
+    "Country": "Haiti",
+    "ShortName": "ttt",
+    "IsVirtual": false,
+    "ExternalIds": {
+      "ProviderId1": 9429,
+      "ProviderId2": 6906,
+      "RotationNumber": 834,
+      "References": {
+        "RefKey1": "calculating",
+        "RefKey2": "Afghani"
+      }
+    },
+    "CountryCode": "EG",
+    "Players": [
+      {
+        "Id": "0342d4fc-3377-57ed-618d-1a63e7c320cf",
+        "Name": "Margot Keeling"
+      },
+      {
+        "Id": "5849841f-5679-7d9d-1bae-17ff62deacde",
+        "Name": "Rosella Lang"
+      },
+      {
+        "Id": "0c250797-ef12-7bd0-7f9c-04278a96c347",
+        "Name": "Ivy Kulas"
+      },
+      {
+        "Id": "dad8db63-13cb-f6d3-a8c2-63513a2732cf",
+        "Name": "Zoey Greenfelder"
+      },
+      {
+        "Id": "eaacea16-564c-ead3-48a3-0f7ee7ba4dbc",
+        "Name": "Rafael Yundt"
+      }
+    ],
+    "SportsUniformVariations": [
+      {
+        "MainColor": "indigo",
+        "Number": "82",
+        "SecondaryColor": "salmon",
+        "Type": "HomeTeam",
+        "HasHorizantalStripes": true,
+        "HasSplit": true,
+        "HasSquares": false,
+        "HasVerticalStripes": false
+      },
+      {
+        "MainColor": "gold",
+        "Number": "37",
+        "SecondaryColor": "yellow",
+        "Type": "AwayTeam",
+        "HasHorizantalStripes": false,
+        "HasSplit": true,
+        "HasSquares": true,
+        "HasVerticalStripes": false
+      },
+      {
+        "MainColor": "green",
+        "Number": "98",
+        "SecondaryColor": "teal",
+        "Type": "AwayTeam",
+        "HasHorizantalStripes": true,
+        "HasSplit": true,
+        "HasSquares": false,
+        "HasVerticalStripes": false
+      }
+    ],
+    "Coach": {
+      "Id": "00ab36a6-d11a-06c4-cd27-c94ce51c3e17",
+      "CountryCode": "IL",
+      "Name": "Charlie Johnston",
+      "Nationality": "Martinique"
+    },
+    "Location": {
+      "Id": "082a4b50-34ff-4d80-82b8-a2954a05793f",
+      "Name": "Schmitt Mall",
+      "City": "Port Bell",
+      "Country": "Canada",
+      "SeatsNumber": 48024,
+      "GeoData": "80.8998,63.3922",
+      "CountryCode": "SY"
+    },
+    "Qualifier": "GSY"
+  },
+  "Season": {
+    "Id": "8a6f75a8-3b38-4fa7-b1f0-3a7c1eb84927",
+    "Name": "2025"
+  },
+  "GamePhase": {
+    "Type": "Unbranded Cotton Cheese",
+    "Number": 37,
+    "GroupType": "D",
+    "AlternativeEvent": "f0240898-f4f7-f267-0371-06b94d376ad9",
+    "Name": "saepe",
+    "GroupName": "minus",
+    "LongName": "Ut quis expedita vel officia adipisci animi quam deserunt.",
+    "CupMatches": 10,
+    "TotalMatches": 4,
+    "ProviderId": 3453
+  },
+  "LongTermEvent": {
+    "Id": "0b3ba71e-5118-4f1a-9026-8094241fa00b",
+    "Name": "Practical Rubber Bike",
+    "SportId": "3855fd97-e626-e031-8590-d9e9e0c9d4da",
+    "ScheduledTime": "2025-09-15T03:52:25.9223729+03:00",
+    "ScheduledEndTime": "2025-04-05T17:38:29.6908309+03:00",
+    "Sport": {
+      "Id": "24e89567-2722-311c-d4f8-7770b493e925",
+      "Name": "Shoes"
+    },
+    "HasLiveCoverage": false
+  },
+  "Fixture": {
+    "KickoffTime": null,
+    "ReScheduled": null,
+    "Confirmed": true,
+    "LiveTime": null,
+    "AlternativeEvent": "787fb3c2-af08-3b2e-0850-adfef95ced98",
+    "Details": {
+      "info1": "wireless",
+      "info2": "interface"
+    },
+    "Media": [
+      {
+        "Channel": "Toy, Satterfield and Luettgen",
+        "StartTime": "2025-03-14T14:00:24.461081+02:00"
+      },
+      {
+        "Channel": "Grant and Sons",
+        "StartTime": "2025-08-18T08:59:28.1094668+03:00"
+      },
+      {
+        "Channel": "Lowe - McCullough",
+        "StartTime": "2025-05-23T03:35:19.6084437+03:00"
+      },
+      {
+        "Channel": "Huels Group",
+        "StartTime": "2025-01-19T11:10:23.622198+02:00"
+      },
+      {
+        "Channel": "Waelchi Group",
+        "StartTime": "2025-05-17T01:24:00.7268738+03:00"
+      }
+    ],
+    "BroadcastInfo": {
+      "Level": "Highlight",
+      "SupportsLiveBroadcast": true,
+      "Details": [
+        "Player Stats",
+        "Interviews"
+      ]
+    },
+    "TradersTracking": {
+      "SupportsAutoTracking": false,
+      "SupportsStatistics": false,
+      "SupportsLiveServices": false,
+      "SupportsLiveScore": true,
+      "References": [
+        {
+          "Link": "https://xavier.org",
+          "Name": "Sleek Plastic Pizza"
+        },
+        {
+          "Link": "https://cora.net",
+          "Name": "Awesome Soft Soap"
+        },
+        {
+          "Link": "http://kelley.biz",
+          "Name": "Licensed Soft Car"
+        }
+      ],
+      "TvChannels": [
+        {
+          "Id": 9942,
+          "Name": "Hegmann LLC"
+        },
+        {
+          "Id": 9943,
+          "Name": "Lowe, VonRueden and Hoeger"
+        },
+        {
+          "Id": 9944,
+          "Name": "Koelpin, Pfeffer and Hahn"
+        }
+      ]
+    },
+    "ExternalIds": {
+      "ProviderId1": 3028,
+      "ProviderId2": 4725,
+      "RotationNumber": 494,
+      "References": {
+        "RefKey1": "Advanced",
+        "RefKey2": "Manager"
+      }
+    },
+    "ScheduleChangeRecords": [
+      {
+        "PreviousValue": "2023-12-12T02:24:31.2552549+02:00",
+        "NewValue": "2024-11-14T04:00:50.1480973+02:00",
+        "Timastamp": "2024-11-13T11:34:53.9530695+02:00"
+      },
+      {
+        "PreviousValue": "2024-03-23T07:02:25.5720149+02:00",
+        "NewValue": "2024-11-14T16:46:56.347192+02:00",
+        "Timastamp": "2024-11-13T02:40:54.6030476+02:00"
+      },
+      {
+        "PreviousValue": "2024-08-01T10:37:40.0647033+03:00",
+        "NewValue": "2024-11-14T07:24:55.8326018+02:00",
+        "Timastamp": "2024-11-13T12:46:33.5895717+02:00"
+      }
+    ],
+    "StageId": "59a2e912-6d35-e9cf-5e73-3b7d36e68f4b",
+    "ParentIds": [
+      "51ecfdaa-6f4f-0a13-8dd6-569d691583ad",
+      "1e302a52-9241-2ac0-c81c-d53060665ce4"
+    ]
+  },
+  "TimelineRecords": [
+    {
+      "Id": 482,
+      "HomeScore": 1.454417317577810,
+      "AwayScore": null,
+      "LiveTime": 35,
+      "Period": "ExtraTime",
+      "PeriodName": "Fiji Dollar",
+      "Points": "3",
+      "InjuryTime": "0",
+      "Side": 1,
+      "Type": "Sports",
+      "Value": "Avon",
+      "CoordinatesA": 90,
+      "CoordinatesB": 8,
+      "Time": "2024-11-13T09:54:26.8335121+02:00",
+      "Assists": [
+        {
+          "Id": "6f4706e9-0a7d-8103-653f-ce3f79a82724",
+          "Name": "Pierre",
+          "Type": "Lebanon"
+        },
+        {
+          "Id": "b10b1ab9-592e-3632-8afc-af85f17e3c7d",
+          "Name": "Kenny",
+          "Type": "Self-enabling"
+        },
+        {
+          "Id": "13ae285b-b95d-186c-6083-3a5d543ff4ef",
+          "Name": "Phyllis",
+          "Type": "Djibouti Franc"
+        }
+      ],
+      "GoalScorer": {
+        "Id": "486fe4ad-4a8e-ef40-a825-c439921a4cd8",
+        "Name": "Travon"
+      },
+      "Player": {
+        "Id": "2a110b9a-3235-1954-5f3f-beef87aea6d9",
+        "Name": "King Price"
+      }
+    },
+    {
+      "Id": 483,
+      "HomeScore": null,
+      "AwayScore": null,
+      "LiveTime": null,
+      "Period": "FirstHalf",
+      "PeriodName": "Bypass",
+      "Points": "3",
+      "InjuryTime": "3",
+      "Side": null,
+      "Type": "Savings Account",
+      "Value": "Gambia",
+      "CoordinatesA": 90,
+      "CoordinatesB": 10,
+      "Time": "2024-11-13T01:23:29.5832129+02:00",
+      "Assists": [
+        {
+          "Id": "8db74e18-20cc-13e5-85a8-d389ddd488fd",
+          "Name": "Tyrese",
+          "Type": "Florida"
+        },
+        {
+          "Id": "9a3bcf93-e500-a7a3-bbc6-cf890362aba4",
+          "Name": "Malika",
+          "Type": "orange"
+        }
+      ],
+      "GoalScorer": {
+        "Id": "d4c29f8c-bd9a-6759-cbf3-c9dc33510c79",
+        "Name": "Jules"
+      },
+      "Player": {
+        "Id": "1e4b4491-eb30-c37b-d08f-4922f6297536",
+        "Name": "Lillie Dooley"
+      }
+    },
+    {
+      "Id": 484,
+      "HomeScore": 0.545226763970865,
+      "AwayScore": null,
+      "LiveTime": null,
+      "Period": "ExtraTime",
+      "PeriodName": "connect",
+      "Points": "2",
+      "InjuryTime": "4",
+      "Side": 1,
+      "Type": "Handcrafted",
+      "Value": "Forward",
+      "CoordinatesA": 34,
+      "CoordinatesB": 37,
+      "Time": "2024-11-13T12:00:24.8276127+02:00",
+      "Assists": [
+        {
+          "Id": "eca5c601-5b53-0633-7024-e80d53cc2083",
+          "Name": "Percival",
+          "Type": "Practical Concrete Chair"
+        },
+        {
+          "Id": "7806cf72-e2cd-7453-a3ab-fe8e62ace157",
+          "Name": "Jordi",
+          "Type": "tertiary"
+        },
+        {
+          "Id": "032aade4-3b1b-b754-4aae-f300da942f00",
+          "Name": "Daisha",
+          "Type": "Factors"
+        }
+      ],
+      "GoalScorer": {
+        "Id": "26c6ef16-34c0-b9c3-6be0-06a109ce4c6c",
+        "Name": "Harmony"
+      },
+      "Player": {
+        "Id": "764b58a2-a389-5cdc-d036-846822b69334",
+        "Name": "Twila Reynolds"
+      }
+    },
+    {
+      "Id": 485,
+      "HomeScore": null,
+      "AwayScore": null,
+      "LiveTime": null,
+      "Period": "FirstHalf",
+      "PeriodName": "Awesome Wooden Chicken",
+      "Points": "1",
+      "InjuryTime": "1",
+      "Side": 0,
+      "Type": "architect",
+      "Value": "reboot",
+      "CoordinatesA": 97,
+      "CoordinatesB": 44,
+      "Time": "2024-11-12T21:10:54.950979+02:00",
+      "Assists": [
+        {
+          "Id": "bab5abf3-3888-95e0-2309-110f3b11e307",
+          "Name": "Sofia",
+          "Type": "benchmark"
+        }
+      ],
+      "GoalScorer": {
+        "Id": "8384af1c-bca4-58e7-73db-ff390c82ea58",
+        "Name": "Phoebe"
+      },
+      "Player": {
+        "Id": "cc78dd9b-8c99-2b37-727c-ad39d2da9d71",
+        "Name": "Jacey Abbott"
+      }
+    }
+  ],
+  "DelayedInfo": {
+    "Id": 82,
+    "Description": "Beatae odit sequi voluptatum."
+  },
+  "StatusDetails": {
+    "WinnerId": "9537524c-0f61-4f0d-553c-a5539f4540e9",
+    "Status": 11,
+    "GameStatus": 3,
+    "EventResults": [
+      {
+        "Id": "158d63ec-055a-2f3d-2465-244c4386f341",
+        "Rank": 5,
+        "Score": 69,
+        "ScoreDecimal": 56.691942854301460,
+        "LeaguePoints": 65.983198034703340,
+        "Time": "6.02:01:23.7075069",
+        "TimeRank": 10,
+        "Status": "Postponed",
+        "StatusDescription": "Dolor est debitis similique voluptate.",
+        "Sprint": 7,
+        "SprintPoints": 8.979820841455156,
+        "SprintRank": 1,
+        "Climber": 9,
+        "ClimbingPoints": 2.393465852359882,
+        "ClimbingRank": 20,
+        "HomeTeamScore": 4.051654703322056,
+        "AwayTeamScore": 1.817536474293380,
+        "StatusCode": 6,
+        "StatusCodeDescription": "Iusto ut eius aut."
+      },
+      {
+        "Id": "62fdbd85-359c-99d7-0b84-57cb3b23b8ce",
+        "Rank": 6,
+        "Score": 33,
+        "ScoreDecimal": 94.547455328874160,
+        "LeaguePoints": 83.635132863078280,
+        "Time": "4.08:30:37.5434513",
+        "TimeRank": 5,
+        "Status": "Abandoned",
+        "StatusDescription": "Doloribus dolorem dolore omnis aut incidunt assumenda assumenda id libero.",
+        "Sprint": 3,
+        "SprintPoints": 3.498530259628693,
+        "SprintRank": 3,
+        "Climber": 3,
+        "ClimbingPoints": 6.452917805193364,
+        "ClimbingRank": 3,
+        "HomeTeamScore": 1.0417576257019704,
+        "AwayTeamScore": 1.446174086186268,
+        "StatusCode": 7,
+        "StatusCodeDescription": "Quis rerum delectus aut dolore dignissimos ad blanditiis necessitatibus."
+      },
+      {
+        "Id": "41514072-29a9-a215-ac69-e1eb610efae4",
+        "Rank": 3,
+        "Score": 33,
+        "ScoreDecimal": 13.9072477656120760,
+        "LeaguePoints": 17.0726573894431960,
+        "Time": "3.23:24:09.5511904",
+        "TimeRank": 4,
+        "Status": "Suspended",
+        "StatusDescription": "Accusantium sint quibusdam.",
+        "Sprint": 8,
+        "SprintPoints": 9.620545351832938,
+        "SprintRank": 9,
+        "Climber": 10,
+        "ClimbingPoints": 9.721542943108738,
+        "ClimbingRank": 8,
+        "HomeTeamScore": 4.905553377442216,
+        "AwayTeamScore": 2.983486432816936,
+        "StatusCode": 5,
+        "StatusCodeDescription": "Qui aliquid tenetur quis impedit exercitationem."
+      },
+      {
+        "Id": "9f743ddf-9748-0598-266c-7bc8e407e90a",
+        "Rank": 9,
+        "Score": 71,
+        "ScoreDecimal": 35.360275000079530,
+        "LeaguePoints": 98.238320073032320,
+        "Time": "3.15:36:14.5401105",
+        "TimeRank": 12,
+        "Status": "Interrupted",
+        "StatusDescription": "Voluptatem officia est quasi.",
+        "Sprint": 4,
+        "SprintPoints": 1.279890442385344,
+        "SprintRank": 4,
+        "Climber": 4,
+        "ClimbingPoints": 1.979628575850928,
+        "ClimbingRank": 1,
+        "HomeTeamScore": 1.3831439046615900,
+        "AwayTeamScore": 2.763393451853504,
+        "StatusCode": 10,
+        "StatusCodeDescription": "Porro quia vero omnis consequatur."
+      },
+      {
+        "Id": "a3f1ce87-438a-8213-3186-9b16f048c2c5",
+        "Rank": 4,
+        "Score": 49,
+        "ScoreDecimal": 84.729898394314570,
+        "LeaguePoints": 36.128822194646110,
+        "Time": "6.20:53:03.3689542",
+        "TimeRank": 1,
+        "Status": "Postponed",
+        "StatusDescription": "Iure cupiditate sequi amet dolor libero laboriosam est.",
+        "Sprint": 10,
+        "SprintPoints": 1.8700700286411901,
+        "SprintRank": 20,
+        "Climber": 5,
+        "ClimbingPoints": 7.138842870256219,
+        "ClimbingRank": 7,
+        "HomeTeamScore": 2.635175297499744,
+        "AwayTeamScore": 1.762029134936092,
+        "StatusCode": 2,
+        "StatusCodeDescription": "Eum vitae mollitia aut eligendi consequatur."
+      }
+    ],
+    "Properties": {
+      "Key1": "connecting",
+      "Key2": "1"
+    },
+    "EventTiming": {
+      "EventTime": "01:11:34",
+      "Injurytime": "05:22:58",
+      "AnnouncedInjuryTime": "23:49:07",
+      "RemainingDuration": "2024-11-12",
+      "TimeLeftInPeriod": "15:47:09",
+      "IsRunning": null
+    },
+    "PeriodScores": [
+      {
+        "HomeScore": 1.5052090886770,
+        "AwayScore": 4.012670761708690,
+        "PeriodType": 2,
+        "PeriodNumber": null,
+        "MatchStatusCode": null,
+        "MatchStatusDetails": "Et voluptatem cumque numquam."
+      },
+      {
+        "HomeScore": 3.662506423787035,
+        "AwayScore": 0.3031395117184605,
+        "PeriodType": 3,
+        "PeriodNumber": null,
+        "MatchStatusCode": 4,
+        "MatchStatusDetails": "Repellat dolor et aut placeat."
+      },
+      {
+        "HomeScore": 2.322340237378865,
+        "AwayScore": 0.4345425492684245,
+        "PeriodType": 1,
+        "PeriodNumber": null,
+        "MatchStatusCode": 2,
+        "MatchStatusDetails": "Enim repellendus aperiam asperiores porro corporis voluptatem expedita."
+      }
+    ],
+    "HomeScore": 2.514806244798015,
+    "AwayScore": 0.932826403326440,
+    "Description": "Commodi labore natus et."
+  },
+  "BookingStatus": 2,
+  "Location": {
+    "Id": "0d763502-e90c-42f5-bb12-d7581a94d0cc",
+    "Name": "Reuben Lane",
+    "City": "Penelopemouth",
+    "Country": "Paraguay",
+    "SeatsNumber": 92767,
+    "GeoData": "-55.2571,-145.46",
+    "CountryCode": "SD"
+  },
+  "Conditions": {
+    "Spectators": "22767",
+    "Format": "Normal",
+    "Official": {
+      "Id": "5d832cac-8375-dec6-ca3a-6e7a132b118b",
+      "Name": "Marianne Barton",
+      "Details": "Antarctica (the territory South of 60 deg S)"
+    },
+    "Environment": {
+      "FieldType": "consequatur",
+      "Temperature": null,
+      "Weather": "Snowy",
+      "WindSpeed": "Gusty",
+      "WindImpact": "ex"
+    }
+  },
+  "Competitors": [
+    {
+      "Id": "f856ab3a-b896-3810-9b01-104bcd55ab73",
+      "Name": "Sporer - Quitzon",
+      "Country": "Suriname",
+      "Abbreviation": "E49",
+      "IsVirtual": true,
+      "ExternalIds": {
+        "ProviderId1": 3145,
+        "ProviderId2": 3762,
+        "RotationNumber": 490,
+        "References": {
+          "RefKey1": "Texas",
+          "RefKey2": "Credit Card Account"
+        }
+      },
+      "CountryCode": "RO",
+      "Players": [
+        {
+          "Id": "60b28b37-c9f9-8b70-ecb9-bb9aaee3ff44",
+          "Name": "Cale Hegmann"
+        },
+        {
+          "Id": "200e702e-8be8-de30-fea8-1d40ad1756f6",
+          "Name": "Elvera Block"
+        },
+        {
+          "Id": "3114d4d3-0dd8-1e5e-965a-4cda0ba37e26",
+          "Name": "Marcus Bergstrom"
+        }
+      ],
+      "SportUniforms": [
+        {
+          "MainColor": "purple",
+          "Number": "83",
+          "SecondaryColor": "sky blue",
+          "Type": "Third",
+          "HasHorizantalStripes": true,
+          "HasSplit": true,
+          "HasSquares": false,
+          "HasVerticalStripes": false
+        }
+      ],
+      "Coach": {
+        "Id": "a9b6f04c-a7cb-ec91-2542-dbcd3b115ec0",
+        "CountryCode": "KH",
+        "Name": "Maximus Spencer",
+        "Nationality": "Venezuela"
+      },
+      "Location": {
+        "Id": "14800a62-d961-49bb-be19-6a97b91e941f",
+        "Name": "Lockman River",
+        "City": "New Kelliburgh",
+        "Country": "Trinidad and Tobago",
+        "SeatsNumber": 41306,
+        "GeoData": "25.2088,44.9896",
+        "CountryCode": "TZ"
+      }
+    },
+    {
+      "Id": "d3b3395b-f2fb-d963-b8a4-5e8e63e42df9",
+      "Name": "Rolfson, Lind and Luettgen",
+      "Country": "Ireland",
+      "Abbreviation": "9CW",
+      "IsVirtual": false,
+      "ExternalIds": {
+        "ProviderId1": 9009,
+        "ProviderId2": 4376,
+        "RotationNumber": 598,
+        "References": {
+          "RefKey1": "Markets",
+          "RefKey2": "Tasty Steel Shoes"
+        }
+      },
+      "CountryCode": "EG",
+      "Players": [
+        {
+          "Id": "141f378e-8c59-717d-b91d-3dbcb00f038e",
+          "Name": "Eldred Donnelly"
+        }
+      ],
+      "SportUniforms": [
+        {
+          "MainColor": "mint green",
+          "Number": "26",
+          "SecondaryColor": "cyan",
+          "Type": "HomeTeam",
+          "HasHorizantalStripes": false,
+          "HasSplit": false,
+          "HasSquares": false,
+          "HasVerticalStripes": false
+        },
+        {
+          "MainColor": "blue",
+          "Number": "52",
+          "SecondaryColor": "yellow",
+          "Type": "Third",
+          "HasHorizantalStripes": true,
+          "HasSplit": true,
+          "HasSquares": false,
+          "HasVerticalStripes": true
+        }
+      ],
+      "Coach": {
+        "Id": "30e15f98-0b5e-67d7-613d-bf26c8cc42ea",
+        "CountryCode": "VN",
+        "Name": "Christiana McKenzie",
+        "Nationality": "Thailand"
+      },
+      "Location": {
+        "Id": "b8319627-a3e7-4ff0-8e54-2449b83113b7",
+        "Name": "Aniya Drive",
+        "City": "West Maramouth",
+        "Country": "Senegal",
+        "SeatsNumber": 29257,
+        "GeoData": "-25.713,62.3738",
+        "CountryCode": "CY"
+      }
+    },
+    {
+      "Id": "b5912b6e-9ea9-8972-11b4-92e2f2609bb5",
+      "Name": "Schaefer - Kuphal",
+      "Country": "Mayotte",
+      "Abbreviation": "CPC",
+      "IsVirtual": false,
+      "ExternalIds": {
+        "ProviderId1": 1972,
+        "ProviderId2": 6023,
+        "RotationNumber": 419,
+        "References": {
+          "RefKey1": "PNG",
+          "RefKey2": "modular"
+        }
+      },
+      "CountryCode": "GT",
+      "Players": [
+        {
+          "Id": "2384c250-c3da-5745-1d82-880ee14e69e6",
+          "Name": "Elinore Glover"
+        },
+        {
+          "Id": "4599a9ed-4eb5-513d-7bc6-affbf2ce0e39",
+          "Name": "Morgan Heaney"
+        },
+        {
+          "Id": "9fcb134b-560b-1751-7026-1b228adf477f",
+          "Name": "Erick Lesch"
+        },
+        {
+          "Id": "1b0dd1cd-a50e-74d5-006b-4d9bf1c6083f",
+          "Name": "Gerald Schaefer"
+        }
+      ],
+      "SportUniforms": [
+        {
+          "MainColor": "pink",
+          "Number": "1",
+          "SecondaryColor": "olive",
+          "Type": "AwayTeam",
+          "HasHorizantalStripes": true,
+          "HasSplit": true,
+          "HasSquares": true,
+          "HasVerticalStripes": false
+        }
+      ],
+      "Coach": {
+        "Id": "54cbc42c-5fac-1ce8-fd1f-3a5ebca8fed5",
+        "CountryCode": "ME",
+        "Name": "Missouri O\u0027Connell",
+        "Nationality": "Germany"
+      },
+      "Location": {
+        "Id": "682f8712-064b-49bb-aec1-26b04f67f34a",
+        "Name": "Rolfson Ways",
+        "City": "Rigobertoville",
+        "Country": "Djibouti",
+        "SeatsNumber": 95227,
+        "GeoData": "50.7966,-33.774",
+        "CountryCode": "LU"
+      }
+    }
+  ]
+}
