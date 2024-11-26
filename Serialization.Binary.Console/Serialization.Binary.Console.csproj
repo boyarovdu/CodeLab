@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Serialization.Binary</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SportsData.Faker\SportsData.Faker.csproj" />
+      <ProjectReference Include="..\SportsData.Models\SportsData.Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+      <PackageReference Include="MessagePack" Version="2.5.192" />
+      <PackageReference Include="protobuf-net" Version="3.2.45" />
+    </ItemGroup>
+
+</Project>
