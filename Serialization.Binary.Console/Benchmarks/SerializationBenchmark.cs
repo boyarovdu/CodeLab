@@ -8,6 +8,7 @@ using SportsData.Models;
 namespace Serialization.Binary.Benchmarks;
 
 [MemoryDiagnoser]
+[Config(typeof(PercentilesConfig))]
 public class SerializationBenchmark(int testDataSize = 25_000)
 {
     private readonly List<SportEvent> _testData = SportsDataFaker.GetSportEventFaker().Generate(testDataSize);

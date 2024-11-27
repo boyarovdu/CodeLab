@@ -18,6 +18,11 @@ namespace Serialization.Binary.Console
             BenchmarkRunner.Run<SerializationBenchmark>();
         }
         
+        static void DeserializersBenchmark()
+        {
+            BenchmarkRunner.Run<DeserializationBenchmark>();
+        }
+        
         static void SerializersDemo()
         {   
             var totalMemoryBeforeTestDataSet = GC.GetTotalMemory(true);
@@ -70,6 +75,7 @@ namespace Serialization.Binary.Console
             
             // SerializersBenchmark();
             // SerializersBenchmark_v2();
+            // DeserializersBenchmark();
         }
     }
 }
