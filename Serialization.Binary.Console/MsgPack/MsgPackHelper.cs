@@ -27,7 +27,7 @@ public static class MsgPackHelper
 
         output.Flush();
     }
-    
+    // TODO: Add versioning to the custom chunked serialization format to simplify further improvements 
     public static void Serialize<T>(T[] dataArray,
         Stream output,
         int chunkSize = 1_000,
@@ -47,7 +47,7 @@ public static class MsgPackHelper
 
             var chunk = dataArrayAsMemory.Slice(i, currentChunkSize);
             MessagePackSerializer.Serialize(chunkBuffer, chunk, serializerOptions);
-
+            // TODO: handle negative case
             BitConverter.TryWriteBytes(chunkLengthBuffer, chunkBuffer.WrittenCount);
             output.Write(chunkLengthBuffer);
             output.Write(chunkBuffer.WrittenSpan);
@@ -74,6 +74,7 @@ public static class MsgPackHelper
             _ = input.Read(chunkLengthBuffer);
             var chunkLength = BitConverter.ToInt32(chunkLengthBuffer);
 
+            // TODO: chunk buffer resizing can be completely avoided by writing largest chunk size at the beginning of the stream during serialization
             // If the buffer is too small, resize it
             if (chunkBuffer.Length < chunkLength)
             {
