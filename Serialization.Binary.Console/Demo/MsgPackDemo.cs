@@ -46,7 +46,7 @@ public static class MsgPackDemo
         
         using (var output = File.Create(fileName))
         {
-            MsgPackHelper.Serialize(data, output, 300, serializerOptions);
+            MsgPackHelper.Serialize(data, output, 250, serializerOptions);
             System.Console.WriteLine($"MsgPack serialized data size is {output.Length / 1_000} kB");
             output.Flush();
         }

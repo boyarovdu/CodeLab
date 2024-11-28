@@ -15,7 +15,7 @@ public class DeserializationBenchmark
     private readonly byte[] _serializedMsgPackTestData;
     private readonly byte[] _serializedMsgPackChunkedTestData;
 
-    public DeserializationBenchmark(int testDataSize = 10_000)
+    public DeserializationBenchmark(int testDataSize = 50_000)
     {
         var testData = SportsDataFaker.GetSportEventFaker().Generate(testDataSize);
         var chunkSize = 250;

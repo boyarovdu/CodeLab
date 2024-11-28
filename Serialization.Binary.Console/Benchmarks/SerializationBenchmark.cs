@@ -9,7 +9,7 @@ namespace Serialization.Binary.Benchmarks;
 
 [MemoryDiagnoser]
 [Config(typeof(PercentilesConfig))]
-public class SerializationBenchmark(int testDataSize = 25_000)
+public class SerializationBenchmark(int testDataSize = 50_000)
 {
     private readonly List<SportEvent> _testData = SportsDataFaker.GetSportEventFaker().Generate(testDataSize);
     private readonly int _chunkSize = 250;

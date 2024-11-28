@@ -9,11 +9,11 @@ namespace Serialization.Binary.Benchmarks;
 
 [MemoryDiagnoser]
 [Config(typeof(PercentilesConfig))]
-public class SerializationBenchmark_v2(int testDataSize = 20_000)
+public class SerializationBenchmark_v2(int testDataSize = 50_000)
 {
     private readonly SportEvent[] _testData = SportsDataFaker.GetSportEventFaker().Generate(testDataSize).ToArray();
     private readonly int _chunkSize = 250;
-    private readonly int _memoBufferInitialSize = 200_000_000;
+    private readonly int _memoBufferInitialSize = 500_000_000;
 
     [Benchmark(Baseline = true)]
     public void MessagePack()
