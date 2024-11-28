@@ -15,7 +15,7 @@ namespace Serialization.Binary.Console
         
         static void SerializersBenchmark_v2()
         {
-            BenchmarkRunner.Run<SerializationBenchmark>();
+            BenchmarkRunner.Run<SerializationBenchmark_v2>();
         }
         
         static void DeserializersBenchmark()
