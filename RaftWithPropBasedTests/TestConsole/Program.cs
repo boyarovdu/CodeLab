@@ -31,7 +31,7 @@ class Program
         aTimer = new System.Timers.Timer(2000);
         // Hook up the Elapsed event for the timer. 
         aTimer.Elapsed += OnTimedEvent;
-        aTimer.AutoReset = true;
+        aTimer.AutoReset = false;
         aTimer.Enabled = true;
     }
 

@@ -1,23 +1,24 @@
 namespace Distributed.Consensus.Raft.LeaderElection
 
 type NodeId = string
+type ElectionTerm = int
 
 type LeaderInfo = { nodeId: NodeId }
 
 type CandidateInfo =
     { nodeId: NodeId
-      electionTerm: int
+      electionTerm: ElectionTerm
       votes: int
       lastLogIndex: int }
 
 type FollowerInfo =
     { leader: LeaderInfo option
       votedFor: CandidateInfo option
-      electionTerm: int
+      electionTerm: ElectionTerm
       lastLogIndex: int }
     
 type NodeState =
-    | Leader
+    | Leader of LeaderInfo
     | Follower of FollowerInfo
     | Candidate of CandidateInfo
 

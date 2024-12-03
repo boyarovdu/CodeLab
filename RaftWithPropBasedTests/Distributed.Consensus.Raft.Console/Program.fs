@@ -4,23 +4,10 @@ open Distributed.Consensus.Raft.LeaderElection
 
 [<EntryPoint>]
 let main argv =
-    // Timer resets when node receives a leader ping
-    // ....
-    
-    let node = new Node("1")
-    let nl = Environment.NewLine
-    
-    node.MessagesStream.Subscribe(fun message ->
-        match message.messageType with
-        | LeaderElection leaderElectionMessage ->
-            match leaderElectionMessage with
-            | RequestVote candidate ->
-                let candidateString = candidate.ToString()
-                printfn $"Received vote request from candidate:%s{nl}%s{candidateString}%s{nl}"
-            | _ -> ())
-    |> ignore
+    let nodes = [| new Node("1", [|"2"; "3"|]); new Node("2", [|"1"; "3"|]); new Node("3", [|"1"; "2"|]) |]
+    let _ = MessageBus(nodes)
 
-    System.Console.ReadKey()
-    |> ignore
-    
+    nodes |> Array.iter _.Start()
+
+    Console.ReadKey() |> ignore
     0
