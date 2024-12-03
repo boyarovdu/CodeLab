@@ -7,15 +7,15 @@ module LeaderElection =
         | r when r > 0 -> GreaterThan
         | r when r < 0 -> LessThan
         // Represents impossible case, however covered so that IDE doesn't highlight this pattern match expression as
-        // incomplete
+        // incomplete :)
         | r -> failwith $"Unexpected result %i{r} from ComapreTo(%i{term1},%i{term2}) operation detected"
 
     let private getNewTerm nodeState =
-        1
-        + match nodeState with
-          | Leader _ -> 0
-          | Follower followerInfo -> followerInfo.electionTerm
-          | Candidate candidateInfo -> candidateInfo.electionTerm
+        match nodeState with
+        | Leader _ -> 0
+        | Follower followerInfo -> followerInfo.electionTerm
+        | Candidate candidateInfo -> candidateInfo.electionTerm
+        + 1
 
     let private getLastLogIndex nodeState =
         match nodeState with
@@ -25,7 +25,7 @@ module LeaderElection =
 
     let private getQuorum numberOfNodes = (numberOfNodes / 2) + 1
 
-    let startNewElectionTerm notifyCandidacy (nodeState, nodeId) =
+    let startNewElectionTerm (nodeId, notifyCandidacy) nodeState =
         match nodeState with
         | Leader _ -> nodeState // Leader doesn't start new election
         | Candidate _ // If candidate doesn't collect the majority of votes it will start new election term
@@ -39,7 +39,7 @@ module LeaderElection =
             notifyCandidacy candidateInfo
             Candidate candidateInfo
 
-    let vote notifyAcceptVote (nodeState: NodeState, candidate: CandidateInfo) =
+    let vote (notifyAcceptVote) (candidate: CandidateInfo) (nodeState: NodeState) =
         match nodeState with
         | Leader _
         | Candidate _ -> nodeState // Leader and Candidate cannot vote?
@@ -63,7 +63,7 @@ module LeaderElection =
             else
                 nodeState
 
-    let tryBecomeLeader (notifyNodeBecomeLeader) (nodeState: NodeState, numberOfNodes: int, receivedNewVote: bool) =
+    let tryBecomeLeader (notifyNodeBecomeLeader) (numberOfNodes: int) (receivedNewVote: bool) (nodeState: NodeState) =
         let quorum = getQuorum numberOfNodes
 
         match nodeState with
@@ -72,19 +72,14 @@ module LeaderElection =
         | Candidate ci ->
             let newVotes = ci.votes + (if receivedNewVote then 1 else 0)
 
-            printf $"Node %s{ci.nodeId} received new vote. Total votes: %i{newVotes}"
-            
             if newVotes >= quorum then
                 let leaderInfo = { nodeId = ci.nodeId }
-                
-                printf $"Node %s{ci.nodeId} became a leader"
-                
                 notifyNodeBecomeLeader leaderInfo
                 Leader leaderInfo
             else
                 Candidate { ci with votes = newVotes }
 
-    let acknowledgeLeaderHeartbeat (nodeState: NodeState, leader: LeaderInfo) =
+    let acknowledgeLeaderHeartbeat (leader: LeaderInfo) (nodeState: NodeState) =
         match nodeState with
         | Leader _ -> nodeState // TODO: cover leader heartbeat to another leader
         | Follower fi -> Follower { fi with leader = Some leader }

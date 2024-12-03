@@ -10,7 +10,7 @@
         <Compile Include="LeaderElection\LeaderElection.fs" />
         <Compile Include="Messages.fs" />
         <Compile Include="Node.fs" />
-        <Compile Include="MessageBus.fs" />
+        <Compile Include="FakeAsyncCommunicationChannel.fs" />
     </ItemGroup>
 
 </Project>
