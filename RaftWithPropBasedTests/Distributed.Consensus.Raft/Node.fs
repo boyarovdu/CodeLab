@@ -33,16 +33,13 @@ type Node(id: NodeId, nodeIds: NodeId array) =
 
     (* --- TIMERS --- *)
     // TODO: make it configurable
-    let electionMinTimeout = 1500
-    let electionMaxTimeout = 3000
-    let heartBeatTimeout = 500
+    let electionMinTimeout, electionMaxTimeout, heartBeatTimeout = (1500, 3000, 500)
     let electionTimerDelayRandom = Random()
     let electionTimerLock = obj ()
 
-    let electionTimer =
-        new Timer(electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout))
-
-    let heartbeatTimer = new Timer(heartBeatTimeout)
+    let electionTimer, heartbeatTimer =
+        new Timer(electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)),
+        new Timer(heartBeatTimeout)
 
     let resetElectionTimerSafe () =
         lock electionTimerLock (fun () ->
