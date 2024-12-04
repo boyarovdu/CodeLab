@@ -5,28 +5,15 @@ open System.Timers
 
 open Distributed.Consensus.Raft.LeaderElection
 
+type NodeEvent =
+    | TimerElapsed of TimerType
+    | IncomingMessage of Message
+
+and TimerType =
+    | ElectionTimeout
+    | HeartbeatTimeout
+
 type Node(id: NodeId, nodeIds: NodeId array) =
-
-    (* --- MUTABLE STATE --- *)
-    let stateLock = obj ()
-
-    let mutable state =
-        Follower // Nodes start as followers
-            { leader = None
-              votedFor = None
-              lastLogIndex = 0
-              electionTerm = 0 }
-
-    (*
-    I thought about using mailbox processor for solving all the concurrency issues(including timers) inside this type, 
-    but all work in such case will be done on one thread, which could become a bottleneck if there are high-frequency 
-    events or many nodes. That's why I prefer to use locks for state updates
-    *)
-    let updateStateSafe f =
-        lock stateLock (fun () -> state <- f state)
-
-    // TODO: Node must know all other reachable nodes in the network
-    // let mutable nodeIds: NodeId array = [||]
 
     (* --- OBSERVABLE MESSAGES STREAM --- *)
     let messagesStream = Event<Message>()
@@ -38,9 +25,9 @@ type Node(id: NodeId, nodeIds: NodeId array) =
     let electionTimerLock = obj ()
 
     let electionTimer, heartbeatTimer =
-        new Timer(electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)),
-        new Timer(heartBeatTimeout)
+        new Timer(electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)), new Timer(heartBeatTimeout)
 
+    // Resetting election timer could happen concurrently, so we need to make it thread-safe
     let resetElectionTimerSafe () =
         lock electionTimerLock (fun () ->
             electionTimer.Stop()
@@ -49,7 +36,6 @@ type Node(id: NodeId, nodeIds: NodeId array) =
             |> ignore
 
             electionTimer.Start())
-
 
     (* --- EVENT TRIGGERS --- *)
     let triggerRequestVoteMessage (candidate: CandidateInfo) =
@@ -86,42 +72,69 @@ type Node(id: NodeId, nodeIds: NodeId array) =
     let tryBecomeLeader = LeaderElection.tryBecomeLeader triggerAppendEntryMessage
 
     (* --- TIMER HANDLERS --- *)
-    let processHeartbeatTimeout _ =
+    let processHeartbeatTimeout state =
         match state with
         | Leader _ -> triggerAppendEntryMessage { nodeId = id }
         | _ -> ()
 
-    let processElectionTimeout _ =
+        state
+
+    let processElectionTimeout state =
         match state with
-        | Leader _ -> () // Leader doesn't start new election
+        | Leader _ -> state // Leader doesn't start new election
         | Candidate _
         | Follower _ ->
-            updateStateSafe startNewElectionTerm
+            let newState = startNewElectionTerm state
             resetElectionTimerSafe ()
+            newState
 
     (* --- MESSAGE PROCESSING --- *)
     let processAppendEntryMessage (leaderInfo: LeaderInfo) =
-        updateStateSafe (LeaderElection.acknowledgeLeaderHeartbeat leaderInfo)
+        let newState = LeaderElection.acknowledgeLeaderHeartbeat leaderInfo
         resetElectionTimerSafe ()
+        newState
 
-    let processRequestVoteMessage (candidate: CandidateInfo) = updateStateSafe (vote candidate)
+    let processRequestVoteMessage (candidate: CandidateInfo) = vote candidate
 
-    let processAcceptVoteMessage (candidate: CandidateInfo) =
-        updateStateSafe (tryBecomeLeader nodeIds.Length true)
+    let processAcceptVoteMessage (candidate: CandidateInfo) = tryBecomeLeader nodeIds.Length true
 
-    let processLeaderElectionMessage (message: MessageType) =
-        match message with
-        | AppendEntry leaderInfo -> processAppendEntryMessage leaderInfo
-        | RequestVote candidateInfo -> processRequestVoteMessage candidateInfo
-        | AcceptVote candidateInfo -> processAcceptVoteMessage candidateInfo
+    (* --- NODE MAILBOX --- *)
+    // Mailbox processor allows to get rid of mutable state, making it impossible to introduce concurrency issues
+    // related to node state changes. State is "locked" inside the mailbox recurring loop.
+    let mailbox =
+        MailboxProcessor<NodeEvent>.Start(fun inbox ->
+            let rec loop state =
+                async {
+                    let! msg = inbox.Receive()
+                    return!
+                        loop (
+                            match msg with
+                            | TimerElapsed ElectionTimeout -> processElectionTimeout state
+                            | TimerElapsed HeartbeatTimeout -> processHeartbeatTimeout state
+                            | IncomingMessage message ->
+                                match message.messageType with
+                                | LeaderElection(AppendEntry leaderInfo) -> processAppendEntryMessage leaderInfo state
+                                | LeaderElection(RequestVote candidate) -> processRequestVoteMessage candidate state
+                                | LeaderElection(AcceptVote candidateInfo) ->
+                                    processAcceptVoteMessage candidateInfo state
+                        )
+                }
+
+            loop (
+                Follower // Nodes start as followers
+                    { leader = None
+                      votedFor = None
+                      lastLogIndex = 0
+                      electionTerm = 0 }
+            ))
 
     (* --- TYPE INITIALIZATION --- *)
     do
         // Init timers
-        electionTimer.Elapsed.Add processElectionTimeout
+        electionTimer.Elapsed.Add(fun _ -> mailbox.Post(TimerElapsed ElectionTimeout))
         electionTimer.AutoReset <- false
 
-        heartbeatTimer.Elapsed.Add processHeartbeatTimeout
+        heartbeatTimer.Elapsed.Add(fun _ -> mailbox.Post(TimerElapsed HeartbeatTimeout))
         heartbeatTimer.AutoReset <- true
 
     (* --- PUBLIC MEMBERS --- *)
@@ -129,9 +142,9 @@ type Node(id: NodeId, nodeIds: NodeId array) =
 
     member this.Start() = resetElectionTimerSafe ()
 
-    member this.ProcessMessage(message: Message) =
-        match message.messageType with
-        | LeaderElection leaderElectionMessage -> processLeaderElectionMessage leaderElectionMessage
+    member this.PostMessage(message: Message) =
+        let msgEvent = NodeEvent.IncomingMessage message
+        mailbox.Post msgEvent
 
     member this.Id = id
 

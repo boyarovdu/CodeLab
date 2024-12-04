@@ -32,7 +32,7 @@ type FakeAsyncCommunicationChannel(nodes: Node array) =
                 consoleMailbox.Post
                     $"Sending message from node %s{message.senderId} to node %s{node.Id}:%s{nl}%s{nl}\"%s{message.ToString()}\"%s{nl}"
 
-                node.ProcessMessage message
+                node.PostMessage message
         }
 
     do

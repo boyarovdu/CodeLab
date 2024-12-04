@@ -1,11 +1,11 @@
 ﻿namespace Distributed.Consensus.Raft.LeaderElection
 
 module LeaderElection =
-    let private (|LessThan|Equals|GreaterThan|) (term1: ElectionTerm, term2: ElectionTerm) =
+    let private (|OutdatedTerm|SameTerm|NewTerm|) (term1: ElectionTerm, term2: ElectionTerm) =
         match term1.CompareTo term2 with
-        | r when r = 0 -> Equals
-        | r when r > 0 -> GreaterThan
-        | r when r < 0 -> LessThan
+        | r when r = 0 -> SameTerm 
+        | r when r > 0 -> NewTerm 
+        | r when r < 0 -> OutdatedTerm
         // Represents impossible case, however covered so that IDE doesn't highlight this pattern match expression as
         // incomplete :)
         | r -> failwith $"Unexpected result %i{r} from ComapreTo(%i{term1},%i{term2}) operation detected"
@@ -42,16 +42,15 @@ module LeaderElection =
     let vote (notifyAcceptVote) (candidate: CandidateInfo) (nodeState: NodeState) =
         match nodeState with
         | Leader _
-        | Candidate _ -> nodeState // Leader and Candidate cannot vote?
-        | Follower fi ->
+        | Candidate _ -> nodeState // Leader and Candidate cannot vote
+        | Follower fi ->          
             let candidateIsUpToDate = candidate.lastLogIndex >= getLastLogIndex nodeState
-
             let nodePermittedToVote =
                 match fi.votedFor, (candidate.electionTerm, fi.electionTerm) with
-                | Some candidate, Equals -> false // Node already voted in this election term
-                | None, Equals -> true // Let it vote in case it didn't yet vote in current term
-                | _, LessThan -> false // Candidate tries to start election with outdated election term
-                | _, GreaterThan -> true // If candidate starts new valid election term - then node permitted to vote
+                | Some candidate, SameTerm -> false // Node already voted in this election term
+                | None, SameTerm -> true // Let it vote in case it didn't yet vote in current term
+                | _, OutdatedTerm -> false // Candidate tries to start election with outdated election term
+                | _, NewTerm -> true // If candidate starts new valid election term - then node permitted to vote
 
             if candidateIsUpToDate && nodePermittedToVote then
                 notifyAcceptVote candidate
