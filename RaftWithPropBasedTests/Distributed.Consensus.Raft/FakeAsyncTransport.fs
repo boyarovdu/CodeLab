@@ -3,10 +3,13 @@ namespace Distributed.Consensus.Raft
 open System
 open Distributed.Consensus.Raft
 
-type FakeAsyncCommunicationChannel(nodes: Node array) =
+type FakeAsyncTransport(nodes: Node array) =
 
     let nl = Environment.NewLine
     let timeFormat = "hh:mm:ss.fff"
+
+    let blockedNodesLock = obj ()
+    let mutable blockedNodeIds = [||]
 
     // As nodes communicate asynchronously, I do not want them to fight for the console pointer, so I use a mailbox
     // processor to write messages to the console in the order they were sent
@@ -25,16 +28,27 @@ type FakeAsyncCommunicationChannel(nodes: Node array) =
     // Fakes asynchronous message delivery
     let sendMessageAsync (message: Message) =
         async {
-            let recipients =
-                nodes |> Array.filter (fun node -> Array.contains node.Id message.recipients)
+            nodes
+            |> Array.filter (fun node -> Array.contains node.Id message.recipients)
+            |> Array.iter (fun recipientNode ->
+                if
+                    not (
+                        Array.contains message.senderId blockedNodeIds
+                        || Array.contains recipientNode.Id blockedNodeIds
+                    )
+                then
+                    consoleMailbox.Post
+                        $"Sending message from node %s{message.senderId} to node %s{recipientNode.Id}:%s{nl}%s{nl}\"%s{message.ToString()}\"%s{nl}"
 
-            for node in recipients do
-                consoleMailbox.Post
-                    $"Sending message from node %s{message.senderId} to node %s{node.Id}:%s{nl}%s{nl}\"%s{message.ToString()}\"%s{nl}"
+                    recipientNode.PostMessage message)
 
-                node.PostMessage message
+            lock blockedNodesLock (fun () -> ())
+
         }
 
     do
         for node in nodes do
             node.MessagesStream.Add(fun message -> sendMessageAsync message |> Async.Start)
+
+    member x.SetBlockedNodes bn =
+        lock blockedNodesLock (fun () -> blockedNodeIds <- bn)

@@ -27,7 +27,7 @@ module LeaderElection =
 
     let private isCandidateUpToDate (candidate: CandidateInfo) nodeState =
         candidate.lastLogIndex >= getLastLogIndex nodeState
-        
+
     let tryStartNewElectionTerm nodeId nodeState =
         match nodeState with
         | Leader _ -> false, nodeState // Leader doesn't start new election
@@ -49,6 +49,7 @@ module LeaderElection =
                     true, Follower { fi with votedFor = Some candidate }
                 else
                     false, Follower fi
+
         let handleNewTermVote candidate fi candidateIsUpToDate =
             if candidateIsUpToDate then
                 true,
@@ -85,13 +86,25 @@ module LeaderElection =
             let latestNumberVotes = ci.votes + (if receivedNewVote then 1 else 0)
 
             if latestNumberVotes >= quorum then
-                true, Leader { nodeId = ci.nodeId }
+                true,
+                Leader
+                    { nodeId = ci.nodeId
+                      electionTerm = ci.electionTerm }
             else
                 false, Candidate { ci with votes = latestNumberVotes }
 
     let acknowledgeLeaderHeartbeat (leader: LeaderInfo) (nodeState: NodeState) =
         match nodeState with
-        | Leader _ -> nodeState // TODO: cover leader heartbeat to another leader
+        | Leader li ->
+            if li.electionTerm > leader.electionTerm then
+                nodeState
+            // If heartbeat comes from another leader with higher election term node must switch to Follower
+            else 
+                Follower
+                    { leader = Some leader
+                      votedFor = None
+                      electionTerm = leader.electionTerm
+                      lastLogIndex = 0 } // TODO: Implement log replication
         | Follower fi -> Follower { fi with leader = Some leader }
         | Candidate ci ->
             Follower

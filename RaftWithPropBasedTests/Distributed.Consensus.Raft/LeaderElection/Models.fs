@@ -3,7 +3,8 @@ namespace Distributed.Consensus.Raft.LeaderElection
 type NodeId = string
 type ElectionTerm = int
 
-type LeaderInfo = { nodeId: NodeId }
+type LeaderInfo = { nodeId: NodeId
+                    electionTerm: ElectionTerm }
 
 type CandidateInfo =
     { nodeId: NodeId

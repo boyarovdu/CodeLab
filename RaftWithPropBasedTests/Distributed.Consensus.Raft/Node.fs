@@ -20,22 +20,20 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
 
     (* --- TIMERS --- *)
     // TODO: make it configurable
-    let electionMinTimeout, electionMaxTimeout, heartBeatTimeout = (1500, 3000, 500)
+    let electionMinTimeout, electionMaxTimeout, heartBeatTimeout = (1500, 3000, 1000)
     let electionTimerDelayRandom = Random()
-    let electionTimerLock = obj ()
 
     let electionTimer, heartbeatTimer =
         new Timer(electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)), new Timer(heartBeatTimeout)
 
     // Resetting election timer could happen concurrently, so we need to make it thread-safe
-    let resetElectionTimerSafe () =
-        lock electionTimerLock (fun () ->
-            electionTimer.Stop()
+    let resetElectionTimer () =
+        electionTimer.Stop()
 
-            electionTimer.Interval = electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)
-            |> ignore
+        electionTimer.Interval = electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)
+        |> ignore
 
-            electionTimer.Start())
+        electionTimer.Start()
 
     (* --- EVENT TRIGGERS --- *)
     let triggerRequestVoteMessage (candidate: CandidateInfo) =
@@ -70,7 +68,7 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
     let processHeartbeatTimeout state =
         do
             match state with
-            | Leader _ -> triggerAppendEntryMessage { nodeId = nodeId }
+            | Leader li -> triggerAppendEntryMessage li
             | _ -> ignore ()
 
         state
@@ -82,8 +80,8 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
                 match newState with
                 | Candidate ci ->
                     triggerRequestVoteMessage ci
-                    resetElectionTimerSafe ()
-                | Follower _ -> resetElectionTimerSafe ()
+                    resetElectionTimer ()
+                | Follower _ -> resetElectionTimer ()
                 | _ -> ignore ()
 
             newState
@@ -91,10 +89,9 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
 
     (* --- MESSAGE PROCESSING --- *)
     let processAppendEntryMessage (leaderInfo: LeaderInfo) =
-        let ns = LeaderElection.acknowledgeLeaderHeartbeat leaderInfo
-        resetElectionTimerSafe ()
-        ns
-
+        resetElectionTimer ()
+        LeaderElection.acknowledgeLeaderHeartbeat leaderInfo
+    
     let processRequestVoteMessage candidate currentState =
         match LeaderElection.tryVote candidate currentState with
         | true, newState ->
@@ -154,7 +151,7 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
     (* --- PUBLIC MEMBERS --- *)
     member this.MessagesStream = messagesStream.Publish
 
-    member this.Start() = resetElectionTimerSafe ()
+    member this.Start() = resetElectionTimer ()
 
     member this.PostMessage(message: Message) =
         mailbox.Post(NodeEvent.IncomingMessage message)
@@ -162,4 +159,8 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
     member this.Id = nodeId
 
     interface IDisposable with
-        member this.Dispose() = electionTimer.Dispose()
+        member this.Dispose() =
+            electionTimer.Dispose()
+            heartbeatTimer.Dispose()
+            mailbox.Dispose()
+        
