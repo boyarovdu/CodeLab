@@ -1,14 +1,14 @@
 ﻿namespace Distributed.Consensus.Raft.LeaderElection
 
 module LeaderElection =
-    let private (|OutdatedTerm|SameTerm|NewTerm|) (term1: ElectionTerm, term2: ElectionTerm) =
-        match term1.CompareTo term2 with
-        | r when r = 0 -> SameTerm 
-        | r when r > 0 -> NewTerm 
-        | r when r < 0 -> OutdatedTerm
+    let private (|OldTerm|SameTerm|NewTerm|) (termToCompare: ElectionTerm, otherTerm: ElectionTerm) =
+        match termToCompare.CompareTo otherTerm with
+        | r when r = 0 -> SameTerm
+        | r when r > 0 -> NewTerm
+        | r when r < 0 -> OldTerm
         // Represents impossible case, however covered so that IDE doesn't highlight this pattern match expression as
         // incomplete :)
-        | r -> failwith $"Unexpected result %i{r} from ComapreTo(%i{term1},%i{term2}) operation detected"
+        | r -> failwith $"Unexpected result %i{r} from ComapreTo(%i{termToCompare},%i{otherTerm}) operation detected"
 
     let private getNewTerm nodeState =
         match nodeState with
@@ -25,58 +25,69 @@ module LeaderElection =
 
     let private getQuorum numberOfNodes = (numberOfNodes / 2) + 1
 
-    let startNewElectionTerm (nodeId, notifyCandidacy) nodeState =
+    let private isCandidateUpToDate (candidate: CandidateInfo) nodeState =
+        candidate.lastLogIndex >= getLastLogIndex nodeState
+        
+    let tryStartNewElectionTerm nodeId nodeState =
         match nodeState with
-        | Leader _ -> nodeState // Leader doesn't start new election
+        | Leader _ -> false, nodeState // Leader doesn't start new election
         | Candidate _ // If candidate doesn't collect the majority of votes it will start new election term
         | Follower _ ->
-            let candidateInfo =
+            true,
+            Candidate
                 { nodeId = nodeId
                   electionTerm = getNewTerm nodeState
                   votes = 1 // votes for itself as a candidate
                   lastLogIndex = getLastLogIndex nodeState }
 
-            notifyCandidacy candidateInfo
-            Candidate candidateInfo
-
-    let vote (notifyAcceptVote) (candidate: CandidateInfo) (nodeState: NodeState) =
-        match nodeState with
-        | Leader _
-        | Candidate _ -> nodeState // Leader and Candidate cannot vote
-        | Follower fi ->          
-            let candidateIsUpToDate = candidate.lastLogIndex >= getLastLogIndex nodeState
-            let nodePermittedToVote =
-                match fi.votedFor, (candidate.electionTerm, fi.electionTerm) with
-                | Some candidate, SameTerm -> false // Node already voted in this election term
-                | None, SameTerm -> true // Let it vote in case it didn't yet vote in current term
-                | _, OutdatedTerm -> false // Candidate tries to start election with outdated election term
-                | _, NewTerm -> true // If candidate starts new valid election term - then node permitted to vote
-
-            if candidateIsUpToDate && nodePermittedToVote then
-                notifyAcceptVote candidate
-
+    let tryVote (candidate: CandidateInfo) (nodeState: NodeState) =
+        let handleSameTermVote candidate fi candidateIsUpToDate =
+            match fi.votedFor with
+            | Some _ -> false, Follower fi
+            | None ->
+                if candidateIsUpToDate then
+                    true, Follower { fi with votedFor = Some candidate }
+                else
+                    false, Follower fi
+        let handleNewTermVote candidate fi candidateIsUpToDate =
+            if candidateIsUpToDate then
+                true,
                 Follower
                     { fi with
                         votedFor = Some candidate
                         electionTerm = candidate.electionTerm }
             else
-                nodeState
+                false,
+                Follower
+                    { fi with
+                        votedFor = None
+                        electionTerm = candidate.electionTerm }
 
-    let tryBecomeLeader (notifyNodeBecomeLeader) (numberOfNodes: int) (receivedNewVote: bool) (nodeState: NodeState) =
+        match nodeState with
+        | Leader _
+        | Candidate _ -> (false, nodeState) // Leader and Candidate cannot vote
+        | Follower fi ->
+            let candidateIsUpToDate = isCandidateUpToDate candidate nodeState
+            let candidateTermComparison = (candidate.electionTerm, fi.electionTerm)
+
+            match candidateTermComparison with
+            | SameTerm -> handleSameTermVote candidate fi candidateIsUpToDate
+            | OldTerm -> false, nodeState
+            | NewTerm -> handleNewTermVote candidate fi candidateIsUpToDate
+
+    let tryBecomeLeader (numberOfNodes: int) (receivedNewVote: bool) (nodeState: NodeState) =
         let quorum = getQuorum numberOfNodes
 
         match nodeState with
-        | Leader _ -> nodeState
-        | Follower _ -> nodeState
+        | Leader _
+        | Follower _ -> false, nodeState
         | Candidate ci ->
-            let newVotes = ci.votes + (if receivedNewVote then 1 else 0)
+            let latestNumberVotes = ci.votes + (if receivedNewVote then 1 else 0)
 
-            if newVotes >= quorum then
-                let leaderInfo = { nodeId = ci.nodeId }
-                notifyNodeBecomeLeader leaderInfo
-                Leader leaderInfo
+            if latestNumberVotes >= quorum then
+                true, Leader { nodeId = ci.nodeId }
             else
-                Candidate { ci with votes = newVotes }
+                false, Candidate { ci with votes = latestNumberVotes }
 
     let acknowledgeLeaderHeartbeat (leader: LeaderInfo) (nodeState: NodeState) =
         match nodeState with

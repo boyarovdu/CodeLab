@@ -13,7 +13,7 @@ and TimerType =
     | ElectionTimeout
     | HeartbeatTimeout
 
-type Node(id: NodeId, nodeIds: NodeId array) =
+type Node(nodeId: NodeId, nodeIds: NodeId array) =
 
     (* --- OBSERVABLE MESSAGES STREAM --- *)
     let messagesStream = Event<Message>()
@@ -40,7 +40,7 @@ type Node(id: NodeId, nodeIds: NodeId array) =
     (* --- EVENT TRIGGERS --- *)
     let triggerRequestVoteMessage (candidate: CandidateInfo) =
         let requestVoteMessage =
-            { senderId = id
+            { senderId = nodeId
               recipients = nodeIds
               messageType = LeaderElection(RequestVote candidate) }
 
@@ -48,7 +48,7 @@ type Node(id: NodeId, nodeIds: NodeId array) =
 
     let triggerAcceptVoteMessage (candidate: CandidateInfo) =
         let acceptVoteMessage =
-            { senderId = id
+            { senderId = nodeId
               recipients = [| candidate.nodeId |]
               messageType = LeaderElection(AcceptVote candidate) }
 
@@ -56,49 +56,74 @@ type Node(id: NodeId, nodeIds: NodeId array) =
 
     let triggerAppendEntryMessage (leaderInfo: LeaderInfo) =
         let appendEntryMessage =
-            { senderId = id
+            { senderId = nodeId
               recipients = nodeIds
               messageType = LeaderElection(AppendEntry leaderInfo) }
 
         messagesStream.Trigger appendEntryMessage
+
         heartbeatTimer.Start()
         electionTimer.Stop()
 
-    (* --- LEADER ELECTION LOGIC FUNCs PREPARATION --- *)
-    let startNewElectionTerm =
-        LeaderElection.startNewElectionTerm (id, triggerRequestVoteMessage)
-
-    let vote = LeaderElection.vote triggerAcceptVoteMessage
-    let tryBecomeLeader = LeaderElection.tryBecomeLeader triggerAppendEntryMessage
 
     (* --- TIMER HANDLERS --- *)
     let processHeartbeatTimeout state =
-        match state with
-        | Leader _ -> triggerAppendEntryMessage { nodeId = id }
-        | _ -> ()
+        do
+            match state with
+            | Leader _ -> triggerAppendEntryMessage { nodeId = nodeId }
+            | _ -> ignore ()
 
         state
 
-    let processElectionTimeout state =
-        match state with
-        | Leader _ -> state // Leader doesn't start new election
-        | Candidate _
-        | Follower _ ->
-            let newState = startNewElectionTerm state
-            resetElectionTimerSafe ()
+    let processElectionTimeout currentState =
+        match LeaderElection.tryStartNewElectionTerm nodeId currentState with
+        | true, newState ->
+            do
+                match newState with
+                | Candidate ci ->
+                    triggerRequestVoteMessage ci
+                    resetElectionTimerSafe ()
+                | Follower _ -> resetElectionTimerSafe ()
+                | _ -> ignore ()
+
             newState
+        | false, newState -> newState
 
     (* --- MESSAGE PROCESSING --- *)
     let processAppendEntryMessage (leaderInfo: LeaderInfo) =
-        let newState = LeaderElection.acknowledgeLeaderHeartbeat leaderInfo
+        let ns = LeaderElection.acknowledgeLeaderHeartbeat leaderInfo
         resetElectionTimerSafe ()
-        newState
+        ns
 
-    let processRequestVoteMessage (candidate: CandidateInfo) = vote candidate
+    let processRequestVoteMessage candidate currentState =
+        match LeaderElection.tryVote candidate currentState with
+        | true, newState ->
+            triggerAcceptVoteMessage candidate
+            newState
+        | _, ns -> ns
 
-    let processAcceptVoteMessage (candidate: CandidateInfo) = tryBecomeLeader nodeIds.Length true
+    let processAcceptVoteMessage (candidate: CandidateInfo) state =
+        match LeaderElection.tryBecomeLeader nodeIds.Length true state with
+        | true, newState ->
+            do
+                match newState with
+                | Leader li -> triggerAppendEntryMessage li
+                | _ -> ignore ()
+
+            newState
+        | false, ns -> ns
 
     (* --- NODE MAILBOX --- *)
+    let processNodeEvent nodeEvent nodeState =
+        match nodeEvent with
+        | TimerElapsed ElectionTimeout -> processElectionTimeout nodeState
+        | TimerElapsed HeartbeatTimeout -> processHeartbeatTimeout nodeState
+        | IncomingMessage message ->
+            match message.messageType with
+            | LeaderElection(AppendEntry leaderInfo) -> processAppendEntryMessage leaderInfo nodeState
+            | LeaderElection(RequestVote candidate) -> processRequestVoteMessage candidate nodeState
+            | LeaderElection(AcceptVote candidateInfo) -> processAcceptVoteMessage candidateInfo nodeState
+
     // Mailbox processor allows to get rid of mutable state, making it impossible to introduce concurrency issues
     // related to node state changes. State is "locked" inside the mailbox recurring loop.
     let mailbox =
@@ -106,18 +131,7 @@ type Node(id: NodeId, nodeIds: NodeId array) =
             let rec loop state =
                 async {
                     let! msg = inbox.Receive()
-                    return!
-                        loop (
-                            match msg with
-                            | TimerElapsed ElectionTimeout -> processElectionTimeout state
-                            | TimerElapsed HeartbeatTimeout -> processHeartbeatTimeout state
-                            | IncomingMessage message ->
-                                match message.messageType with
-                                | LeaderElection(AppendEntry leaderInfo) -> processAppendEntryMessage leaderInfo state
-                                | LeaderElection(RequestVote candidate) -> processRequestVoteMessage candidate state
-                                | LeaderElection(AcceptVote candidateInfo) ->
-                                    processAcceptVoteMessage candidateInfo state
-                        )
+                    return! loop (processNodeEvent msg state)
                 }
 
             loop (
@@ -143,10 +157,9 @@ type Node(id: NodeId, nodeIds: NodeId array) =
     member this.Start() = resetElectionTimerSafe ()
 
     member this.PostMessage(message: Message) =
-        let msgEvent = NodeEvent.IncomingMessage message
-        mailbox.Post msgEvent
+        mailbox.Post(NodeEvent.IncomingMessage message)
 
-    member this.Id = id
+    member this.Id = nodeId
 
     interface IDisposable with
         member this.Dispose() = electionTimer.Dispose()
