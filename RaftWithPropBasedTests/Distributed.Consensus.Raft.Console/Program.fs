@@ -1,38 +1,24 @@
 ﻿open System
+open System.Threading
 open Distributed.Consensus.Raft
 open Distributed.Consensus.Raft.LeaderElection
 
+open Distributed.Consensus.Raft.UnitTests
+open FSharpx.Control
+open Microsoft.FSharp.Control
+open FSharpx.Control.Observable
+
 [<EntryPoint>]
 let main argv =
-    let nodes =
-        [| new Node("1", [| "2"; "3" |])
-           new Node("2", [| "1"; "3" |])
-           new Node("3", [| "1"; "2" |]) |]
+    let testCluster = TestCluster.startCluster 3
 
-    let transport = FakeAsyncTransport(nodes)
+    // Wait for the leader to be elected
+    let appendEntryMessage =
+        testCluster
+        |> TestCluster.waitAppendEntryMessageAsync (fun li -> true)
+        |> Async.RunSynchronously
 
-    let mergedEventsStream =
-        nodes.[0].MessagesStream
-        |> Observable.merge nodes.[1].MessagesStream
-        |> Observable.merge nodes.[2].MessagesStream
+    let leaderNodes = TestCluster.getLeaderNodes testCluster
+    let followerNodes = TestCluster.getFollowerNodes testCluster
 
-    nodes |> Array.iter _.Start()
-
-    Console.ReadKey() |> ignore
-
-    let temp =
-        mergedEventsStream
-        |> Observable.filter (fun m ->
-            match m.messageType with
-            | LeaderElection(AppendEntry li) -> true
-            | _ -> false)
-        |> Observable.subscribe (fun m ->
-            let nodeToStop = m.senderId
-            transport.SetBlockedNodes [| nodeToStop |]
-            printfn $"Node %s{nodeToStop} is blocked")
-        
-    Console.ReadKey() |> ignore
-    temp.Dispose();
-
-    Console.ReadKey() |> ignore
     0

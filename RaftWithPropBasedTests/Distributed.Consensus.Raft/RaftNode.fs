@@ -3,62 +3,43 @@ namespace Distributed.Consensus.Raft
 open System
 open System.Timers
 
+open Distributed.Consensus.Raft
 open Distributed.Consensus.Raft.LeaderElection
 
-type NodeEvent =
-    | TimerElapsed of TimerType
-    | IncomingMessage of Message
+type InternalMailboxMessage =
+    | ProcessElectionTimeout
+    | ProcessHeartbeatTimeout
+    | GetCurrentState of AsyncReplyChannel<NodeState>
+    | ProcessNodeMessage of RaftMessage
 
-and TimerType =
-    | ElectionTimeout
-    | HeartbeatTimeout
-
-type Node(nodeId: NodeId, nodeIds: NodeId array) =
+type RaftNode(nodeId: NodeId, clusterSize) =
 
     (* --- OBSERVABLE MESSAGES STREAM --- *)
-    let messagesStream = Event<Message>()
+    let nodeMessagesStream = Event<NodeId * RaftMessage>()
 
     (* --- TIMERS --- *)
     // TODO: make it configurable
-    let electionMinTimeout, electionMaxTimeout, heartBeatTimeout = (1500, 3000, 1000)
+    let electionMinTimeout, electionMaxTimeout, heartBeatTimeout = (150, 300, 100)
     let electionTimerDelayRandom = Random()
 
     let electionTimer, heartbeatTimer =
-        new Timer(electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)), new Timer(heartBeatTimeout)
+        new Timer(), new Timer(heartBeatTimeout)
 
     // Resetting election timer could happen concurrently, so we need to make it thread-safe
     let resetElectionTimer () =
         electionTimer.Stop()
-
-        electionTimer.Interval = electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)
-        |> ignore
-
+        electionTimer.Interval <- electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)
         electionTimer.Start()
 
     (* --- EVENT TRIGGERS --- *)
     let triggerRequestVoteMessage (candidate: CandidateInfo) =
-        let requestVoteMessage =
-            { senderId = nodeId
-              recipients = nodeIds
-              messageType = LeaderElection(RequestVote candidate) }
-
-        messagesStream.Trigger requestVoteMessage
+        nodeMessagesStream.Trigger(nodeId, LeaderElection(RequestVote candidate))
 
     let triggerAcceptVoteMessage (candidate: CandidateInfo) =
-        let acceptVoteMessage =
-            { senderId = nodeId
-              recipients = [| candidate.nodeId |]
-              messageType = LeaderElection(AcceptVote candidate) }
-
-        messagesStream.Trigger acceptVoteMessage
+        nodeMessagesStream.Trigger(nodeId, LeaderElection(AcceptVote candidate))
 
     let triggerAppendEntryMessage (leaderInfo: LeaderInfo) =
-        let appendEntryMessage =
-            { senderId = nodeId
-              recipients = nodeIds
-              messageType = LeaderElection(AppendEntry leaderInfo) }
-
-        messagesStream.Trigger appendEntryMessage
+        nodeMessagesStream.Trigger(nodeId, LeaderElection(AppendEntry leaderInfo))
 
         heartbeatTimer.Start()
         electionTimer.Stop()
@@ -78,11 +59,9 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
         | true, newState ->
             do
                 match newState with
-                | Candidate ci ->
-                    triggerRequestVoteMessage ci
-                    resetElectionTimer ()
-                | Follower _ -> resetElectionTimer ()
-                | _ -> ignore ()
+                | Candidate ci -> triggerRequestVoteMessage ci
+                | _ -> ()
+                resetElectionTimer()
 
             newState
         | false, newState -> newState
@@ -91,7 +70,7 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
     let processAppendEntryMessage (leaderInfo: LeaderInfo) =
         resetElectionTimer ()
         LeaderElection.acknowledgeLeaderHeartbeat leaderInfo
-    
+
     let processRequestVoteMessage candidate currentState =
         match LeaderElection.tryVote candidate currentState with
         | true, newState ->
@@ -100,7 +79,7 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
         | _, ns -> ns
 
     let processAcceptVoteMessage (candidate: CandidateInfo) state =
-        match LeaderElection.tryBecomeLeader nodeIds.Length true state with
+        match LeaderElection.tryBecomeLeader clusterSize true state with
         | true, newState ->
             do
                 match newState with
@@ -111,24 +90,28 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
         | false, ns -> ns
 
     (* --- NODE MAILBOX --- *)
-    let processNodeEvent nodeEvent nodeState =
-        match nodeEvent with
-        | TimerElapsed ElectionTimeout -> processElectionTimeout nodeState
-        | TimerElapsed HeartbeatTimeout -> processHeartbeatTimeout nodeState
-        | IncomingMessage message ->
-            match message.messageType with
+    let processCommand (nodeMessage: InternalMailboxMessage) nodeState =
+        match nodeMessage with
+        | ProcessElectionTimeout -> processElectionTimeout nodeState
+        | ProcessHeartbeatTimeout -> processHeartbeatTimeout nodeState
+        | ProcessNodeMessage raftMessage ->
+            match raftMessage with
             | LeaderElection(AppendEntry leaderInfo) -> processAppendEntryMessage leaderInfo nodeState
             | LeaderElection(RequestVote candidate) -> processRequestVoteMessage candidate nodeState
             | LeaderElection(AcceptVote candidateInfo) -> processAcceptVoteMessage candidateInfo nodeState
+            | LogReplication -> failwith "todo"
+        | GetCurrentState chan ->
+            chan.Reply nodeState
+            nodeState
 
     // Mailbox processor allows to get rid of mutable state, making it impossible to introduce concurrency issues
     // related to node state changes. State is "locked" inside the mailbox recurring loop.
     let mailbox =
-        MailboxProcessor<NodeEvent>.Start(fun inbox ->
+        MailboxProcessor<InternalMailboxMessage>.Start(fun inbox ->
             let rec loop state =
                 async {
                     let! msg = inbox.Receive()
-                    return! loop (processNodeEvent msg state)
+                    return! loop (processCommand msg state)
                 }
 
             loop (
@@ -142,19 +125,21 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
     (* --- TYPE INITIALIZATION --- *)
     do
         // Init timers
-        electionTimer.Elapsed.Add(fun _ -> mailbox.Post(TimerElapsed ElectionTimeout))
+        electionTimer.Elapsed.Add(fun _ -> mailbox.Post(ProcessElectionTimeout))
         electionTimer.AutoReset <- false
 
-        heartbeatTimer.Elapsed.Add(fun _ -> mailbox.Post(TimerElapsed HeartbeatTimeout))
+        heartbeatTimer.Elapsed.Add(fun _ -> mailbox.Post(ProcessHeartbeatTimeout))
         heartbeatTimer.AutoReset <- true
 
     (* --- PUBLIC MEMBERS --- *)
-    member this.MessagesStream = messagesStream.Publish
+    member this.MessagesStream = nodeMessagesStream.Publish
 
     member this.Start() = resetElectionTimer ()
 
-    member this.PostMessage(message: Message) =
-        mailbox.Post(NodeEvent.IncomingMessage message)
+    member this.ProcessMessage(message: RaftMessage) =
+        mailbox.Post(ProcessNodeMessage message)
+
+    member this.GetState() = mailbox.PostAndReply(GetCurrentState)
 
     member this.Id = nodeId
 
@@ -163,4 +148,11 @@ type Node(nodeId: NodeId, nodeIds: NodeId array) =
             electionTimer.Dispose()
             heartbeatTimer.Dispose()
             mailbox.Dispose()
-        
+
+module RaftMessageDelivery =
+    let getRecipients (nodes: RaftNode array) (message: RaftMessage) : RaftNode array =
+        match message with
+        | LeaderElection(AcceptVote ci) -> nodes |> Array.filter (fun node -> node.Id = ci.nodeId)
+        | LeaderElection(RequestVote ci) -> nodes |> Array.filter (fun node -> node.Id <> ci.nodeId)
+        | LeaderElection(AppendEntry li) -> nodes |> Array.filter (fun node -> node.Id <> li.nodeId)
+        | LogReplication -> failwith "todo"

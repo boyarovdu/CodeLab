@@ -23,7 +23,7 @@ type NodeState =
     | Follower of FollowerInfo
     | Candidate of CandidateInfo
 
-type MessageType =
+type LeaderElectionMessage =
     | RequestVote of CandidateInfo
     | AcceptVote of CandidateInfo
     | AppendEntry of LeaderInfo

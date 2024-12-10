@@ -2,8 +2,9 @@ namespace Distributed.Consensus.Raft
 
 open System
 open Distributed.Consensus.Raft
+open Distributed.Consensus.Raft.LeaderElection
 
-type FakeAsyncTransport(nodes: Node array) =
+type FakeAsyncTransport(nodes: RaftNode array) =
 
     let nl = Environment.NewLine
     let timeFormat = "hh:mm:ss.fff"
@@ -26,29 +27,24 @@ type FakeAsyncTransport(nodes: Node array) =
             loop 1)
 
     // Fakes asynchronous message delivery
-    let sendMessageAsync (message: Message) =
+    let sendMessageAsync (senderId: NodeId, message: RaftMessage) =
         async {
-            nodes
-            |> Array.filter (fun node -> Array.contains node.Id message.recipients)
-            |> Array.iter (fun recipientNode ->
-                if
-                    not (
-                        Array.contains message.senderId blockedNodeIds
-                        || Array.contains recipientNode.Id blockedNodeIds
-                    )
-                then
-                    consoleMailbox.Post
-                        $"Sending message from node %s{message.senderId} to node %s{recipientNode.Id}:%s{nl}%s{nl}\"%s{message.ToString()}\"%s{nl}"
+            if Array.contains senderId blockedNodeIds then
+                ignore ()
+            else
+                RaftMessageDelivery.getRecipients nodes message
+                |> Array.iter (fun recipientNode ->
+                    lock blockedNodesLock (fun () ->
+                        if not (Array.contains recipientNode.Id blockedNodeIds) then
+                            consoleMailbox.Post
+                                $"Sending message from node %s{senderId} to node %s{recipientNode.Id}:%s{nl}%s{nl}\"%s{message.ToString()}\"%s{nl}"
 
-                    recipientNode.PostMessage message)
-
-            lock blockedNodesLock (fun () -> ())
-
+                            recipientNode.ProcessMessage message))
         }
 
     do
         for node in nodes do
-            node.MessagesStream.Add(fun message -> sendMessageAsync message |> Async.Start)
+            node.MessagesStream.Add(fun messageDetails -> sendMessageAsync messageDetails |> Async.Start)
 
     member x.SetBlockedNodes bn =
         lock blockedNodesLock (fun () -> blockedNodeIds <- bn)

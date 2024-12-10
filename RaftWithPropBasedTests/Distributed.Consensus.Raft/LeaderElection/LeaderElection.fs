@@ -10,13 +10,16 @@ module LeaderElection =
         // incomplete :)
         | r -> failwith $"Unexpected result %i{r} from ComapreTo(%i{termToCompare},%i{otherTerm}) operation detected"
 
-    let private getNewTerm nodeState =
+    let private getElectionTerm nodeState =
         match nodeState with
-        | Leader _ -> 0
+        | Leader li -> li.electionTerm
         | Follower followerInfo -> followerInfo.electionTerm
         | Candidate candidateInfo -> candidateInfo.electionTerm
+    
+    let private getNewTerm nodeState =
+        getElectionTerm nodeState
         + 1
-
+     
     let private getLastLogIndex nodeState =
         match nodeState with
         | Leader _ -> 0
@@ -69,7 +72,7 @@ module LeaderElection =
         | Candidate _ -> (false, nodeState) // Leader and Candidate cannot vote
         | Follower fi ->
             let candidateIsUpToDate = isCandidateUpToDate candidate nodeState
-            let candidateTermComparison = (candidate.electionTerm, fi.electionTerm)
+            let candidateTermComparison = (candidate.electionTerm, getElectionTerm nodeState)
 
             match candidateTermComparison with
             | SameTerm -> handleSameTermVote candidate fi candidateIsUpToDate
