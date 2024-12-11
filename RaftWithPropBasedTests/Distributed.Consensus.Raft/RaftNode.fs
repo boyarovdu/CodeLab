@@ -2,8 +2,8 @@ namespace Distributed.Consensus.Raft
 
 open System
 open System.Timers
+open System.Reactive.Disposables
 
-open Distributed.Consensus.Raft
 open Distributed.Consensus.Raft.LeaderElection
 
 type InternalMailboxMessage =
@@ -12,18 +12,26 @@ type InternalMailboxMessage =
     | GetCurrentState of AsyncReplyChannel<NodeState>
     | ProcessNodeMessage of RaftMessage
 
+type DiagnosticLogEntry =
+    { nodeId: NodeId
+      timeStamp: string
+      mailboxMessage: InternalMailboxMessage
+      initialState: NodeState
+      finalState: NodeState
+      mailboxQueueSize: int }
+
 type RaftNode(nodeId: NodeId, clusterSize) =
 
     (* --- OBSERVABLE MESSAGES STREAM --- *)
-    let nodeMessagesStream = Event<NodeId * RaftMessage>()
+    let nodeMessageEvent = Event<NodeId * RaftMessage>()
+    let diagnosticLogEntryEvent = Event<DiagnosticLogEntry>()
 
     (* --- TIMERS --- *)
     // TODO: make it configurable
     let electionMinTimeout, electionMaxTimeout, heartBeatTimeout = (150, 300, 100)
     let electionTimerDelayRandom = Random()
 
-    let electionTimer, heartbeatTimer =
-        new Timer(), new Timer(heartBeatTimeout)
+    let electionTimer, heartbeatTimer = new Timer(), new Timer(heartBeatTimeout)
 
     // Resetting election timer could happen concurrently, so we need to make it thread-safe
     let resetElectionTimer () =
@@ -33,17 +41,13 @@ type RaftNode(nodeId: NodeId, clusterSize) =
 
     (* --- EVENT TRIGGERS --- *)
     let triggerRequestVoteMessage (candidate: CandidateInfo) =
-        nodeMessagesStream.Trigger(nodeId, LeaderElection(RequestVote candidate))
+        nodeMessageEvent.Trigger(nodeId, LeaderElection(RequestVote candidate))
 
     let triggerAcceptVoteMessage (candidate: CandidateInfo) =
-        nodeMessagesStream.Trigger(nodeId, LeaderElection(AcceptVote candidate))
+        nodeMessageEvent.Trigger(nodeId, LeaderElection(AcceptVote candidate))
 
     let triggerAppendEntryMessage (leaderInfo: LeaderInfo) =
-        nodeMessagesStream.Trigger(nodeId, LeaderElection(AppendEntry leaderInfo))
-
-        heartbeatTimer.Start()
-        electionTimer.Stop()
-
+        nodeMessageEvent.Trigger(nodeId, LeaderElection(AppendEntry leaderInfo))
 
     (* --- TIMER HANDLERS --- *)
     let processHeartbeatTimeout state =
@@ -55,15 +59,15 @@ type RaftNode(nodeId: NodeId, clusterSize) =
         state
 
     let processElectionTimeout currentState =
+        resetElectionTimer ()
+
         match LeaderElection.tryStartNewElectionTerm nodeId currentState with
         | true, newState ->
-            do
-                match newState with
-                | Candidate ci -> triggerRequestVoteMessage ci
-                | _ -> ()
-                resetElectionTimer()
-
-            newState
+            match newState with
+            | Candidate ci ->
+                triggerRequestVoteMessage ci
+                newState
+            | _ -> newState
         | false, newState -> newState
 
     (* --- MESSAGE PROCESSING --- *)
@@ -76,7 +80,7 @@ type RaftNode(nodeId: NodeId, clusterSize) =
         | true, newState ->
             triggerAcceptVoteMessage candidate
             newState
-        | _, ns -> ns
+        | _, newState -> newState
 
     let processAcceptVoteMessage (candidate: CandidateInfo) state =
         match LeaderElection.tryBecomeLeader clusterSize true state with
@@ -87,10 +91,11 @@ type RaftNode(nodeId: NodeId, clusterSize) =
                 | _ -> ignore ()
 
             newState
-        | false, ns -> ns
+        | false, newState -> newState
 
     (* --- NODE MAILBOX --- *)
     let processCommand (nodeMessage: InternalMailboxMessage) nodeState =
+
         match nodeMessage with
         | ProcessElectionTimeout -> processElectionTimeout nodeState
         | ProcessHeartbeatTimeout -> processHeartbeatTimeout nodeState
@@ -111,14 +116,25 @@ type RaftNode(nodeId: NodeId, clusterSize) =
             let rec loop state =
                 async {
                     let! msg = inbox.Receive()
-                    return! loop (processCommand msg state)
+                    let finalState = processCommand msg state
+
+                    let diagnosticLogEntry =
+                        { nodeId = nodeId
+                          timeStamp = DateTime.Now.ToString("hh:mm:ss.fff")
+                          mailboxMessage = msg
+                          initialState = state
+                          finalState = finalState
+                          mailboxQueueSize = inbox.CurrentQueueLength }
+
+                    diagnosticLogEntryEvent.Trigger(diagnosticLogEntry)
+
+                    return! loop (finalState)
                 }
 
             loop (
                 Follower // Nodes start as followers
                     { leader = None
                       votedFor = None
-                      lastLogIndex = 0
                       electionTerm = 0 }
             ))
 
@@ -132,22 +148,29 @@ type RaftNode(nodeId: NodeId, clusterSize) =
         heartbeatTimer.AutoReset <- true
 
     (* --- PUBLIC MEMBERS --- *)
-    member this.MessagesStream = nodeMessagesStream.Publish
+    member this.MessagesStream = nodeMessageEvent.Publish
+    member this.DiagnosticLogStream = diagnosticLogEntryEvent.Publish
 
-    member this.Start() = resetElectionTimer ()
+    member this.Start() =
+        resetElectionTimer ()
+        heartbeatTimer.Start()
 
     member this.ProcessMessage(message: RaftMessage) =
         mailbox.Post(ProcessNodeMessage message)
 
-    member this.GetState() = mailbox.PostAndReply(GetCurrentState)
+    member this.GetState() =
+        mailbox.PostAndReply(GetCurrentState)
+
 
     member this.Id = nodeId
 
     interface IDisposable with
         member this.Dispose() =
-            electionTimer.Dispose()
-            heartbeatTimer.Dispose()
-            mailbox.Dispose()
+            try
+                electionTimer.Dispose()
+                heartbeatTimer.Dispose()
+            finally
+                mailbox.Dispose()
 
 module RaftMessageDelivery =
     let getRecipients (nodes: RaftNode array) (message: RaftMessage) : RaftNode array =

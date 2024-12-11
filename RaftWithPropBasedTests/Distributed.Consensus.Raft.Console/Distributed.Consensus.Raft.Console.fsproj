@@ -14,4 +14,8 @@
       <ProjectReference Include="..\Distributed.Consensus.Raft\Distributed.Consensus.Raft.fsproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="System.Reactive.Linq" Version="6.0.1" />
+    </ItemGroup>
+
 </Project>

@@ -12,4 +12,8 @@
         <Compile Include="RaftNode.fs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="System.Reactive.Core" Version="6.0.1" />
+    </ItemGroup>
+
 </Project>

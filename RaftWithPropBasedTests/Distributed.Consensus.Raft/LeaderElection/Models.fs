@@ -9,14 +9,12 @@ type LeaderInfo = { nodeId: NodeId
 type CandidateInfo =
     { nodeId: NodeId
       electionTerm: ElectionTerm
-      votes: int
-      lastLogIndex: int }
+      votes: int }
 
 type FollowerInfo =
     { leader: LeaderInfo option
       votedFor: CandidateInfo option
-      electionTerm: ElectionTerm
-      lastLogIndex: int }
+      electionTerm: ElectionTerm }
     
 type NodeState =
     | Leader of LeaderInfo

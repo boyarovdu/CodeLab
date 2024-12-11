@@ -1,50 +1,42 @@
 namespace Distributed.Consensus.Raft
 
 open System
+open System.Threading
+open System.Threading.Tasks
+open System.Reactive
+open System.Reactive.Linq
+open System.Reactive.Concurrency
 open Distributed.Consensus.Raft
 open Distributed.Consensus.Raft.LeaderElection
 
 type FakeAsyncTransport(nodes: RaftNode array) =
 
-    let nl = Environment.NewLine
-    let timeFormat = "hh:mm:ss.fff"
-
-    let blockedNodesLock = obj ()
+    let rwLock = new ReaderWriterLockSlim()
     let mutable blockedNodeIds = [||]
 
-    // As nodes communicate asynchronously, I do not want them to fight for the console pointer, so I use a mailbox
-    // processor to write messages to the console in the order they were sent
-    let consoleMailbox =
-        MailboxProcessor.Start(fun inbox ->
-            let rec loop (counter: int) =
-                async {
-                    let! message = inbox.Receive()
-                    let time = DateTime.Now.ToString timeFormat
-                    printfn $"----- Operation %d{counter} [%s{time}] -----%s{nl}%s{message}"
-                    return! loop (counter + 1)
-                }
-
-            loop 1)
-
     // Fakes asynchronous message delivery
-    let sendMessageAsync (senderId: NodeId, message: RaftMessage) =
-        async {
-            if Array.contains senderId blockedNodeIds then
-                ignore ()
-            else
+    let sendMessage (senderId: NodeId, message: RaftMessage) =
+        rwLock.EnterReadLock()
+
+        try
+            if not (Array.contains senderId blockedNodeIds) then
                 RaftMessageDelivery.getRecipients nodes message
                 |> Array.iter (fun recipientNode ->
-                    lock blockedNodesLock (fun () ->
-                        if not (Array.contains recipientNode.Id blockedNodeIds) then
-                            consoleMailbox.Post
-                                $"Sending message from node %s{senderId} to node %s{recipientNode.Id}:%s{nl}%s{nl}\"%s{message.ToString()}\"%s{nl}"
-
-                            recipientNode.ProcessMessage message))
-        }
+                    if not (Array.contains recipientNode.Id blockedNodeIds) then
+                        recipientNode.ProcessMessage message)
+        finally
+            rwLock.ExitReadLock()
 
     do
-        for node in nodes do
-            node.MessagesStream.Add(fun messageDetails -> sendMessageAsync messageDetails |> Async.Start)
+        for node in nodes do                       
+            node.MessagesStream.Add(fun messageDetails ->
+                let task = new Task(fun () -> sendMessage messageDetails)
+                task.Start())
 
     member x.SetBlockedNodes bn =
-        lock blockedNodesLock (fun () -> blockedNodeIds <- bn)
+        rwLock.EnterWriteLock()
+
+        try
+            blockedNodeIds <- bn
+        finally
+            rwLock.ExitWriteLock()

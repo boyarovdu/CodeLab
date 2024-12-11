@@ -4,18 +4,19 @@ open System
 open Distributed.Consensus.Raft
 open Distributed.Consensus.Raft.LeaderElection
 open Microsoft.FSharp.Control
-open FSharpx.Control.Observable
+
 
 type TestClusterType =
     { nodes: RaftNode array
       transport: FakeAsyncTransport
-      messagesStream: IObservable<NodeId * RaftMessage> }
+      messagesStream: IObservable<NodeId * RaftMessage>
+      diagnosticLogStream: IObservable<DiagnosticLogEntry> }
 
 module TestCluster =
     let startCluster (clusterSize) =
 
         let nodes =
-            [| 1..clusterSize|]
+            [| 1..clusterSize |]
             |> Array.map (fun nodeId -> new RaftNode(nodeId.ToString(), clusterSize))
 
         let transport = FakeAsyncTransport(nodes)
@@ -25,12 +26,19 @@ module TestCluster =
             |> Array.fold
                 (fun messagesCollector node -> node.MessagesStream |> Observable.merge messagesCollector)
                 nodes.[0].MessagesStream
+                
+        let combinedDiagnosticLogStream =
+            nodes.[1..]
+            |> Array.fold
+                (fun messagesCollector node -> node.DiagnosticLogStream |> Observable.merge messagesCollector)
+                nodes.[0].DiagnosticLogStream
 
         nodes |> Array.iter _.Start()
 
         { nodes = nodes
           transport = transport
-          messagesStream = combinedMessagesStream }
+          messagesStream = combinedMessagesStream
+          diagnosticLogStream = combinedDiagnosticLogStream }
 
     let getLeaderNodes cluster =
         cluster.nodes
@@ -50,13 +58,19 @@ module TestCluster =
                 | _ -> collector)
             []
 
+    let waitNumberOfAppendEntryMessagesAsync predicate numberOfMessages cluster =
+        cluster.messagesStream
+        |> Observable.scan (fun (collector: LeaderInfo list) (_, message) ->
+            match message with
+            | LeaderElection(AppendEntry li) ->
+                if predicate li then li :: collector
+                else collector
+            | _ -> collector) []
+        |> Observable.filter (fun messages -> messages.Length >= numberOfMessages)
+    
     let waitAppendEntryMessageAsync predicate cluster =
         cluster.messagesStream
-        |> Observable.scan
-            (fun (collector: LeaderInfo list) (_, message) ->
-                match message with
-                | LeaderElection(AppendEntry li) -> if predicate li then li :: collector else collector
-                | _ -> collector)
-            []
-        |> Observable.filter (fun x -> x.Length > 0)
-        |> Async.AwaitObservable
+        |> Observable.choose (fun (_, message) ->
+            match message with
+            | LeaderElection(AppendEntry li) -> if predicate li then Some li else None
+            | _ -> None)
