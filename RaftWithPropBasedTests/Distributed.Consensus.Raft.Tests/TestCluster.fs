@@ -44,7 +44,7 @@ module TestCluster =
                 (fun messagesCollector node -> node.DiagnosticLogStream |> Observable.merge messagesCollector)
                 nodes.[0].DiagnosticLogStream
 
-        let diagnosticCollector =
+        let _ =
             combinedDiagnosticLogStream
             |> Observable.filter (fun logEntry ->
                 match logEntry.mailboxMessage with

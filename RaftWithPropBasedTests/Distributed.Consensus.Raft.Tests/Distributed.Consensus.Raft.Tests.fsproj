@@ -11,7 +11,8 @@
     <ItemGroup>
         <Compile Include="FakeAsyncTransport.fs" />
         <Compile Include="TestCluster.fs" />
-        <Compile Include="UnitTest1.fs"/>
+        <Compile Include="TestUtil.fs" />
+        <Compile Include="LeaderElectionTests.fs" />
         <Compile Include="Program.fs"/>
     </ItemGroup>
 

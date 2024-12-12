@@ -2,29 +2,10 @@ namespace Distributed.Consensus.Raft.Tests
 
 open NUnit.Framework
 open Distributed.Consensus.Raft
-open System
 
-module testUtil =
-    // Utility to wait until a condition is satisfied or a timeout occurs
-    let waitUntil<'T> (timeoutMs: int) (condition: unit -> bool) =
-        let sw = System.Diagnostics.Stopwatch.StartNew()
-
-        let rec waitUntil (condition: unit -> bool) =
-            async {
-                do! Async.Sleep 50
-
-                match sw.ElapsedMilliseconds > int64 timeoutMs, condition () with
-                | true, _ -> return false
-                | _, true -> return true
-                | _ -> return! waitUntil condition
-            }
-
-        waitUntil (condition)
 
 [<TestFixture>]
 type RaftNodeIntegrationTests() =
-
-
 
     [<Test>]
     member _.ClusterElectsLeader() =
@@ -34,7 +15,7 @@ type RaftNodeIntegrationTests() =
 
             // Wait for a leader to be elected
             let! leaderElected =
-                testUtil.waitUntil 5000 (fun () ->
+                TestUtil.waitUntil 5000 (fun () ->
                     cluster.nodes
                     |> Array.exists (fun n ->
                         match n.GetState().role with
@@ -61,7 +42,7 @@ type RaftNodeIntegrationTests() =
 
             // Wait for a leader to emerge
             let! _ =
-                testUtil.waitUntil 5000 (fun _ ->
+                TestUtil.waitUntil 5000 (fun _ ->
                     cluster.nodes
                     |> Array.exists (fun n ->
                         match n.GetState().role with
@@ -76,7 +57,7 @@ type RaftNodeIntegrationTests() =
                     | _ -> false)
 
             let! heartbeatReceived =
-                testUtil.waitUntil 5000 (fun _ ->
+                TestUtil.waitUntil 5000 (fun _ ->
                     cluster.nodes
                     |> Array.filter (fun n -> n.Id <> actualLeader.Id) // Exclude the leader
                     |> Array.forall (fun n ->
@@ -95,7 +76,7 @@ type RaftNodeIntegrationTests() =
 
             // Wait for a leader to emerge
             let! _ =
-                testUtil.waitUntil 5000 (fun _ ->
+                TestUtil.waitUntil 5000 (fun _ ->
                     cluster.nodes
                     |> Array.exists (fun n ->
                         match n.GetState().role with
@@ -114,7 +95,7 @@ type RaftNodeIntegrationTests() =
 
             // Wait for a new leader to emerge
             let! newLeaderElected =
-                testUtil.waitUntil 5000 (fun _ ->
+                TestUtil.waitUntil 5000 (fun _ ->
                     cluster.nodes
                     |> Array.filter (fun n -> n.Id <> initialLeader.Id) // Exclude failed leader
                     |> Array.exists (fun n ->
@@ -130,7 +111,7 @@ type RaftNodeIntegrationTests() =
                     | _ -> false)
 
             let! heartbeatFromNewLeaderReceived =
-                testUtil.waitUntil 5000 (fun _ ->
+                TestUtil.waitUntil 5000 (fun _ ->
                     cluster.nodes
                     |> Array.filter (fun n -> [| initialLeader.Id; newLeader.Id |] |> Array.contains n.Id |> not) 
                     |> Array.forall (fun n ->
@@ -153,7 +134,7 @@ type RaftNodeIntegrationTests() =
 
             // Wait to confirm no new leader is elected
             let! leaderElected =
-                (testUtil.waitUntil 5000 (fun _ ->
+                (TestUtil.waitUntil 5000 (fun _ ->
                     cluster.nodes
                     |> Array.filter (fun n -> not (Array.contains n.Id partitionedNodes))
                     |> Array.exists (fun n ->
@@ -170,8 +151,8 @@ type RaftNodeIntegrationTests() =
         let cluster = TestCluster.startCluster 5
 
         // Wait for a leader to emerge
-        let! leaderelected =
-            testUtil.waitUntil 5000 (fun _ ->
+        let! leaderRlected =
+            TestUtil.waitUntil 5000 (fun _ ->
                 cluster.nodes
                 |> Array.exists (fun n ->
                     match n.GetState().role with
@@ -192,7 +173,7 @@ type RaftNodeIntegrationTests() =
 
         // Wait and confirm no leader is elected
         let! leaderDuringPartition =
-            testUtil.waitUntil 5000 (fun _ ->
+            TestUtil.waitUntil 5000 (fun _ ->
                 cluster.nodes
                 |> Array.exists (fun n ->
                     match n.GetState().role with
@@ -206,7 +187,7 @@ type RaftNodeIntegrationTests() =
 
         // Wait for a new leader to emerge
         let! newLeaderElected =
-            testUtil.waitUntil 5000 (fun _ ->
+            TestUtil.waitUntil 5000 (fun _ ->
                 cluster.nodes
                 |> Array.exists (fun n ->
                     match n.GetState().role with
