@@ -20,7 +20,7 @@ module Raft =
             true, { electionTerm = getNewTerm nodeState.electionTerm; role = Candidate { votes = 1 } }
 
     let tryVote (candidateId, candidateTerm) (nodeState: NodeState) =
-        let handleSameCandidateTerm (candidateId, candidateTerm) nodeState : (bool * NodeState) =
+        let handleCandidateWithSameTerm (candidateId, candidateTerm) nodeState : (bool * NodeState) =
             match nodeState.role with
             | Follower fi ->
                 match fi.votedFor with
@@ -28,7 +28,7 @@ module Raft =
                 | None -> true, { nodeState with role = Follower { fi with votedFor = Some candidateId } }
             | _ -> false, nodeState
 
-        let handleNewerCandidateTerm (candidateId, candidateTerm) nodeState : bool * NodeState =
+        let handleCandidateWithNewerTerm (candidateId, candidateTerm) nodeState : bool * NodeState =
             match nodeState.role with
             | Follower fi ->
                 true, { electionTerm = candidateTerm; role = Follower { fi with votedFor = Some candidateId } }
@@ -36,9 +36,9 @@ module Raft =
                 true, { electionTerm = candidateTerm; role = Follower { leader = None; votedFor = Some candidateId } }
 
         match (candidateTerm, nodeState.electionTerm) with
-        | SameTerm candidateTerm -> handleSameCandidateTerm (candidateId, candidateTerm) nodeState
+        | SameTerm candidateTerm -> handleCandidateWithSameTerm (candidateId, candidateTerm) nodeState
         | OlderTerm candidateTerm -> false, nodeState
-        | NewerTerm candidateTerm -> handleNewerCandidateTerm (candidateId, candidateTerm) nodeState
+        | NewerTerm candidateTerm -> handleCandidateWithNewerTerm (candidateId, candidateTerm) nodeState
 
     let tryBecomeLeader (numberOfNodes: int) (receivedNewVote: bool) (nodeState: NodeState) =
         let quorum = getQuorum numberOfNodes

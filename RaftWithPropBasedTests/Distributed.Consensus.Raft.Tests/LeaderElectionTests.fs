@@ -8,7 +8,7 @@ open Distributed.Consensus.Raft
 type RaftNodeIntegrationTests() =
 
     [<Test>]
-    member _.ClusterElectsLeader() =
+    member _.``Cluster elects leader``() =
         async {
             // Set up a cluster of 3 nodes
             let cluster = TestCluster.startCluster 3
@@ -35,7 +35,7 @@ type RaftNodeIntegrationTests() =
         }
 
     [<Test>]
-    member _.FollowersRespondToLeaderHeartbeats() =
+    member _.``Followers respond to leader heartbeats``() =
         async {
             // Set up a cluster of 3 nodes
             let cluster = TestCluster.startCluster 3
@@ -69,7 +69,7 @@ type RaftNodeIntegrationTests() =
         }
 
     [<Test>]
-    member _.ClusterHandlesLeaderFailure() =
+    member _.``Cluster handles leader failure``() =
         async {
             // Set up a cluster of 3 nodes
             let cluster = TestCluster.startCluster 3
@@ -124,7 +124,7 @@ type RaftNodeIntegrationTests() =
         }
 
     [<Test>]
-    member _.NetworkPartitionPreventsLeadership() = async {
+    member _.``Network partition prevents leadership``() = async {
             // Set up a cluster of 5 nodes
             let cluster = TestCluster.startCluster 5
 
@@ -146,7 +146,7 @@ type RaftNodeIntegrationTests() =
         }
 
     [<Test>]
-    member _.ClusterRecoversAfterPartition() = async {
+    member _.``Cluster recovers after partition``() = async {
         // Set up a cluster of 5 nodes
         let cluster = TestCluster.startCluster 5
 

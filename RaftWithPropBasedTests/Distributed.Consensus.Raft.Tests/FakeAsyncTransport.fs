@@ -15,7 +15,7 @@ type FakeAsyncTransport(nodes: Node array) =
 
         try
             if not (Array.contains senderId blockedNodeIds) then
-                RaftMessageDelivery.getRecipients nodes message
+                MessageRouter.getRecipients nodes message
                 |> Array.iter (fun recipientNode ->
                     if not (Array.contains recipientNode.Id blockedNodeIds) then
                         recipientNode.ProcessMessage message)
