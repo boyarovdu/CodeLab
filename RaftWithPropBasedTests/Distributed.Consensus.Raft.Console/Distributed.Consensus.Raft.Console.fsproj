@@ -6,15 +6,18 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="FakeAsyncTransport.fs" />
+        <Compile Include="TestCluster.fs" />
         <Compile Include="Program.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Distributed.Consensus.Raft.UnitTests\Distributed.Consensus.Raft.UnitTests.fsproj" />
       <ProjectReference Include="..\Distributed.Consensus.Raft\Distributed.Consensus.Raft.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FSharpx.Async" Version="1.14.1" />
+      <PackageReference Include="NUnit" Version="4.2.2" />
       <PackageReference Include="System.Reactive.Linq" Version="6.0.1" />
     </ItemGroup>
 

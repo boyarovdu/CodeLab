@@ -1,15 +1,10 @@
 namespace Distributed.Consensus.Raft
 
-open System
 open System.Threading
 open System.Threading.Tasks
-open System.Reactive
-open System.Reactive.Linq
-open System.Reactive.Concurrency
 open Distributed.Consensus.Raft
-open Distributed.Consensus.Raft.LeaderElection
 
-type FakeAsyncTransport(nodes: RaftNode array) =
+type FakeAsyncTransport(nodes: Node array) =
 
     let rwLock = new ReaderWriterLockSlim()
     let mutable blockedNodeIds = [||]

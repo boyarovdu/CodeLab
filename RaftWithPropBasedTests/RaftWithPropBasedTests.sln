@@ -4,7 +4,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Distributed.Consensus.Raft"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Distributed.Consensus.Raft.Console", "Distributed.Consensus.Raft.Console\Distributed.Consensus.Raft.Console.fsproj", "{AFE64197-CB16-4974-9187-C69026371DAE}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Distributed.Consensus.Raft.UnitTests", "Distributed.Consensus.Raft.UnitTests\Distributed.Consensus.Raft.UnitTests.fsproj", "{7E95059B-55B7-4FDD-99F0-86FBB2BDCA1D}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Distributed.Consensus.Raft.Tests", "Distributed.Consensus.Raft.Tests\Distributed.Consensus.Raft.Tests.fsproj", "{C26D18E7-6E70-4B36-948D-B72BF587FE3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +20,9 @@ Global
 		{AFE64197-CB16-4974-9187-C69026371DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFE64197-CB16-4974-9187-C69026371DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFE64197-CB16-4974-9187-C69026371DAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E95059B-55B7-4FDD-99F0-86FBB2BDCA1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E95059B-55B7-4FDD-99F0-86FBB2BDCA1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E95059B-55B7-4FDD-99F0-86FBB2BDCA1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E95059B-55B7-4FDD-99F0-86FBB2BDCA1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C26D18E7-6E70-4B36-948D-B72BF587FE3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C26D18E7-6E70-4B36-948D-B72BF587FE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C26D18E7-6E70-4B36-948D-B72BF587FE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C26D18E7-6E70-4B36-948D-B72BF587FE3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

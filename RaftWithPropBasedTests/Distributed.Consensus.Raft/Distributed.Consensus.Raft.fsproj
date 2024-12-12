@@ -6,10 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="LeaderElection\Models.fs" />
-        <Compile Include="LeaderElection\LeaderElection.fs" />
-        <Compile Include="Messages.fs" />
-        <Compile Include="RaftNode.fs" />
+        <Compile Include="DomainTypes.fs" />
+        <Compile Include="Raft.fs" />
+        <Compile Include="Node.fs" />
     </ItemGroup>
 
     <ItemGroup>

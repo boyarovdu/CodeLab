@@ -2,15 +2,12 @@ namespace Distributed.Consensus.Raft
 
 open System
 open System.Timers
-open System.Reactive.Disposables
-
-open Distributed.Consensus.Raft.LeaderElection
 
 type InternalMailboxMessage =
     | ProcessElectionTimeout
     | ProcessHeartbeatTimeout
     | GetCurrentState of AsyncReplyChannel<NodeState>
-    | ProcessNodeMessage of RaftMessage
+    | ProcessRaftMessage of RaftMessage
 
 type DiagnosticLogEntry =
     { nodeId: NodeId
@@ -20,7 +17,7 @@ type DiagnosticLogEntry =
       finalState: NodeState
       mailboxQueueSize: int }
 
-type RaftNode(nodeId: NodeId, clusterSize) =
+type Node(nodeId: NodeId, clusterSize) =
 
     (* --- OBSERVABLE MESSAGES STREAM --- *)
     let nodeMessageEvent = Event<NodeId * RaftMessage>()
@@ -40,80 +37,88 @@ type RaftNode(nodeId: NodeId, clusterSize) =
         electionTimer.Start()
 
     (* --- EVENT TRIGGERS --- *)
-    let triggerRequestVoteMessage (candidate: CandidateInfo) =
-        nodeMessageEvent.Trigger(nodeId, LeaderElection(RequestVote candidate))
+    let triggerRequestVoteMessage (electionTerm) =
+        nodeMessageEvent.Trigger(nodeId, RequestVote(nodeId, electionTerm))
 
-    let triggerAcceptVoteMessage (candidate: CandidateInfo) =
-        nodeMessageEvent.Trigger(nodeId, LeaderElection(AcceptVote candidate))
+    let triggerAcceptVoteMessage (candidateId: NodeId) =
+        nodeMessageEvent.Trigger(nodeId, AcceptVote candidateId)
 
-    let triggerAppendEntryMessage (leaderInfo: LeaderInfo) =
-        nodeMessageEvent.Trigger(nodeId, LeaderElection(AppendEntry leaderInfo))
+    let triggerAppendEntryMessage (electionTerm) =
+        nodeMessageEvent.Trigger(nodeId, AppendEntry(nodeId, electionTerm))
 
     (* --- TIMER HANDLERS --- *)
-    let processHeartbeatTimeout state =
-        do
-            match state with
-            | Leader li -> triggerAppendEntryMessage li
-            | _ -> ignore ()
+    let processHeartbeatTimeout (state: NodeState) =
+        match state.role with
+        | Leader ->
+            triggerAppendEntryMessage state.electionTerm
+            state
+        | _ -> state
 
-        state
 
-    let processElectionTimeout currentState =
+    let processElectionTimeout (currentState: NodeState) =
         resetElectionTimer ()
 
-        match LeaderElection.tryStartNewElectionTerm nodeId currentState with
+        match Raft.tryStartNewElectionTerm nodeId currentState with
         | true, newState ->
-            match newState with
+            match newState.role with
             | Candidate ci ->
-                triggerRequestVoteMessage ci
+                triggerRequestVoteMessage newState.electionTerm
                 newState
             | _ -> newState
         | false, newState -> newState
 
     (* --- MESSAGE PROCESSING --- *)
-    let processAppendEntryMessage (leaderInfo: LeaderInfo) =
+    let processAppendEntryMessage (nodeId, electionTerm) (nodeState: NodeState) =
         resetElectionTimer ()
-        LeaderElection.acknowledgeLeaderHeartbeat leaderInfo
+        Raft.acknowledgeLeaderHeartbeat (nodeId, electionTerm) nodeState
 
-    let processRequestVoteMessage candidate currentState =
-        match LeaderElection.tryVote candidate currentState with
+    let processRequestVoteMessage (candidateId, candidateTerm) (nodeState: NodeState) =
+        match Raft.tryVote (candidateId, candidateTerm) (nodeState: NodeState) with
         | true, newState ->
-            triggerAcceptVoteMessage candidate
+            triggerAcceptVoteMessage candidateId
             newState
         | _, newState -> newState
 
-    let processAcceptVoteMessage (candidate: CandidateInfo) state =
-        match LeaderElection.tryBecomeLeader clusterSize true state with
+    let processAcceptVoteMessage (nodeId) (state: NodeState) =
+        match Raft.tryBecomeLeader clusterSize true state with
         | true, newState ->
-            do
-                match newState with
-                | Leader li -> triggerAppendEntryMessage li
-                | _ -> ignore ()
-
+            do triggerAppendEntryMessage newState.electionTerm
             newState
         | false, newState -> newState
 
     (* --- NODE MAILBOX --- *)
-    let processCommand (nodeMessage: InternalMailboxMessage) nodeState =
+    let processCommand (nodeMessage: InternalMailboxMessage) (nodeState: NodeState) =
 
         match nodeMessage with
         | ProcessElectionTimeout -> processElectionTimeout nodeState
         | ProcessHeartbeatTimeout -> processHeartbeatTimeout nodeState
-        | ProcessNodeMessage raftMessage ->
+        | ProcessRaftMessage raftMessage ->
             match raftMessage with
-            | LeaderElection(AppendEntry leaderInfo) -> processAppendEntryMessage leaderInfo nodeState
-            | LeaderElection(RequestVote candidate) -> processRequestVoteMessage candidate nodeState
-            | LeaderElection(AcceptVote candidateInfo) -> processAcceptVoteMessage candidateInfo nodeState
-            | LogReplication -> failwith "todo"
+            | AppendEntry(nodeId, electionTerm) ->
+                processAppendEntryMessage (nodeId, electionTerm) nodeState
+            | RequestVote(nodeId, electionTerm) ->
+                processRequestVoteMessage (nodeId, electionTerm) nodeState
+            | AcceptVote nodeId -> processAcceptVoteMessage (nodeId) nodeState
         | GetCurrentState chan ->
             chan.Reply nodeState
             nodeState
+
+    let diagnosticMailbox =
+        MailboxProcessor<DiagnosticLogEntry>.Start(fun inbox ->
+            let rec loop () =
+                async {
+                    let! msg = inbox.Receive()
+                    diagnosticLogEntryEvent.Trigger(msg)
+                    return! loop ()
+                }
+
+            loop ())
 
     // Mailbox processor allows to get rid of mutable state, making it impossible to introduce concurrency issues
     // related to node state changes. State is "locked" inside the mailbox recurring loop.
     let mailbox =
         MailboxProcessor<InternalMailboxMessage>.Start(fun inbox ->
-            let rec loop state =
+            let rec loop (state: NodeState) =
                 async {
                     let! msg = inbox.Receive()
                     let finalState = processCommand msg state
@@ -126,17 +131,12 @@ type RaftNode(nodeId: NodeId, clusterSize) =
                           finalState = finalState
                           mailboxQueueSize = inbox.CurrentQueueLength }
 
-                    diagnosticLogEntryEvent.Trigger(diagnosticLogEntry)
+                    diagnosticMailbox.Post(diagnosticLogEntry)
 
                     return! loop (finalState)
                 }
 
-            loop (
-                Follower // Nodes start as followers
-                    { leader = None
-                      votedFor = None
-                      electionTerm = 0 }
-            ))
+            loop { electionTerm = 0; role = Follower { leader = None; votedFor = None } })
 
     (* --- TYPE INITIALIZATION --- *)
     do
@@ -150,18 +150,12 @@ type RaftNode(nodeId: NodeId, clusterSize) =
     (* --- PUBLIC MEMBERS --- *)
     member this.MessagesStream = nodeMessageEvent.Publish
     member this.DiagnosticLogStream = diagnosticLogEntryEvent.Publish
-
     member this.Start() =
         resetElectionTimer ()
         heartbeatTimer.Start()
-
     member this.ProcessMessage(message: RaftMessage) =
-        mailbox.Post(ProcessNodeMessage message)
-
-    member this.GetState() =
-        mailbox.PostAndReply(GetCurrentState)
-
-
+        mailbox.Post(ProcessRaftMessage message)
+    member this.GetState() = mailbox.PostAndReply(GetCurrentState)
     member this.Id = nodeId
 
     interface IDisposable with
@@ -173,9 +167,8 @@ type RaftNode(nodeId: NodeId, clusterSize) =
                 mailbox.Dispose()
 
 module RaftMessageDelivery =
-    let getRecipients (nodes: RaftNode array) (message: RaftMessage) : RaftNode array =
+    let getRecipients (nodes: Node array) (message: RaftMessage) : Node array =
         match message with
-        | LeaderElection(AcceptVote ci) -> nodes |> Array.filter (fun node -> node.Id = ci.nodeId)
-        | LeaderElection(RequestVote ci) -> nodes |> Array.filter (fun node -> node.Id <> ci.nodeId)
-        | LeaderElection(AppendEntry li) -> nodes |> Array.filter (fun node -> node.Id <> li.nodeId)
-        | LogReplication -> failwith "todo"
+        | AcceptVote candidateId ->nodes |> Array.filter (fun node -> node.Id = candidateId)
+        | RequestVote (candidateId, candidateTerm) ->  nodes |> Array.filter (fun node -> node.Id <> candidateId)
+        | AppendEntry (leaderId, leaderTerm) -> nodes |> Array.filter (fun node -> node.Id <> leaderId)
