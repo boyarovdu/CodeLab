@@ -8,14 +8,12 @@ type NodeBenchmark() =
 
     let mutable node: Node = Unchecked.defaultof<Node>
 
-    [<GlobalSetup>] // Runs once before all benchmark iterations
+    [<GlobalSetup>] 
     member _.Setup() =
-        node <- new Node("1", 3) // Create a node with ID 1 and cluster size 3
-
-        // Ensure node starts in the follower state
+        node <- new Node("1", 3) 
         node.Start()
 
-    [<Benchmark>] // Combines all three steps in a single method
+    [<Benchmark>]
     member _.FullNodeLifecycle() =
         // Step 1: Node becomes a candidate
         let nodeState = node.ForceBecomeCandidate() |> Async.RunSynchronously
