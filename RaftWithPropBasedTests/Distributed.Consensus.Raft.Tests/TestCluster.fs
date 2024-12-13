@@ -47,13 +47,10 @@ module TestCluster =
         let _ =
             combinedDiagnosticLogStream
             |> Observable.filter (fun logEntry ->
-                match logEntry.mailboxMessage with
-                | ProcessHeartbeatTimeout -> false
-                | _ -> true)
+                logEntry.initialState <> logEntry.finalState)     
             |> Observable.subscribe (fun message ->
                 let msg = $"%s{message.ToString()}"
                 consoleMailbox.Post(msg))
-        
         
         nodes |> Array.iter _.Start()
 

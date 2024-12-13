@@ -4,6 +4,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Distributed.Consensus.Raft"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Distributed.Consensus.Raft.Tests", "Distributed.Consensus.Raft.Tests\Distributed.Consensus.Raft.Tests.fsproj", "{C26D18E7-6E70-4B36-948D-B72BF587FE3A}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Distributed.Consensus.Raft.Benchmark", "Distributed.Consensus.Raft.Benchmark\Distributed.Consensus.Raft.Benchmark.fsproj", "{7E344DCB-4F70-4922-BF2E-B691E75399C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{C26D18E7-6E70-4B36-948D-B72BF587FE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C26D18E7-6E70-4B36-948D-B72BF587FE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C26D18E7-6E70-4B36-948D-B72BF587FE3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E344DCB-4F70-4922-BF2E-B691E75399C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E344DCB-4F70-4922-BF2E-B691E75399C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E344DCB-4F70-4922-BF2E-B691E75399C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E344DCB-4F70-4922-BF2E-B691E75399C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

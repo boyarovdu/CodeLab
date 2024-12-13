@@ -4,10 +4,10 @@ open System
 open System.Timers
 
 type InternalMailboxMessage =
-    | ProcessElectionTimeout
+    | ProcessElectionTimeout of AsyncReplyChannel<NodeState>
     | ProcessHeartbeatTimeout
     | GetCurrentState of AsyncReplyChannel<NodeState>
-    | ProcessRaftMessage of RaftMessage
+    | ProcessRaftMessage of RaftMessage * AsyncReplyChannel<NodeState>
 
 type DiagnosticLogEntry =
     { nodeId: NodeId
@@ -90,15 +90,20 @@ type Node(nodeId: NodeId, clusterSize) =
     let processCommand (nodeMessage: InternalMailboxMessage) (nodeState: NodeState) =
 
         match nodeMessage with
-        | ProcessElectionTimeout -> processElectionTimeout nodeState
+        | ProcessElectionTimeout chan ->
+            let newState = processElectionTimeout nodeState
+            chan.Reply newState
+            newState
         | ProcessHeartbeatTimeout -> processHeartbeatTimeout nodeState
-        | ProcessRaftMessage raftMessage ->
-            match raftMessage with
-            | AppendEntry(nodeId, electionTerm) ->
-                processAppendEntryMessage (nodeId, electionTerm) nodeState
-            | RequestVote(nodeId, electionTerm) ->
-                processRequestVoteMessage (nodeId, electionTerm) nodeState
-            | AcceptVote nodeId -> processAcceptVoteMessage (nodeId) nodeState
+        | ProcessRaftMessage(raftMessage, chan) ->
+            let newState =
+                match raftMessage with
+                | AppendEntry(nodeId, electionTerm) -> processAppendEntryMessage (nodeId, electionTerm) nodeState
+                | RequestVote(nodeId, electionTerm) -> processRequestVoteMessage (nodeId, electionTerm) nodeState
+                | AcceptVote nodeId -> processAcceptVoteMessage (nodeId) nodeState
+
+            chan.Reply newState
+            newState
         | GetCurrentState chan ->
             chan.Reply nodeState
             nodeState
@@ -136,12 +141,14 @@ type Node(nodeId: NodeId, clusterSize) =
                     return! loop (finalState)
                 }
 
-            loop { electionTerm = 0; role = Follower { leader = None; votedFor = None } })
+            loop
+                { electionTerm = 0
+                  role = Follower { leader = None; votedFor = None } })
 
     (* --- TYPE INITIALIZATION --- *)
     do
         // Init timers
-        electionTimer.Elapsed.Add(fun _ -> mailbox.Post(ProcessElectionTimeout))
+        electionTimer.Elapsed.Add(fun _ -> mailbox.PostAndAsyncReply(ProcessElectionTimeout) |> ignore)
         electionTimer.AutoReset <- false
 
         heartbeatTimer.Elapsed.Add(fun _ -> mailbox.Post(ProcessHeartbeatTimeout))
@@ -150,11 +157,17 @@ type Node(nodeId: NodeId, clusterSize) =
     (* --- PUBLIC MEMBERS --- *)
     member this.MessagesStream = nodeMessageEvent.Publish
     member this.DiagnosticLogStream = diagnosticLogEntryEvent.Publish
+
     member this.Start() =
         resetElectionTimer ()
         heartbeatTimer.Start()
+
     member this.ProcessMessage(message: RaftMessage) =
-        mailbox.Post(ProcessRaftMessage message)
+        mailbox.PostAndAsyncReply(fun chan -> ProcessRaftMessage(message, chan))
+
+    member this.ForceBecomeCandidate() =
+        mailbox.PostAndAsyncReply(fun chan -> ProcessElectionTimeout chan)
+
     member this.GetState() = mailbox.PostAndReply(GetCurrentState)
     member this.Id = nodeId
 
@@ -165,4 +178,3 @@ type Node(nodeId: NodeId, clusterSize) =
                 heartbeatTimer.Dispose()
             finally
                 mailbox.Dispose()
-
