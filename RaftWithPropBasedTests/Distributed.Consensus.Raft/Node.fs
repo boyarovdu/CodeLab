@@ -166,7 +166,7 @@ type Node(nodeId: NodeId, clusterSize) =
         mailbox.PostAndAsyncReply(fun chan -> ProcessRaftMessage(message, chan))
 
     member this.ForceBecomeCandidate() =
-        mailbox.PostAndAsyncReply(fun chan -> ProcessElectionTimeout chan)
+        mailbox.PostAndAsyncReply(ProcessElectionTimeout) 
 
     member this.GetState() = mailbox.PostAndReply(GetCurrentState)
     member this.Id = nodeId
