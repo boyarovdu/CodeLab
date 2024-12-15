@@ -14,7 +14,7 @@ type MessageProcessingBenchmark() =
 
     [<Benchmark>]
     member this.ProcessVotes() =
-        let clusterSize = this.ClusterSize // Get the parameterized cluster size
+        let clusterSize = this.ClusterSize 
         let quorum = clusterSize / 2 + 1
 
         let node =
