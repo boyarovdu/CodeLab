@@ -3,6 +3,14 @@ namespace Distributed.Consensus.Raft
 open System
 open System.Timers
 
+[<Measure>] type ms
+
+type TimersCofig = {
+    electionMinTimeoutMs: int
+    electionMaxTimeoutMs: int
+    heartBeatTimeoutMs: int
+}
+
 type InternalMailboxMessage =
     | ProcessElectionTimeout of AsyncReplyChannel<NodeState>
     | ProcessHeartbeatTimeout
@@ -17,23 +25,21 @@ type DiagnosticLogEntry =
       finalState: NodeState
       mailboxQueueSize: int }
 
-type Node(nodeId: NodeId, clusterSize) =
+type Node(nodeId: NodeId, clusterSize, timersConfig: TimersCofig) =
 
     (* --- OBSERVABLE MESSAGES STREAM --- *)
     let nodeMessageEvent = Event<NodeId * RaftMessage>()
     let diagnosticLogEntryEvent = Event<DiagnosticLogEntry>()
 
     (* --- TIMERS --- *)
-    // TODO: make it configurable
-    let electionMinTimeout, electionMaxTimeout, heartBeatTimeout = (150, 300, 100)
     let electionTimerDelayRandom = Random()
 
-    let electionTimer, heartbeatTimer = new Timer(), new Timer(heartBeatTimeout)
+    let electionTimer, heartbeatTimer = new Timer(), new Timer(timersConfig.heartBeatTimeoutMs)
 
     // Resetting election timer could happen concurrently, so we need to make it thread-safe
     let resetElectionTimer () =
         electionTimer.Stop()
-        electionTimer.Interval <- electionTimerDelayRandom.Next(electionMinTimeout, electionMaxTimeout)
+        electionTimer.Interval <- electionTimerDelayRandom.Next(timersConfig.electionMinTimeoutMs, timersConfig.electionMaxTimeoutMs)
         electionTimer.Start()
 
     (* --- EVENT TRIGGERS --- *)

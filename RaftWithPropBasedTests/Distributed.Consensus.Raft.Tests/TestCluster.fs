@@ -23,12 +23,17 @@ module TestCluster =
                 }
 
             loop 1)
-    
+
     let startCluster (clusterSize) =
 
         let nodes =
             [| 1..clusterSize |]
-            |> Array.map (fun nodeId -> new Node(nodeId.ToString(), clusterSize))
+            |> Array.map (fun nodeId ->
+                new Node(nodeId.ToString(), clusterSize,
+                    { electionMinTimeoutMs = 150
+                      electionMaxTimeoutMs = 300
+                      heartBeatTimeoutMs = 50 }
+                ))
 
         let transport = FakeAsyncTransport(nodes)
 
@@ -46,12 +51,11 @@ module TestCluster =
 
         let _ =
             combinedDiagnosticLogStream
-            |> Observable.filter (fun logEntry ->
-                logEntry.initialState <> logEntry.finalState)     
+            |> Observable.filter (fun logEntry -> logEntry.initialState <> logEntry.finalState)
             |> Observable.subscribe (fun message ->
                 let msg = $"%s{message.ToString()}"
                 consoleMailbox.Post(msg))
-        
+
         nodes |> Array.iter _.Start()
 
         { nodes = nodes
