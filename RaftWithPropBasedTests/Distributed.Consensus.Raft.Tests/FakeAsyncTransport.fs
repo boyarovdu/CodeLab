@@ -11,17 +11,7 @@ type FakeAsyncTransport(nodes: Node array) =
 
     // Fakes asynchronous message delivery
     let sendMessage (senderId: NodeId, message: RaftMessage) =
-        // rwLock.EnterReadLock()
-        //
-        // try
-        //     if not (Array.contains senderId blockedNodeIds) then
-        //         MessageRouter.getRecipients nodes message
-        //         |> Array.iter (fun recipientNode ->
-        //             if not (Array.contains recipientNode.Id blockedNodeIds) then
-        //                 recipientNode.ProcessMessage message)
-        // finally
-        //     rwLock.ExitReadLock()
-        
+
         rwLock.EnterReadLock()        
         try
             if not (blockedNodeIds |> Array.contains senderId) then
