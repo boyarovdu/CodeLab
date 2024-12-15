@@ -5,7 +5,7 @@ open System.Timers
 
 [<Measure>] type ms
 
-type TimersCofig = {
+type TimersConfig = {
     electionMinTimeoutMs: int
     electionMaxTimeoutMs: int
     heartBeatTimeoutMs: int
@@ -25,7 +25,7 @@ type DiagnosticLogEntry =
       finalState: NodeState
       mailboxQueueSize: int }
 
-type Node(nodeId: NodeId, clusterSize, timersConfig: TimersCofig) =
+type Node(nodeId: NodeId, clusterSize, timersConfig: TimersConfig) =
 
     (* --- OBSERVABLE MESSAGES STREAM --- *)
     let nodeMessageEvent = Event<NodeId * RaftMessage>()
