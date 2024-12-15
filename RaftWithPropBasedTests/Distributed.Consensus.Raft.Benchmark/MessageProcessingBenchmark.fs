@@ -4,7 +4,7 @@ open System
 open BenchmarkDotNet.Attributes
 open Distributed.Consensus.Raft
 
-type NodeBenchmark() =
+type MessageProcessingBenchmark() =
 
     [<Params(10, 100, 1000)>]
     member val ClusterSize = 100 with get, set

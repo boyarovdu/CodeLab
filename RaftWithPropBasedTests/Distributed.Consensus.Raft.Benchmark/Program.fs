@@ -4,4 +4,4 @@ open BenchmarkDotNet.Running
 open Distributed.Consensus.Raft.Benchmark
 
 printfn "Hello from F#"
-BenchmarkRunner.Run<NodeBenchmark>() |> ignore
+BenchmarkRunner.Run<MessageProcessingBenchmark>() |> ignore
