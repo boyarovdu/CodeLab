@@ -3,8 +3,6 @@ namespace Distributed.Consensus.Raft
 open System
 open System.Timers
 
-[<Measure>] type ms
-
 type TimersConfig = {
     electionMinTimeoutMs: int
     electionMaxTimeoutMs: int
