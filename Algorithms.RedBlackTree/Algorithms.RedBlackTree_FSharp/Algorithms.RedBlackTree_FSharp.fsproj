@@ -6,7 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Job.fs" />
         <Compile Include="RedBlackTree.fs" />
+        <Compile Include="RedBlackTree_Original.fs" />
         <Compile Include="Program.fs"/>
     </ItemGroup>
 
