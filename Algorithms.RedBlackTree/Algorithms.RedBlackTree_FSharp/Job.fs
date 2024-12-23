@@ -19,6 +19,11 @@ let job = JobBuilder()
 
 let bind (binder) job' = job.Bind(job', binder)
 
+let map (mapper) job' =
+    match job' with
+    | ToDo v -> v |> mapper |> ToDo
+    | Done v -> v |> mapper |> Done
+
 let fromResult (job: Job<'T>) : 'T =
     match job with
     | Done v
