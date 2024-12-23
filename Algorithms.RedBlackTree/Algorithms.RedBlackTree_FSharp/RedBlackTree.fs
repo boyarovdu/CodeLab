@@ -49,11 +49,7 @@ let rec delete tree x =
         | Node(color, left, y, right) ->
             match x, y with
             | Left -> left |> del |> map (fun left' -> Node(color, left', y, right)) |> bind delLeft
-            | Right ->
-                right
-                |> del
-                |> map (fun right' -> Node(color, left, y, right'))
-                |> bind delRight
+            | Right -> right |> del |> map (fun right' -> Node(color, left, y, right')) |> bind delRight
             | None -> delRoot t
 
     and delRoot t =
@@ -62,11 +58,7 @@ let rec delete tree x =
         | Node(Red, left, _, NilNode) -> Done left
         | Node(color, left, _, right) ->
             let m = ref None
-
-            m
-            |> delMin right
-            |> map (fun right' -> Node(color, left, (m.Value).Value, right'))
-            |> bind delRight
+            m |> delMin right |> map (fun right' -> Node(color, left, m.Value.Value, right')) |> bind delRight
 
     and delMin t m =
         match t with
@@ -84,18 +76,20 @@ let rec delete tree x =
 
     and delLeft t =
         match t with
-        | Node(Black, Node(Red, left, x, right), y, sibling) -> ToDo(Node(Red, Node(Black, left, x, right), y, sibling))
+        | Node(Black, Node(Red, left, x, right), y, sibling) ->
+            ToDo(Node(Red, Node(Black, left, x, right), y, sibling))
         | Node(color, left, y, sibling) -> balance (Node(color, left, y, sibling)) |> Done
         | _ -> Done t
 
     and delRight t =
         match t with
-        | Node(Black, sibling, y, Node(Red, left, x, right)) -> ToDo(Node(Red, sibling, y, Node(Black, left, x, right)))
+        | Node(Black, sibling, y, Node(Red, left, x, right)) ->
+            ToDo(Node(Red, sibling, y, Node(Black, left, x, right)))
         | Node(color, sibling, y, right) -> balance (Node(color, sibling, y, right)) |> Done
         | _ -> Done t
 
     and balance t =
-        let (node) =
+        let node =
 
             match t with
             | Node(color, Node(Red, Node(Red, a, x, b), y, c), z, d) // Symmetric balancing cases
