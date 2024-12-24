@@ -1,21 +1,21 @@
-module Algorithms.RedBlackTree_FSharp.Job
+module Algorithms.RedBlackTree_FSharp.Result
 
-type Job<'T> =
+type Result<'T> =
     | ToDo of 'T
     | Done of 'T
 
 // Computation expression builder
-type JobBuilder() =
-    member _.Return(value: 'T) : Job<'T> = Done value
+type ResultBuilder() =
+    member _.Return(value: 'T) : Result<'T> = Done value
 
-    member _.ReturnFrom(job: Job<'T>) : Job<'T> = job
+    member _.ReturnFrom(job: Result<'T>) : Result<'T> = job
 
-    member _.Bind(job: Job<'T>, binder: 'T -> Job<'T>) : Job<'T> =
+    member _.Bind(job: Result<'T>, binder: 'T -> Result<'T>) : Result<'T> =
         match job with
         | ToDo value -> binder value
         | Done value -> Done value
 
-let job = JobBuilder()
+let job = ResultBuilder()
 
 let bind (binder) job' = job.Bind(job', binder)
 
@@ -24,7 +24,7 @@ let map (mapper) job' =
     | ToDo v -> v |> mapper |> ToDo
     | Done v -> v |> mapper |> Done
 
-let fromResult (job: Job<'T>) : 'T =
+let fromResult (job: Result<'T>) : 'T =
     match job with
     | Done v
     | ToDo v -> v

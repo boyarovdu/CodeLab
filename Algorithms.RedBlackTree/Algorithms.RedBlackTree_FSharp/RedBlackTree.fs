@@ -1,13 +1,13 @@
 ﻿module RedBlackTree_FSharp.RedBlackTree
 
-open Algorithms.RedBlackTree_FSharp.Job
+open Algorithms.RedBlackTree_FSharp.Result
 
 type Color =
     | Red
     | Black
 
 type Tree<'T> =
-    | NilNode
+    | Nil
     | Node of Color * Tree<'T> * 'T * Tree<'T>
 
 let (|Left|Right|None|) (x, y) =
@@ -17,24 +17,25 @@ let (|Left|Right|None|) (x, y) =
 
 let insert tree x =
 
-    let rec ins t =
-        match t with
-        | NilNode -> ToDo(Node(Red, NilNode, x, NilNode))
+    let rec ins tree =
+        match tree with
+        | Nil -> ToDo(Node(Red, Nil, x, Nil))
         | Node(color, left, y, right) ->
             match (x, y) with
             | Left -> left |> ins |> map (fun left' -> Node(color, left', y, right)) |> bind balance
             | Right -> right |> ins |> map (fun right' -> Node(color, left, y, right')) |> bind balance
-            | None -> Done t
+            | None -> Done tree
 
-    and balance t =
-        match t with
-        | Node(Black, Node(Red, Node(Red, a, x, b), y, c), z, d) // Case 1
-        | Node(Black, Node(Red, a, x, Node(Red, b, y, c)), z, d) // Case 2
-        | Node(Black, a, x, Node(Red, Node(Red, b, y, c), z, d)) // Case 3
-        | Node(Black, a, x, Node(Red, b, y, Node(Red, c, z, d))) -> // Case 4
-            ToDo(Node(Red, Node(Black, a, x, b), y, Node(Black, c, z, d)))
-        | _ -> Done t
-    
+    and balance tree =
+        match tree with
+        | Node(Black, Node(Red, a, x, Node(Red, b, y, c)), z, d)
+        | Node(Black, Node(Red, Node(Red, a, x, b), y, c), z, d)
+        | Node(Black, a, x, Node(Red, Node(Red, b, y, c), z, d))
+        | Node(Black, a, x, Node(Red, b, y, Node(Red, c, z, d))) ->
+            Node(Red, Node(Black, a, x, b), y, Node(Black, c, z, d)) |> ToDo
+        | Node(Black, _, _, _) -> Done tree
+        | _ -> ToDo tree
+
     and blacken tree =
         match tree with
         | Node(Red, left, x, right) -> Node(Black, left, x, right)
@@ -43,67 +44,71 @@ let insert tree x =
     tree |> ins |> fromResult |> blacken
 
 let rec delete tree x =
-    let rec del t =
-        match t with
-        | NilNode -> Done NilNode
+    let rec del tree =
+        match tree with
+        | Nil -> Done Nil
         | Node(color, left, y, right) ->
             match x, y with
-            | Left -> left |> del |> map (fun left' -> Node(color, left', y, right)) |> bind delLeft
-            | Right -> right |> del |> map (fun right' -> Node(color, left, y, right')) |> bind delRight
-            | None -> delRoot t
+            | Left -> left |> del |> map (fun left' -> Node(color, left', y, right)) |> bind eqLeft
+            | Right -> right |> del |> map (fun right' -> Node(color, left, y, right')) |> bind eqRight
+            | None -> delRoot tree
 
     and delRoot t =
         match t with
-        | Node(Black, left, _, NilNode) -> blacken left
-        | Node(Red, left, _, NilNode) -> Done left
+        | Node(Black, left, _, Nil) -> blacken left
+        | Node(Red, left, _, Nil) -> Done left
         | Node(color, left, _, right) ->
             let m = ref None
-            m |> delMin right |> map (fun right' -> Node(color, left, m.Value.Value, right')) |> bind delRight
+
+            m
+            |> delMin right
+            |> map (fun right' -> Node(color, left, m.Value.Value, right'))
+            |> bind eqRight
 
     and delMin t m =
         match t with
-        | Node(Black, NilNode, y, right) ->
+        | Node(Black, Nil, y, right) ->
             m.Value <- Some y
             blacken right
-        | Node(Red, NilNode, y, right) ->
+        | Node(Red, Nil, y, right) ->
             m.Value <- Some y
             Done right
         | Node(color, left, y, right) ->
             m
             |> delMin left
-            |> map(fun left' -> Node(color, left', y, right)) 
-            |> bind delLeft
+            |> map (fun left' -> Node(color, left', y, right))
+            |> bind eqLeft
 
-    and delLeft t =
+    and eqLeft t =
         match t with
-        | Node(Black, Node(Red, left, x, right), y, sibling) ->
-            ToDo(Node(Red, Node(Black, left, x, right), y, sibling))
-        | Node(color, left, y, sibling) -> balance (Node(color, left, y, sibling)) |> Done
-        | _ -> Done t
+        | Node(_, sibling, y, Node(Red, left, z, right)) ->
+            Node(Red, sibling, y, left)
+            |> eqLeft
+            |> map (fun left' -> Node(Black, left', z, right))
+        | Node(color, sibling, y, Node(Black, left, z, right)) ->
+            Node(color, sibling, y, Node(Red, left, z, right)) |> balance
 
-    and delRight t =
+    and eqRight t =
         match t with
-        | Node(Black, sibling, y, Node(Red, left, x, right)) ->
-            ToDo(Node(Red, sibling, y, Node(Black, left, x, right)))
-        | Node(color, sibling, y, right) -> balance (Node(color, sibling, y, right)) |> Done
-        | _ -> Done t
+        | Node(_, Node(Red, left, x, right), y, sibling) ->
+            Node(Red, right, y, sibling)
+            |> eqRight
+            |> map (fun right' -> Node(Black, left, x, right'))
+        | Node(color, Node(Black, left, x, right), y, sibling) ->
+            Node(color, Node(Red, left, x, right), y, sibling) |> balance
 
     and balance t =
-        let node =
+        match t with
+        | Node(k, Node(Red, a, x, Node(Red, b, y, c)), z, d)
+        | Node(k, Node(Red, Node(Red, a, x, b), y, c), z, d)
+        | Node(k, a, x, Node(Red, Node(Red, b, y, c), z, d))
+        | Node(k, a, x, Node(Red, b, y, Node(Red, c, z, d))) ->
+            Node(k, Node(Black, a, x, b), y, Node(Black, c, z, d)) |> Done
+        | _ -> blacken t
 
-            match t with
-            | Node(color, Node(Red, Node(Red, a, x, b), y, c), z, d) // Symmetric balancing cases
-            | Node(color, Node(Red, a, x, Node(Red, b, y, c)), z, d)
-            | Node(color, a, x, Node(Red, Node(Red, b, y, c), z, d))
-            | Node(color, a, x, Node(Red, b, y, Node(Red, c, z, d))) ->
-                (Node(color, Node(Black, a, x, b), y, Node(Black, c, z, d))) |> Done
-            | _ -> blacken t
-
-        fromResult node
-        
-    and blacken tree : Job<Tree<'T>> =
+    and blacken tree : Result<Tree<'T>> =
         match tree with
         | Node(Red, left, x, right) -> Node(Black, left, x, right) |> Done
-        | _ -> tree |> ToDo
+        | _ -> ToDo tree
 
     tree |> del |> fromResult

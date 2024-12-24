@@ -10,7 +10,7 @@ module RedBlackTreeTests =
     [<Test>]
     let ``Insert should add single node to empty tree`` () =
         // Arrange
-        let emptyTree = NilNode
+        let emptyTree = Nil
         let valueToInsert = 5
 
         // Act
@@ -18,14 +18,14 @@ module RedBlackTreeTests =
 
         // Assert
         match resultingTree with
-        | Node(Black, NilNode, 5, NilNode) -> Assert.Pass()
+        | Node(Black, Nil, 5, Nil) -> Assert.Pass()
         | _ -> Assert.Fail("Insert did not add the value correctly.")
 
     [<Test>]
     let ``Insert should rebalance tree after red-red conflict`` () =
         // Arrange
         let initialTree =
-            Node(Black, Node(Red, Node(Red, NilNode, 10, NilNode), 15, NilNode), 20, NilNode)
+            Node(Black, Node(Red, Node(Red, Nil, 10, Nil), 15, Nil), 20, Nil)
         
         let valueToInsert = 5
 
@@ -42,7 +42,7 @@ module RedBlackTreeTests =
     let ``Delete should remove a leaf node`` () =
         // Arrange
         let tree =
-            Node(Black, Node(Red, NilNode, 10, NilNode), 20, Node(Black, NilNode, 30, NilNode))
+            Node(Black, Node(Red, Nil, 10, Nil), 20, Node(Black, Nil, 30, Nil))
         
         let valueToDelete = 10
 
@@ -51,14 +51,14 @@ module RedBlackTreeTests =
 
         // Assert
         match resultingTree with
-        | Node(Black, NilNode, 20, Node(Black, NilNode, 30, NilNode)) -> Assert.Pass()
+        | Node(Black, Nil, 20, Node(Black, Nil, 30, Nil)) -> Assert.Pass()
         | _ -> Assert.Fail("Delete did not remove the leaf node correctly.")
 
     [<Test>]
     let ``Delete should re-balance the tree after deletion`` () =
         // Arrange
         let tree =
-            Node(Black, Node(Red, Node(Black, NilNode, 5, NilNode), 10, Node(Black, NilNode, 15, NilNode)), 20, NilNode)
+            Node(Black, Node(Red, Node(Black, Nil, 5, Nil), 10, Node(Black, Nil, 15, Nil)), 20, Nil)
 
         let valueToDelete = 10
 
@@ -67,14 +67,14 @@ module RedBlackTreeTests =
 
         // Assert
         match resultingTree with
-        | Node(Black, Node(Black, NilNode, 5, NilNode), 15, NilNode) -> Assert.Pass()
+        | Node(Black, Node(Black, Nil, 5, Nil), 15, Nil) -> Assert.Pass()
         | _ -> Assert.Fail("Tree did not re-balance after deletion.")
 
     [<Test>]
     let ``Delete non-existing value should not modify the tree`` () =
         // Arrange
         let tree =
-            Node(Black, Node(Red, NilNode, 10, NilNode), 15, Node(Black, NilNode, 20, NilNode))
+            Node(Black, Node(Red, Nil, 10, Nil), 15, Node(Black, Nil, 20, Nil))
 
         let valueToDelete = 25 // Non-existent value
 
