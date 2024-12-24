@@ -49,8 +49,8 @@ let rec delete tree x =
         | Nil -> Done Nil
         | Node(color, left, y, right) ->
             match x, y with
-            | Left -> left |> del |> map (fun left' -> Node(color, left', y, right)) |> bind eqLeft
-            | Right -> right |> del |> map (fun right' -> Node(color, left, y, right')) |> bind eqRight
+            | Left -> left |> del |> map (fun left' -> Node(color, left', y, right)) |> bind delLeft
+            | Right -> right |> del |> map (fun right' -> Node(color, left, y, right')) |> bind delRight
             | None -> delRoot tree
 
     and delRoot t =
@@ -63,7 +63,7 @@ let rec delete tree x =
             m
             |> delMin right
             |> map (fun right' -> Node(color, left, m.Value.Value, right'))
-            |> bind eqRight
+            |> bind delRight
 
     and delMin t m =
         match t with
@@ -77,22 +77,22 @@ let rec delete tree x =
             m
             |> delMin left
             |> map (fun left' -> Node(color, left', y, right))
-            |> bind eqLeft
+            |> bind delLeft
 
-    and eqLeft t =
+    and delLeft t =
         match t with
         | Node(_, sibling, y, Node(Red, left, z, right)) ->
             Node(Red, sibling, y, left)
-            |> eqLeft
+            |> delLeft
             |> map (fun left' -> Node(Black, left', z, right))
         | Node(color, sibling, y, Node(Black, left, z, right)) ->
             Node(color, sibling, y, Node(Red, left, z, right)) |> balance
 
-    and eqRight t =
+    and delRight t =
         match t with
         | Node(_, Node(Red, left, x, right), y, sibling) ->
             Node(Red, right, y, sibling)
-            |> eqRight
+            |> delRight
             |> map (fun right' -> Node(Black, left, x, right'))
         | Node(color, Node(Black, left, x, right), y, sibling) ->
             Node(color, Node(Red, left, x, right), y, sibling) |> balance
