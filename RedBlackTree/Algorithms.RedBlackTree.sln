@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithms.RedBlackTree", "Algorithms.RedBlackTree\Algorithms.RedBlackTree.csproj", "{9F2898EB-F938-461F-8FC1-D7389CDA1109}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Algorithms.RedBlackTree", "Algorithms.RedBlackTree\Algorithms.RedBlackTree.fsproj", "{CE15F9A0-04F2-45C5-B20F-9A1C44716690}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Algorithms.RedBlackTree_FSharp", "Algorithms.RedBlackTree_FSharp\Algorithms.RedBlackTree_FSharp.fsproj", "{CE15F9A0-04F2-45C5-B20F-9A1C44716690}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Algorithms.RedBlackTree.Tests_FSharp", "Algorithms.RedBlackTree.Tests_FSharp\Algorithms.RedBlackTree.Tests_FSharp.fsproj", "{C6C43216-8522-4A14-9C64-5D2CD7C98F9E}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Algorithms.RedBlackTree.Tests", "Algorithms.RedBlackTree.Tests\Algorithms.RedBlackTree.Tests.fsproj", "{C6C43216-8522-4A14-9C64-5D2CD7C98F9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,10 +10,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9F2898EB-F938-461F-8FC1-D7389CDA1109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F2898EB-F938-461F-8FC1-D7389CDA1109}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F2898EB-F938-461F-8FC1-D7389CDA1109}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F2898EB-F938-461F-8FC1-D7389CDA1109}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE15F9A0-04F2-45C5-B20F-9A1C44716690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE15F9A0-04F2-45C5-B20F-9A1C44716690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE15F9A0-04F2-45C5-B20F-9A1C44716690}.Release|Any CPU.ActiveCfg = Release|Any CPU

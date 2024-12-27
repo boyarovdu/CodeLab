@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Algorithms.RedBlackTree_FSharp\Algorithms.RedBlackTree_FSharp.fsproj" />
+      <ProjectReference Include="..\Algorithms.RedBlackTree\Algorithms.RedBlackTree.fsproj" />
     </ItemGroup>
 
 </Project>
