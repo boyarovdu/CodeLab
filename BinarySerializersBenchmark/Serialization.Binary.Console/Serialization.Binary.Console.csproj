@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SportsData.Faker\SportsData.Faker.csproj" />
-      <ProjectReference Include="..\SportsData.Models\SportsData.Models.csproj" />
+      <ProjectReference Include="..\..\FakingRealData\SportsData.Faker\SportsData.Faker.csproj" />
+      <ProjectReference Include="..\..\FakingRealData\SportsData.Models\SportsData.Models.csproj" />
     </ItemGroup>
 
     <ItemGroup>

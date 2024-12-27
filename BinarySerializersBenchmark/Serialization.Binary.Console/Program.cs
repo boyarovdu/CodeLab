@@ -66,7 +66,7 @@ namespace Serialization.Binary.Console
             }
         }
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             // Uncomment desired demo or benchmark method below to run it. 
             

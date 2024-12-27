@@ -2,9 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serialization.Binary.Console", "Serialization.Binary.Console\Serialization.Binary.Console.csproj", "{4B753258-8487-4DE2-980D-CC85FCC14D92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsData.Faker", "SportsData.Faker\SportsData.Faker.csproj", "{516A9845-6B08-41DA-BB76-EA6EBBFE34FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsData.Models", "..\FakingRealData\SportsData.Models\SportsData.Models.csproj", "{DF97AF52-138D-4DDF-94D1-AA7340E7D166}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsData.Models", "SportsData.Models\SportsData.Models.csproj", "{3C6B3DB0-4CF0-43F3-BC4B-7D4DC8796DAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsData.Faker", "..\FakingRealData\SportsData.Faker\SportsData.Faker.csproj", "{EDE96960-98CF-45BB-99CB-20A175244068}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,13 +16,13 @@ Global
 		{4B753258-8487-4DE2-980D-CC85FCC14D92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B753258-8487-4DE2-980D-CC85FCC14D92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B753258-8487-4DE2-980D-CC85FCC14D92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{516A9845-6B08-41DA-BB76-EA6EBBFE34FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{516A9845-6B08-41DA-BB76-EA6EBBFE34FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{516A9845-6B08-41DA-BB76-EA6EBBFE34FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{516A9845-6B08-41DA-BB76-EA6EBBFE34FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C6B3DB0-4CF0-43F3-BC4B-7D4DC8796DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C6B3DB0-4CF0-43F3-BC4B-7D4DC8796DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C6B3DB0-4CF0-43F3-BC4B-7D4DC8796DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C6B3DB0-4CF0-43F3-BC4B-7D4DC8796DAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF97AF52-138D-4DDF-94D1-AA7340E7D166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF97AF52-138D-4DDF-94D1-AA7340E7D166}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF97AF52-138D-4DDF-94D1-AA7340E7D166}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF97AF52-138D-4DDF-94D1-AA7340E7D166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDE96960-98CF-45BB-99CB-20A175244068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDE96960-98CF-45BB-99CB-20A175244068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDE96960-98CF-45BB-99CB-20A175244068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDE96960-98CF-45BB-99CB-20A175244068}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
