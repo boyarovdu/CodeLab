@@ -7,3 +7,5 @@ This is my Playground for small educational code projects in .NET. For most of t
 2. [Do Not Guess - Measure](https://www.linkedin.com/pulse/do-guess-measure-david-boyarov-ttnte/?trackingId=9GLbOcnFT7exTx7u2AOk7w%3D%3D) covers [BinarySerializersBenchmark.sln](https://github.com/boyarovdu/CodeLab/tree/main/BinarySerializersBenchmark)
 
 3. [Raft Leader Election in .NET: A Practical Guide](https://www.linkedin.com/pulse/raft-leader-election-net-practical-guide-david-boyarov-z5x4e/?trackingId=9GLbOcnFT7exTx7u2AOk7w%3D%3D) covers [RaftLeaderElection.sln](https://github.com/boyarovdu/CodeLab/tree/main/RaftLeaderElection)
+
+4. [Functional Approach to Red-Black Tree](https://www.linkedin.com/pulse/functional-approach-red-black-tree-david-boyarov-zywhe) covers [Algorithms.RedBlackTree.sln](https://github.com/boyarovdu/CodeLab/tree/main/RedBlackTree) 
