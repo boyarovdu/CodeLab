@@ -8,6 +8,8 @@ public class ProtobufDemo
     {
         using (var output = File.Create("Protobuf.bin"))
         {
+            
+            
             Serializer.Serialize(output, data);
             System.Console.WriteLine($"Protobuf serialized data size is {output.Length / 1_000} kB");
             output.Flush();
