@@ -35,6 +35,12 @@ namespace FluentApiExample
             MergeSortExample.MergeSort(array3);
 
             Console.WriteLine("Sorted Array: " + string.Join(", ", array3));
+            
+            
+            int[] array4 = { 38, 27, 43, 3, 9, 82, 10 };
+            Console.WriteLine("Original Array: " + string.Join(", ", array4));
+            ParallelMergeSort.MergeSort(array4);
+            Console.WriteLine("Sorted Array: " + string.Join(", ", array4));
         }
     }
 }

@@ -4,7 +4,7 @@ using System;
 
 public static class MergeSortAlgorithm
 {
-    private static void Merge(Span<int> slice1, Span<int> slice2, Span<int> buffer)
+    public static void Merge(Span<int> slice1, Span<int> slice2, Span<int> buffer)
     {
         var i1 = 0;
         var i2 = 0;
