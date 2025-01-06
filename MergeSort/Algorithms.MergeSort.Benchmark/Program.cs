@@ -6,78 +6,67 @@ namespace Algorithms.MergeSort.Benchmark;
 [MemoryDiagnoser]
 public class MergeSortBenchmark
 {
-    private int[] _data;
+    private int[] _testData;
 
-    [Params(1_000_000)] // Different sizes of input arrays to benchmark
+    [Params(1_000_000)]
     public int ArraySize;
 
     [GlobalSetup]
     public void Setup()
     {
         var random = new Random();
-        _data = new int[ArraySize];
-        for (int i = 0; i < ArraySize; i++)
+        _testData = new int[ArraySize];
+        for (var i = 0; i < ArraySize; i++)
         {
-            _data[i] = random.Next();
+            _testData[i] = random.Next();
         }
     }
-
-    [Benchmark]
-    public void MyMergeSort()
-    {
-        // Copy the data to ensure each run starts clean
-        var dataCopy = new int[_data.Length];
-        _data.CopyTo(dataCopy, 0);
-
-        // Run the sorting algorithm
-        MergeSortGcFriendly.Sort(dataCopy);
-    }
-
-    [Benchmark]
-    public void MyParallelMergeSort()
-    {
-        // Copy the data to ensure each run starts clean
-        var dataCopy = new int[_data.Length];
-        _data.CopyTo(dataCopy, 0);
-
-        // Run the sorting algorithm
-        MergeSortParallel.Sort(dataCopy);
-    }
-
-
-    [Benchmark]
-    public void LinqParallelMergeSort()
-    {
-        // Copy the data to ensure each run starts clean
-        var dataCopy = new int[_data.Length];
-        _data.CopyTo(dataCopy, 0);
-
-        dataCopy.AsParallel()
-            .OrderBy(x => x) // Specify the key to order by (identity function for default sorting)
-            .ToArray(); // Convert back to an array
-    }
-
-
+    
     [Benchmark]
     public void AiMergeSort()
     {
-        // Copy the data to ensure each run starts clean
-        var dataCopy = new int[_data.Length];
-        _data.CopyTo(dataCopy, 0);
+        var array = new int[_testData.Length];
+        _testData.CopyTo(array, 0);
 
-        // Run the sorting algorithm
-        MergeSortAi.Sort(dataCopy);
+        MergeSortAi.Sort(array);
     }
-
+    
     [Benchmark]
+    public void GcFriendlyMergeSort()
+    {
+        var array = new int[_testData.Length];
+        _testData.CopyTo(array, 0);
+
+        MergeSortGcFriendly.Sort(array);
+    }
+    
+    [Benchmark]
+    public void LinqParallelMergeSort()
+    {
+        var array = new int[_testData.Length];
+        _testData.CopyTo(array, 0);
+
+        array.AsParallel()
+            .OrderBy(x => x) 
+            .ToArray();
+    }
+    
+    [Benchmark(Baseline = true)]
     public void NativeSort()
     {
-        // Copy the data to ensure each run starts clean
-        var dataCopy = new int[_data.Length];
-        _data.CopyTo(dataCopy, 0);
+        var array = new int[_testData.Length];
+        _testData.CopyTo(array, 0);
 
-        // Run the sorting algorithm
-        Array.Sort(dataCopy);
+        Array.Sort(array);
+    }
+    
+    [Benchmark]
+    public void GcFriendlyParallelMergeSort()
+    {
+        var array = new int[_testData.Length];
+        _testData.CopyTo(array, 0);
+
+        MergeSortParallel.Sort(array);
     }
 }
 
@@ -85,7 +74,6 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        // Run the benchmark
-        var summary = BenchmarkRunner.Run<MergeSortBenchmark>();
+        BenchmarkRunner.Run<MergeSortBenchmark>();
     }
 }

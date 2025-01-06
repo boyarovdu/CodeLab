@@ -8,20 +8,20 @@ public static class MergeSortGcFriendly
         Sort(array.AsSpan(), buffer.AsSpan());
     }
     
-    internal static void Merge(Span<int> slice1, Span<int> slice2, Span<int> buffer)
+    public static void Merge(Span<int> left, Span<int> right, Span<int> buffer)
     {
         var idx1 = 0;
         var idx2 = 0;
 
         for (var iter = 0; iter < buffer.Length; iter++)
         {
-            if (idx1 < slice1.Length && (idx2 >= slice2.Length || slice1[idx1] < slice2[idx2]))
+            if (idx1 < left.Length && (idx2 >= right.Length || left[idx1] < right[idx2]))
             {
-                buffer[iter] = slice1[idx1++];
+                buffer[iter] = left[idx1++];
             }
             else
             {
-                buffer[iter] = slice2[idx2++];
+                buffer[iter] = right[idx2++];
             }
         }
     }
@@ -32,15 +32,33 @@ public static class MergeSortGcFriendly
         {
             var halfLength = span.Length / 2;
 
-            var left = span[..halfLength];
-            var right = span[halfLength..];
+            var left = span.Slice(0, halfLength);
+            var right = span.Slice(halfLength);
 
-            Sort(left, buffer[..halfLength]);
-            Sort(right, buffer[halfLength..]);
+            Sort(left, buffer.Slice(0, halfLength));
+            Sort(right, buffer.Slice(halfLength));
 
             Merge(left, right, buffer);
 
             buffer.CopyTo(span);
         }
     }
+    
+    // internal static void Sort(Span<int> span, Span<int> buffer)
+    // {
+    //     if (span.Length > 1)
+    //     {
+    //         var halfLength = span.Length / 2;
+    //
+    //         var left = span[..halfLength];
+    //         var right = span[halfLength..];
+    //
+    //         Sort(left, buffer[..halfLength]);
+    //         Sort(right, buffer[halfLength..]);
+    //
+    //         Merge(left, right, buffer);
+    //
+    //         buffer.CopyTo(span);
+    //     }
+    // }
 }

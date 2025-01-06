@@ -29,35 +29,37 @@ public static class MergeSortParallel
                     memory.Slice(partition.Offset, partition.Length).Span,
                     buffer.Slice(partition.Offset, partition.Length).Span));
 
-        Merge(memory, buffer, Environment.ProcessorCount);
+        Merge(memory, buffer, partitions);
     }
 
-    private static void Merge(Memory<int> memory, Memory<int> buffer, int partitionsNumber)
+    private static void Merge(Memory<int> memory, Memory<int> buffer, Partition[] partitions, int mergeFactor = 2)
     {
-        var partitions = PartitionCalculator.CalculatePartitions(memory.Length, partitionsNumber);
-        
-        if (partitions.Length > 1)
-        {
-            Parallel.For(0, partitions.Length / 2,
-                new ParallelOptions { MaxDegreeOfParallelism = ProcessorCount },
-                iter =>
-                {
-                    var partitionLeft = partitions[iter * 2];
-                    var partitionRight = partitions[iter * 2 + 1];
+        var numberOfMerges = partitions.Length / mergeFactor;
 
-                    if (partitionLeft.Offset + partitionLeft.Length < partitionRight.Offset)
-                        throw new Exception("Invalid partition order");
+        if (numberOfMerges <= 0) return;
 
-                    var sliceLeft = memory.Slice(partitionLeft.Offset, partitionLeft.Length);
-                    var sliceRight = memory.Slice(partitionRight.Offset, partitionRight.Length);
-                    var sliceBuffer = buffer.Slice(partitionLeft.Offset,
-                        partitionLeft.Length + partitionRight.Length);
+        Parallel.For(0, numberOfMerges, new ParallelOptions { MaxDegreeOfParallelism = ProcessorCount },
+            operationIndex =>
+            {
+                var leftPartitionIndex = operationIndex * mergeFactor;
+                var rightPartitionIndex = leftPartitionIndex + mergeFactor / 2;
 
-                    MergeSortGcFriendly.Merge(sliceLeft.Span, sliceRight.Span, sliceBuffer.Span);
-                });
+                var leftOffset = partitions[leftPartitionIndex].Offset;
+                var rightOffset = partitions[rightPartitionIndex].Offset;
 
-            buffer.CopyTo(memory);
-            Merge(memory, buffer, partitionsNumber / 2);
-        }
+                var leftLength = rightOffset - leftOffset;
+                var rightLength = operationIndex == numberOfMerges - 1
+                    ? memory.Length - rightOffset
+                    : partitions[rightPartitionIndex + mergeFactor / 2].Offset - rightOffset;
+
+                var sliceLeft = memory.Slice(leftOffset, leftLength);
+                var sliceRight = memory.Slice(rightOffset, rightLength);
+                var sliceBuffer = buffer.Slice(leftOffset, leftLength + rightLength);
+
+                MergeSortGcFriendly.Merge(sliceLeft.Span, sliceRight.Span, sliceBuffer.Span);
+            });
+
+        buffer.CopyTo(memory);
+        Merge(memory, buffer, partitions, mergeFactor * 2);
     }
 }
