@@ -8,7 +8,7 @@ public class MergeSortBenchmark
 {
     private int[] _testData;
 
-    [Params(1_000_000)]
+    [Params(1_000, 10_000, 100_000, 1_000_000)]
     public int ArraySize;
 
     [GlobalSetup]
