@@ -20,7 +20,7 @@ public static class MergeSortParallel
 
     private static void Sort(Memory<int> memory, Memory<int> buffer)
     {
-        var partitions = PartitionCalculator.CalculatePartitions(memory.Length, ProcessorCount);
+        var partitions = Partitioner.CalculatePartitions(memory.Length, ProcessorCount);
 
         Parallel.ForEach(partitions,
             new ParallelOptions { MaxDegreeOfParallelism = ProcessorCount },

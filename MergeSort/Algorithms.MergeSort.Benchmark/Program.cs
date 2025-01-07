@@ -40,6 +40,15 @@ public class MergeSortBenchmark
         MergeSortGcFriendly.Sort(array);
     }
     
+    [Benchmark(Baseline = true)]
+    public void NativeSort()
+    {
+        var array = new int[_testData.Length];
+        _testData.CopyTo(array, 0);
+
+        Array.Sort(array);
+    }
+    
     [Benchmark]
     public void LinqParallelMergeSort()
     {
@@ -49,15 +58,6 @@ public class MergeSortBenchmark
         array.AsParallel()
             .OrderBy(x => x) 
             .ToArray();
-    }
-    
-    [Benchmark(Baseline = true)]
-    public void NativeSort()
-    {
-        var array = new int[_testData.Length];
-        _testData.CopyTo(array, 0);
-
-        Array.Sort(array);
     }
     
     [Benchmark]
