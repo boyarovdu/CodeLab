@@ -43,22 +43,4 @@ public static class MergeSortGcFriendly
             buffer.CopyTo(span);
         }
     }
-    
-    // internal static void Sort(Span<int> span, Span<int> buffer)
-    // {
-    //     if (span.Length > 1)
-    //     {
-    //         var halfLength = span.Length / 2;
-    //
-    //         var left = span[..halfLength];
-    //         var right = span[halfLength..];
-    //
-    //         Sort(left, buffer[..halfLength]);
-    //         Sort(right, buffer[halfLength..]);
-    //
-    //         Merge(left, right, buffer);
-    //
-    //         buffer.CopyTo(span);
-    //     }
-    // }
 }
