@@ -36,7 +36,6 @@ public static class MergeSortParallel
         int mergeFactor = 2)
     {
         var numberOfMerges = partitions.Length / mergeFactor;
-
         if (numberOfMerges <= 0) return;
 
         Parallel.For(0, numberOfMerges, new ParallelOptions { MaxDegreeOfParallelism = degreeOfParallelism },
