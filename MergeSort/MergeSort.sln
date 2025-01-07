@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithms.MergeSort.Benchmark", "Algorithms.MergeSort.Benchmark\Algorithms.MergeSort.Benchmark.csproj", "{1F60877F-6950-4A84-B8D0-AC187FB066DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithms.MergeSort", "Algorithms.MergeSort\Algorithms.MergeSort.csproj", "{77C9C0DE-FACD-4C9F-8A7F-3C11466E0EA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithms.MergeSort.Tests", "Algorithms.MergeSort.Tests\Algorithms.MergeSort.Tests.csproj", "{8FE5CA82-C436-4477-9E9B-4009D520D6A8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F60877F-6950-4A84-B8D0-AC187FB066DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F60877F-6950-4A84-B8D0-AC187FB066DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F60877F-6950-4A84-B8D0-AC187FB066DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F60877F-6950-4A84-B8D0-AC187FB066DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77C9C0DE-FACD-4C9F-8A7F-3C11466E0EA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77C9C0DE-FACD-4C9F-8A7F-3C11466E0EA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77C9C0DE-FACD-4C9F-8A7F-3C11466E0EA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77C9C0DE-FACD-4C9F-8A7F-3C11466E0EA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE5CA82-C436-4477-9E9B-4009D520D6A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE5CA82-C436-4477-9E9B-4009D520D6A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE5CA82-C436-4477-9E9B-4009D520D6A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE5CA82-C436-4477-9E9B-4009D520D6A8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
