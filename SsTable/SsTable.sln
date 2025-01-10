@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsTable.Console", "SsTable.Console\SsTable.Console.csproj", "{551AAF7E-1999-45BB-BFBF-2FA42CF46391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSTable", "SSTable\SSTable.csproj", "{597096EF-30FD-454A-8661-DB601B864130}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{551AAF7E-1999-45BB-BFBF-2FA42CF46391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{551AAF7E-1999-45BB-BFBF-2FA42CF46391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{551AAF7E-1999-45BB-BFBF-2FA42CF46391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{551AAF7E-1999-45BB-BFBF-2FA42CF46391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{597096EF-30FD-454A-8661-DB601B864130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{597096EF-30FD-454A-8661-DB601B864130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{597096EF-30FD-454A-8661-DB601B864130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{597096EF-30FD-454A-8661-DB601B864130}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
