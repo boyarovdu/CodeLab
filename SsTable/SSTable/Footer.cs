@@ -16,7 +16,7 @@ public class FooterConverter
 {
     private readonly Tuple<PropertyInfo, Delegate, Delegate>[] _propertyConverters;
 
-    private Version _version;
+    private readonly Version _version;
 
     internal FooterConverter(Version version, Tuple<PropertyInfo, Delegate, Delegate>[] propertyConverters)
     {

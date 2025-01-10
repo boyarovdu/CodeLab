@@ -1,7 +1,6 @@
 ﻿namespace SSTable;
 
-using System;
-using System.Security.Cryptography;
+using System.IO;
 using DataRecord = Tuple<string, byte[]>;
 
 public class SsTable(ISerializer serializer, FooterConverter footerConverter, int blockSize)
@@ -18,7 +17,7 @@ public class SsTable(ISerializer serializer, FooterConverter footerConverter, in
             BlockCompressionType = serializer.CompressionType,
             BlockSerializationType = serializer.SerializationType
         });
-        
+
         fileStream.Write(footerBytes);
     }
 
@@ -44,11 +43,5 @@ public class SsTable(ISerializer serializer, FooterConverter footerConverter, in
         }
 
         return blocks;
-    }
-
-    public static byte[] GetChecksum(Stream stream)
-    {
-        using var md5 = MD5.Create();
-        return md5.ComputeHash(stream);
     }
 }
