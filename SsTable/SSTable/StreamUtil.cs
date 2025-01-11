@@ -2,8 +2,10 @@
 
 public static class StreamUtil
 {
-    public static async Task ProcessBlocksAsync(this Stream stream, long length, Action<byte[], int> action, int blockSize = 8192)
+    public static async Task ProcessBlocksAsync(this Stream stream, long offset, long length, Action<byte[], int> action, int blockSize = 8192)
     {
+        stream.Seek(offset, SeekOrigin.Begin);
+        
         var buffer = new byte[blockSize];
         long totalRead = 0;
 

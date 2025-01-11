@@ -12,7 +12,14 @@ public class Footer
     public SerializationType BlockSerializationType { get; set; }
 }
 
-public class FooterConverter
+public interface IFooterConverter
+{
+    public byte[] GetBytes(Footer footer);
+    public Footer ToFooter(byte[] bytes);
+    public int GetSize(bool includeVersion = true);
+}
+
+public class FooterConverter : IFooterConverter
 {
     private readonly Tuple<PropertyInfo, Delegate, Delegate>[] _propertyConverters;
 
@@ -24,7 +31,7 @@ public class FooterConverter
         _propertyConverters = propertyConverters;
     }
 
-    private int GetSize(bool includeVersion = true)
+    public int GetSize(bool includeVersion = true)
     {
         return _propertyConverters.Sum(property => Marshal.SizeOf(property.Item1.PropertyType))
                + (includeVersion ? Version.SizeOf() : 0);
