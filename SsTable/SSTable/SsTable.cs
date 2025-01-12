@@ -27,35 +27,20 @@ public class SsTable(ISerializer serializer, IFooterConverter footerConverter, I
         await checksum.AppendAsync(path);
     }
 
-    public async Task<BlockIndex> ReadIndex(string path)
+    private async Task<BlockIndex> ReadIndexAsync(string path)
     {
-        await using (var fileStream = File.OpenWrite(path))
-        {
-            //...
-        }
-    }
+        await using var fileStream = File.OpenRead(path);
+        
+        var footerBytes = new byte[footerConverter.SizeOf()];
+        await fileStream.ReadExactlyAsync(footerBytes, 
+            (int)(fileStream.Length - Version.SizeOf() - footerConverter.SizeOf()), 
+            footerConverter.SizeOf());
+        var footer = footerConverter.ToFooter(footerBytes);
 
-    // private async Task<Footer> DeserializeFooter(Stream stream, long offset, int length)
-    // {
-    //     if (stream.Length < offset + length)
-    //         throw new Exception("SSTable footer is corrupted.");
-    //
-    //     var result = new List<byte>(length);
-    //     await stream.ProcessBlocksAsync(offset, length, (bytes, _) => result.AddRange(bytes));
-    //
-    //     return footerConverter.ToFooter(result.ToArray());
-    // }
-    //
-    // private async Task<BlockIndex> DeserializeIndex(Stream stream, long offset, int length)
-    // {
-    //     if (stream.Length < offset + length)
-    //         throw new Exception("SSTable index is corrupted.");
-    //
-    //     var result = new List<byte>(length);
-    //     await stream.ProcessBlocksAsync(offset, length, (bytes, _) => result.AddRange(bytes));
-    //
-    //     return serializer.Deserialize<BlockIndex>(result.ToArray());
-    // }
+        var indexBytes = new byte[footer.BlockIndexLength];
+        await fileStream.ReadExactlyAsync(indexBytes, (int)footer.BlockIndexOffset, (int)footer.BlockIndexLength);
+        return serializer.Deserialize<Block[]>(indexBytes);
+    }
 
     private async Task<ValueTuple<long, List<Block>>> Serialize(DataRecord[] records, Stream stream)
     {

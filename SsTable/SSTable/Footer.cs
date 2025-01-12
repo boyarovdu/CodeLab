@@ -16,7 +16,7 @@ public interface IFooterConverter
 {
     public byte[] GetBytes(Footer footer);
     public Footer ToFooter(byte[] bytes);
-    public int GetSize(bool includeVersion = true);
+    public int SizeOf(bool includeVersion = true);
 }
 
 public class FooterConverter : IFooterConverter
@@ -31,7 +31,7 @@ public class FooterConverter : IFooterConverter
         _propertyConverters = propertyConverters;
     }
 
-    public int GetSize(bool includeVersion = true)
+    public int SizeOf(bool includeVersion = true)
     {
         return _propertyConverters.Sum(property => Marshal.SizeOf(property.Item1.PropertyType))
                + (includeVersion ? Version.SizeOf() : 0);
@@ -39,7 +39,7 @@ public class FooterConverter : IFooterConverter
 
     public byte[] GetBytes(Footer footer)
     {
-        var result = new List<byte>(GetSize());
+        var result = new List<byte>(SizeOf());
 
         result.AddRange(_version.GetBytes());
 
