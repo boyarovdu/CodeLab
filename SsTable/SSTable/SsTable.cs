@@ -29,17 +29,20 @@ public class SsTable(ISerializer serializer, IFooterConverter footerConverter, I
 
     private async Task<BlockIndex> ReadIndexAsync(string path)
     {
-        await using var fileStream = File.OpenRead(path);
-        
-        var footerBytes = new byte[footerConverter.SizeOf()];
-        await fileStream.ReadExactlyAsync(footerBytes, 
-            (int)(fileStream.Length - checksum.GetSize() - footerConverter.SizeOf()), 
-            footerConverter.SizeOf());
-        var footer = footerConverter.ToFooter(footerBytes);
+        await checksum.VerifyAsync(path);
 
-        var indexBytes = new byte[footer.BlockIndexLength];
-        await fileStream.ReadExactlyAsync(indexBytes, (int)footer.BlockIndexOffset, (int)footer.BlockIndexLength);
-        return serializer.Deserialize<Block[]>(indexBytes);
+        await using (var fileStream = File.OpenRead(path))
+        {
+            var footerBytes = new byte[footerConverter.SizeOf()];
+            await fileStream.ReadExactlyAsync(footerBytes, 
+                (int)(fileStream.Length - checksum.GetSize() - footerConverter.SizeOf()), 
+                footerConverter.SizeOf());
+            var footer = footerConverter.ToFooter(footerBytes);
+
+            var indexBytes = new byte[footer.BlockIndexLength];
+            await fileStream.ReadExactlyAsync(indexBytes, (int)footer.BlockIndexOffset, (int)footer.BlockIndexLength);
+            return serializer.Deserialize<Block[]>(indexBytes);
+        }
     }
 
     private async Task<ValueTuple<long, List<Block>>> Serialize(DataRecord[] records, Stream stream)

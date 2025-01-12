@@ -6,7 +6,6 @@ namespace SSTable;
 public interface IChecksum
 {
     public Task AppendAsync(string filePath);
-    
     public Task<bool> VerifyAsync(string filePath);
     public int GetSize();
 }
