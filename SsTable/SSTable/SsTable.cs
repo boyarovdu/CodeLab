@@ -33,7 +33,7 @@ public class SsTable(ISerializer serializer, IFooterConverter footerConverter, I
         
         var footerBytes = new byte[footerConverter.SizeOf()];
         await fileStream.ReadExactlyAsync(footerBytes, 
-            (int)(fileStream.Length - Version.SizeOf() - footerConverter.SizeOf()), 
+            (int)(fileStream.Length - checksum.GetSize() - footerConverter.SizeOf()), 
             footerConverter.SizeOf());
         var footer = footerConverter.ToFooter(footerBytes);
 
