@@ -14,6 +14,6 @@ public interface ISerializer
 {
     public SerializationType SerializationType { get; } 
     public CompressionType CompressionType { get; } 
-    public Task<int> SerializeAsync<T>(T obj, Stream stream);
-    public T Deserialize<T>(byte[] bytes);
+    public byte[] Serialize<T>(T obj);
+    public T Deserialize<T>(IEnumerable<byte> bytes);
 }

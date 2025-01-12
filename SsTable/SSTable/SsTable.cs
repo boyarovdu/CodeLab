@@ -12,17 +12,16 @@ public class SsTable(ISerializer serializer, IFooterConverter footerConverter, I
     {
         await using (var fileStream = File.OpenWrite(path))
         {
-            var blocks = await Serialize(records, fileStream);
-            
-            var footerBytes = footerConverter.GetBytes(new Footer
+            var (blocksLength, blocks) = await Serialize(records, fileStream);
+            var indexBytes = await Serialize(blocks.ToArray(), fileStream);
+
+            fileStream.Write(footerConverter.GetBytes(new Footer
             {
-                BlockIndexOffset = fileStream.Length,
-                BlockIndexLength = await serializer.SerializeAsync(blocks, fileStream),
+                BlockIndexOffset = blocksLength,
+                BlockIndexLength = indexBytes.Length,
                 BlockCompressionType = serializer.CompressionType,
                 BlockSerializationType = serializer.SerializationType
-            });
-
-            fileStream.Write(footerBytes);
+            }));
         }
 
         await checksum.AppendAsync(path);
@@ -32,56 +31,49 @@ public class SsTable(ISerializer serializer, IFooterConverter footerConverter, I
     {
         await using (var fileStream = File.OpenWrite(path))
         {
-            var footerOffset = fileStream.Length - checksum.GetSize() - footerConverter.GetSize();
-            var footer = await DeserializeFooter(fileStream, footerOffset, footerConverter.GetSize());
-            
-            return await DeserializeIndex(fileStream, footer.BlockIndexOffset, (int)footer.BlockIndexLength);
+            //...
         }
     }
-    
-    private async Task<Footer> DeserializeFooter(Stream stream, long offset, int length)
-    {
-        if (stream.Length < offset + length)
-            throw new Exception("SSTable footer is corrupted.");
-        
-        var result = new List<byte>(length);
-        await stream.ProcessBlocksAsync(offset, length, (bytes, _) => result.AddRange(bytes));
 
-        return footerConverter.ToFooter(result.ToArray());
+    // private async Task<Footer> DeserializeFooter(Stream stream, long offset, int length)
+    // {
+    //     if (stream.Length < offset + length)
+    //         throw new Exception("SSTable footer is corrupted.");
+    //
+    //     var result = new List<byte>(length);
+    //     await stream.ProcessBlocksAsync(offset, length, (bytes, _) => result.AddRange(bytes));
+    //
+    //     return footerConverter.ToFooter(result.ToArray());
+    // }
+    //
+    // private async Task<BlockIndex> DeserializeIndex(Stream stream, long offset, int length)
+    // {
+    //     if (stream.Length < offset + length)
+    //         throw new Exception("SSTable index is corrupted.");
+    //
+    //     var result = new List<byte>(length);
+    //     await stream.ProcessBlocksAsync(offset, length, (bytes, _) => result.AddRange(bytes));
+    //
+    //     return serializer.Deserialize<BlockIndex>(result.ToArray());
+    // }
+
+    private async Task<ValueTuple<long, List<Block>>> Serialize(DataRecord[] records, Stream stream)
+    {
+        return await records.ChunkIterAsync(blockSize, new ValueTuple<long, List<Block>>(0, []),
+            async (_, state, chunk) =>
+            {
+                var bytes = serializer.Serialize(chunk);
+                await stream.WriteAsync(bytes);
+                state.Item1 += bytes.Length;
+                state.Item2.Add(
+                    new Block { KeyFrom = chunk.First().Item1, Length = bytes.Length, Offset = state.Item1 });
+            });
     }
     
-    private async Task<BlockIndex> DeserializeIndex(Stream stream, long offset, int length)
+    private async Task<byte[]> Serialize(Block[] blocks, FileStream fileStream)
     {
-        if (stream.Length < offset + length)
-            throw new Exception("SSTable index is corrupted.");
-        
-        var result = new List<byte>(length);
-        await stream.ProcessBlocksAsync(offset, length, (bytes, _) => result.AddRange(bytes));
-        
-        return serializer.Deserialize<BlockIndex>(result.ToArray());
-    }
-
-    private async Task<Block[]> Serialize(DataRecord[] records, Stream stream)
-    {
-        var partitions = records.Chunk(blockSize).ToArray();
-        var blocks = new Block[partitions.Length];
-
-        var offset = stream.Length;
-
-        for (var i = 0; i < partitions.Count(); i++)
-        {
-            var block =
-                new Block
-                {
-                    KeyFrom = partitions[i].First().Item1,
-                    Length = await serializer.SerializeAsync(partitions[i], stream),
-                    Offset = offset
-                };
-
-            blocks[i] = block;
-            offset += block.Length;
-        }
-
-        return blocks;
+        var indexBytes = serializer.Serialize(blocks);
+        await fileStream.WriteAsync(indexBytes);
+        return indexBytes;
     }
 }
