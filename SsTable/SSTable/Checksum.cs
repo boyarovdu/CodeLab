@@ -7,16 +7,18 @@ public interface IChecksum
 {
     public Task AppendAsync(string filePath);
     public Task<bool> VerifyAsync(string filePath);
-    public int GetSize();
+    public int SizeOf();
 }
 
 public class Checksum : IChecksum
 {
     public async Task AppendAsync(string filePath)
     {
-        await using var stream = File.OpenRead(filePath);
-        var checksum = await ComputeAsync(stream, stream.Length);
-        await File.WriteAllBytesAsync(filePath, checksum);
+        await using (var stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite))
+        {
+            var checksum = await ComputeAsync(stream, stream.Length);
+            await stream.WriteAsync(checksum);
+        }
     }
 
     public async Task<bool> VerifyAsync(string filePath)
@@ -37,7 +39,7 @@ public class Checksum : IChecksum
         return StructuralComparisons.StructuralEqualityComparer.Equals(controlChecksum, checksum);
     }
 
-    public int GetSize()
+    public int SizeOf()
     {
         return MD5.HashSizeInBytes;
     }

@@ -8,15 +8,13 @@ public class Footer
 {
     public long BlockIndexOffset { get; set; }
     public long BlockIndexLength { get; set; }
-    public CompressionType BlockCompressionType { get; set; }
-    public SerializationType BlockSerializationType { get; set; }
 }
 
 public interface IFooterConverter
 {
     public byte[] GetBytes(Footer footer);
     public Footer ToFooter(byte[] bytes);
-    public int SizeOf(bool includeVersion = true);
+    public int SizeOf();
 }
 
 public class FooterConverter : IFooterConverter
@@ -31,18 +29,11 @@ public class FooterConverter : IFooterConverter
         _propertyConverters = propertyConverters;
     }
 
-    public int SizeOf(bool includeVersion = true)
-    {
-        return _propertyConverters.Sum(property => Marshal.SizeOf(property.Item1.PropertyType))
-               + (includeVersion ? Version.SizeOf() : 0);
-    }
+    public int SizeOf() => _propertyConverters.Sum(property => Marshal.SizeOf(property.Item1.PropertyType));
 
     public byte[] GetBytes(Footer footer)
     {
         var result = new List<byte>(SizeOf());
-
-        result.AddRange(_version.GetBytes());
-
         foreach (var property in _propertyConverters)
         {
             result.AddRange(SerializeProperty(footer, property));
@@ -56,21 +47,15 @@ public class FooterConverter : IFooterConverter
         var val = property.Item1.GetValue(footer);
         var bytes = property.Item2.DynamicInvoke(val) as byte[];
 
-        if (bytes == null || bytes.Length == 0)
-            throw new Exception(
-                $"Property '{property.Item1.Name}' of the footer cannot be serialized. Property serializer returns null or empty bytes array.");
+        ValidatePropertyPayload(property.Item1, bytes);
 
-        return bytes;
+        return bytes!;
     }
 
-    public Footer ToFooter(byte[] bytes)
+    public Footer ToFooter(byte[] payload)
     {
         var footer = new Footer();
-
-        ValidateVersion(GetVersion(bytes));
-
-        var payload = bytes[Version.SizeOf()..];
-
+        
         var propOffset = 0;
         foreach (var property in _propertyConverters)
         {
@@ -87,18 +72,12 @@ public class FooterConverter : IFooterConverter
         property.Item1.SetValue(footer, property.Item3.DynamicInvoke(bytes[..propLength]));
         return propLength;
     }
-
-    private Version GetVersion(byte[] bytes)
+    
+    private static void ValidatePropertyPayload(PropertyInfo prop, byte[]? bytes)
     {
-        return Version.FromBytes(bytes.Take(Version.SizeOf()).ToArray());
-    }
-
-    private void ValidateVersion(Version version)
-    {
-        // TODO: make footer versions backward-compatible 
-        if (!version.Equals(_version))
+        if (bytes == null || bytes.Length == 0)
             throw new Exception(
-                $"Cannot convert given bytes into Footer object. Given footer format of version {version} but expected version is {_version}.");
+                $"Property '{prop.Name}' of the footer cannot be serialized. Property serializer returns null or empty bytes array.");
     }
 }
 
@@ -121,7 +100,7 @@ public class FooterConverterBuilder
         if (property == null)
             throw new Exception($"Property '{member.Member.Name}' not found on type '{nameof(FooterConverter)}'.");
 
-        if (property.PropertyType.IsPrimitive)
+        if (!property.PropertyType.IsPrimitive)
             throw new Exception($"Property '{member.Member.Name}' must be a primitive type");
 
         _propConverters.Add(new Tuple<PropertyInfo, Delegate, Delegate>(property, toBytes, fromBytes));

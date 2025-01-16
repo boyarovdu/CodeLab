@@ -12,7 +12,7 @@ public static class StreamUtil
         while (totalRead < length)
         {
             var bytesToRead = Math.Min(buffer.Length, length - totalRead);
-            var read = await stream.ReadAsync(buffer, 0, (int)bytesToRead);
+            var read = await stream.ReadAsync(buffer, (int)totalRead, (int)bytesToRead);
 
             if (read <= 0) continue;
             action(buffer, read);

@@ -7,7 +7,7 @@ public enum CompressionType
 
 public enum SerializationType
 {
-    ProtobufNet = 0
+    MsgPack = 0
 }
 
 public interface ISerializer
@@ -15,5 +15,5 @@ public interface ISerializer
     public SerializationType SerializationType { get; } 
     public CompressionType CompressionType { get; } 
     public byte[] Serialize<T>(T obj);
-    public T Deserialize<T>(IEnumerable<byte> bytes);
+    public T Deserialize<T>(byte[] bytes);
 }
