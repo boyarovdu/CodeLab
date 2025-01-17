@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PointFree.LeetCode", "PointFree.LeetCode\PointFree.LeetCode.fsproj", "{841DEE6F-ED65-4D46-A195-2C6F82A92838}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointFree.LeetCode_CSharp", "PointFree.LeetCode_CSharp\PointFree.LeetCode_CSharp.csproj", "{9D50BBFF-5C69-4326-AC6C-97F5DEAE4B60}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PointFree.LeetCode.Tests_XUnit", "PointFree.LeetCode.Tests_XUnit\PointFree.LeetCode.Tests_XUnit.fsproj", "{980A79B3-A54C-4337-9458-FCC877F5C911}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointFree.LeetCode.Benchmark", "PointFree.LeetCode.Benchmark\PointFree.LeetCode.Benchmark.csproj", "{CC29A121-3937-4FA4-8AE8-486018FD3F9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{841DEE6F-ED65-4D46-A195-2C6F82A92838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{841DEE6F-ED65-4D46-A195-2C6F82A92838}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{841DEE6F-ED65-4D46-A195-2C6F82A92838}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{841DEE6F-ED65-4D46-A195-2C6F82A92838}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D50BBFF-5C69-4326-AC6C-97F5DEAE4B60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D50BBFF-5C69-4326-AC6C-97F5DEAE4B60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D50BBFF-5C69-4326-AC6C-97F5DEAE4B60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D50BBFF-5C69-4326-AC6C-97F5DEAE4B60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{980A79B3-A54C-4337-9458-FCC877F5C911}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{980A79B3-A54C-4337-9458-FCC877F5C911}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{980A79B3-A54C-4337-9458-FCC877F5C911}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{980A79B3-A54C-4337-9458-FCC877F5C911}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
