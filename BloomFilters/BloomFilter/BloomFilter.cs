@@ -37,8 +37,8 @@ public class BloomFilter
         
         for (var i = 0; i < _bitsPerItem; i++)
         {
-            var hash = DoubleHash(primaryHash, secondaryHash, i);
-            _bitsArrea[hash] = true;
+            var bit = DoubleHash(primaryHash, secondaryHash, i);
+            _bitsArrea[bit] = true;
         }
     }
 
@@ -49,8 +49,8 @@ public class BloomFilter
         
         for (var i = 0; i < _bitsPerItem; i++)
         {
-            var hash = DoubleHash(primaryHash, secondaryHash, i);
-            if (_bitsArrea[hash] == false)
+            var bit = DoubleHash(primaryHash, secondaryHash, i);
+            if (_bitsArrea[bit] == false)
             {
                 return false;
             }
