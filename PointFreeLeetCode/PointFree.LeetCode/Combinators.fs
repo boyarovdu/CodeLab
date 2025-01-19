@@ -4,7 +4,7 @@ let curry f a b = f (a,b)
 let uncurry f (a,b) = f a b
 
 (* ----------------------------------------------------------------------------
- ---- The following source code was was copied from ---------------------------
+ ---- The following source code was copied from -------------------------------
  ---- https://gist.github.com/Happypig375/8adac33d210fc8dd3d36d847d1b855a3 ----
  ------------------------------------------------------------------------------ *)
 
