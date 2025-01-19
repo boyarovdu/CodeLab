@@ -7,7 +7,7 @@ open System
 module Problem_674 =
 
     /// Tracks specified "trend" in a sequence of values based on a comparison function
-    let trend<'T> compare (prev: 'T, memo: int list) next  =
+    let trend<'T when 'T: comparison> compare (prev: 'T, memo: int list) next  =
         if compare next prev then
             (next, memo.Head + 1 :: memo.Tail)
         else
