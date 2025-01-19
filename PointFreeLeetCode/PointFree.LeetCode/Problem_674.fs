@@ -6,12 +6,12 @@ open System
 // Problem Link (Practice): https://leetcode.com/problems/longest-continuous-increasing-subsequence
 module Problem_674 =
 
+    /// Tracks specified "trend" in a sequence of values based on a comparison function
     let trend<'T> compare (prev: 'T, memo: int list) next  =
         if compare next prev then
             (next, memo.Head + 1 :: memo.Tail)
         else
             (next, 1 :: memo)
-
 
     let findLengthOfLCIS (nums: int array) : int =
         nums
