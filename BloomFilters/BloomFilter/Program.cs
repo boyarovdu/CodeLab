@@ -9,7 +9,7 @@ class Program
         const double zeroBitsFraction = 0.5; // represent the expected proportion of bits in the hash area of N" bits still set to 0 after n messages have been hash stored
         
         var totalBitsNumber = BloomFilterCalculator.CalculateTotalBitsNumber(numberOfItems, errorFraction, zeroBitsFraction);
-        Console.WriteLine($"Total bits number = {totalBitsNumber / 8}");
+        Console.WriteLine($"Total bits number = {totalBitsNumber}");
         
         var bitsPerItem = BloomFilterCalculator.CalculateBitsNumberPerItem(numberOfItems, zeroBitsFraction, totalBitsNumber); // represents number of bits set to 1 in the hash area of N" bits" for each new message
         Console.WriteLine($"Bits number per item = {bitsPerItem}");
@@ -18,6 +18,6 @@ class Program
         _ = new BloomFilter(numberOfItems, (float)errorFraction);
         var memSample2 = GC.GetTotalMemory(true);
 
-        Console.WriteLine($"Memory acllocated: {memSample2 - memSample1} bytes");
+        Console.WriteLine($"Memory allocated: {memSample2 - memSample1} bytes");
     }
 }
