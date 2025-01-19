@@ -5,21 +5,23 @@ namespace BloomFilter;
 
 public class BloomFilter
 {
+    const double ZeroBitsFraction = 0.5;
+    
     private readonly BitArray _bitsArrea;
     private readonly int _bitsPerItem;
-
+    
     public BloomFilter(int capcity, double errorRate)
     {
         var totalNumberOfBits = (int)Math.Ceiling(
             BloomFilterCalculator.CalculateTotalBitsNumber(
                 numberOfItems: capcity, 
                 errorFraction: errorRate, 
-                zeroBitsFraction: 0.5));
+                zeroBitsFraction: ZeroBitsFraction));
         
         _bitsPerItem = (int)Math.Round(
             BloomFilterCalculator.CalculateBitsNumberPerItem(
                 numberOfItems: capcity, 
-                zeroBitsFraction: 0.5, 
+                zeroBitsFraction: ZeroBitsFraction, 
                 totalBitsNumber: totalNumberOfBits)) / 2;
         
         _bitsArrea = new BitArray(totalNumberOfBits);
