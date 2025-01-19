@@ -11,7 +11,7 @@ public class BloomFilter
     public BloomFilter(int capcity, double errorRate)
     {
         var totalNumberOfBits = (int)Math.Ceiling(
-            BloomFilterCalculator.CalculateTtalBitsNumber(
+            BloomFilterCalculator.CalculateTotalBitsNumber(
                 numberOfItems: capcity, 
                 errorFraction: errorRate, 
                 zeroBitsFraction: 0.5));
