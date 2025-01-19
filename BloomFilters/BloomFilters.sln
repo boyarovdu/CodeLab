@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloomFilter", "BloomFilter\BloomFilter.csproj", "{C46C380C-8315-474B-B844-2429ED40F75C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloomFilter.Tests", "BloomFilter.Tests\BloomFilter.Tests.csproj", "{5C40B762-9438-4414-BB4F-73A93CD97AD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloomFilter.Benchmark", "BloomFilter.Benchmark\BloomFilter.Benchmark.csproj", "{94D885CB-C060-44D5-AB32-E66C45C67D77}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C46C380C-8315-474B-B844-2429ED40F75C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C46C380C-8315-474B-B844-2429ED40F75C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C46C380C-8315-474B-B844-2429ED40F75C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C46C380C-8315-474B-B844-2429ED40F75C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C40B762-9438-4414-BB4F-73A93CD97AD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C40B762-9438-4414-BB4F-73A93CD97AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C40B762-9438-4414-BB4F-73A93CD97AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C40B762-9438-4414-BB4F-73A93CD97AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94D885CB-C060-44D5-AB32-E66C45C67D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94D885CB-C060-44D5-AB32-E66C45C67D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94D885CB-C060-44D5-AB32-E66C45C67D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94D885CB-C060-44D5-AB32-E66C45C67D77}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
