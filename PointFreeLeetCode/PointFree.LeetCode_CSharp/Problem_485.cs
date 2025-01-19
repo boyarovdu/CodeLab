@@ -1,5 +1,7 @@
 ﻿namespace PointFree.LeetCode_CSharp;
 
+// 485. Max Consecutive Ones
+// Problem Link (Practice): https://leetcode.com/problems/max-consecutive-ones/
 public class Problem_485()
 {
     public int FindMaxConsecutiveOnes(int[] nums)
