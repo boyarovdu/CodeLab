@@ -7,7 +7,7 @@ public class BloomFilterTests
     private const double ErrorRate = 0.001;
 
     [Test]
-    public void False_Positives_are_not_Allowed_for_Existing_Items()
+    public void False_Negatives_are_not_Allowed_for_Existing_Items()
     {
         var filter = new BloomFilter(Capacity, ErrorRate);
 
