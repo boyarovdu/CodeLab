@@ -10,6 +10,8 @@
         <Compile Include="Problem_485.fs" />
         <Compile Include="Problem_532.fs" />
         <Compile Include="Problem_674.fs" />
+        <Compile Include="Problem_905.fs" />
+        <Compile Include="Problem_1351.fs" />
     </ItemGroup>
 
 </Project>
