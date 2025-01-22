@@ -15,6 +15,7 @@ let genIntArrayArray =
         let row =
             ArbMap.defaults
             |> ArbMap.arbitrary<int>
+            |> Arb.filter(fun el -> el >= -100 && el <= 100)
             |> Arb.toGen
             |> Gen.arrayOfLength rowLength
             |> Gen.map Array.sortDescending
