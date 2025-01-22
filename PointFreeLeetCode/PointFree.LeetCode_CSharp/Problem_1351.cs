@@ -4,15 +4,28 @@ public class Problem_1351
 {
     public int CountNegatives(int[][] grid)
     {
-        var res = 0;
-        var i = grid[0].Length - 1;
+        var count = 0;
+        var n = grid[0].Length;
 
         foreach (var row in grid)
         {
-            while (i >= 0 && row[i] < 0) i--;
-            res += grid[0].Length - (i + 1);
+            int left = 0, right = n - 1;
+            
+            while (left <= right)
+            {
+                var mid = (right + left) / 2;
+                if (row[mid] < 0)
+                {
+                    right = mid - 1;
+                }
+                else
+                {
+                    left = mid + 1;
+                }
+            }
+            count += (n - left);
         }
 
-        return res;
+        return count;
     }
 }
