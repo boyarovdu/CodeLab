@@ -6,7 +6,7 @@ open FsCheck.Xunit
 open PointFree.LeetCode_CSharp
 open PointFree.LeetCode
 
-let genIntArrayArray =
+let matrixGen =
     gen {
         let! rowCount = Gen.sized (fun size -> Gen.choose (1, max 1 size))
         let! rowLength = Gen.choose (1, 100)
@@ -25,14 +25,14 @@ let genIntArrayArray =
         return arrays
     }
 
-type MyGenerators =
+type sortedMatrix =
     static member Array() =
         { new Arbitrary<int array array>() with
-            override _.Generator = genIntArrayArray
+            override _.Generator = matrixGen
             override _.Shrinker _ = Seq.empty }
 
 
-[<Property(Arbitrary = [| typeof<MyGenerators> |])>]
+[<Property(Arbitrary = [| typeof<sortedMatrix> |])>]
 let ``Implementation is correct`` (array: int array array) =
     let s = Problem_1351()
     s.CountNegatives array = Problem_1351.countNegatives2 array
