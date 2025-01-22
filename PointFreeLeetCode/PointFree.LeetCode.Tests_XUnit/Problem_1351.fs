@@ -20,9 +20,7 @@ let matrixGen =
             |> Gen.arrayOfLength rowLength
             |> Gen.map Array.sortDescending
 
-        let! arrays = Gen.arrayOfLength rowCount row |> Gen.map (Array.sortBy firstEl)
-
-        return arrays
+        return! Gen.arrayOfLength rowCount row |> Gen.map (Array.sortBy firstEl)
     }
 
 type sortedMatrix =
