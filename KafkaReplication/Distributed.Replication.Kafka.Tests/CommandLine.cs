@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 
 namespace Distributed.Replication.Kafka.Tests;
@@ -6,12 +7,17 @@ public class CommandLine
 {
     public static void Run(string command, string workingDirectory)
     {
+        var isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
+        
+        var shell = isWindows ? "cmd.exe" : "sh";
+        var shellArguments = isWindows ? $"/c \"{command}\"" : $"-c \"{command}\"";
+
         var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "sh",
-                Arguments = $"-c \"{command}\"",
+                FileName = shell,
+                Arguments = shellArguments,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -21,7 +27,7 @@ public class CommandLine
         };
 
         process.Start();
-
+        
         while (!process.StandardOutput.EndOfStream)
         {
             var line = process.StandardOutput.ReadLine();
@@ -29,7 +35,7 @@ public class CommandLine
         }
 
         process.WaitForExit();
-
+        
         if (process.ExitCode != 0)
         {
             throw new Exception(
