@@ -5,7 +5,7 @@ open FsCheck.FSharp
 open FsCheck.Xunit
 open PointFree.LeetCode
 
-type NonEmptyArray2 =
+type AtLeastTwoRangedElementsArray =
     
     static member Int() =
         ArbMap.defaults
@@ -13,16 +13,14 @@ type NonEmptyArray2 =
         |> Arb.mapFilter abs (fun t -> t >= 0 && t <= 100)
     
     static member Array() =
-        NonEmptyArray2.Int().Generator
+        AtLeastTwoRangedElementsArray.Int().Generator
         |> Gen.arrayOf
         |> Gen.filter (fun arr -> arr.Length >= 2)
         |> Arb.fromGen
 
-[<Property(Arbitrary = [| typeof<NonEmptyArray2> |])>]
+[<Property(Arbitrary = [| typeof<AtLeastTwoRangedElementsArray> |])>]
 let ``Implementation is correct`` (array: int array) =
     let s = Problem_1365()
-    
-    let l = Array.toList array
-    
-    s.SmallerNumbersThanCurrent(array) = ((Problem_1365.smallerNumbersThanCurrent l) |> List.toArray) 
+        
+    s.SmallerNumbersThanCurrent(array) = (Problem_1365.smallerNumbersThanCurrent (Array.toList array) |> List.toArray) 
     
