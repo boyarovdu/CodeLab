@@ -22,5 +22,5 @@ type AtLeastTwoRangedElementsArray =
 let ``Implementation is correct`` (array: int array) =
     let s = Problem_1365()
         
-    s.SmallerNumbersThanCurrent(array) = (Problem_1365.smallerNumbersThanCurrent (Array.toList array) |> List.toArray) 
+    s.SmallerNumbersThanCurrent(array) = Problem_1365.smallerNumbersThanCurrent array 
     
