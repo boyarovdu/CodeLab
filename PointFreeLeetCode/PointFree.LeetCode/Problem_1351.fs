@@ -7,6 +7,6 @@ module Problem_1351 =
         
     let countNegatives2: int array array -> int =
         Array.concat
-        >> Array.filter (fun e -> e < 0 ) // ((<) 0)
+        >> Array.filter (flip (<) 0)
         >> Array.length
         
