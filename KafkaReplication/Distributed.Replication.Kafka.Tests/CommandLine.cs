@@ -8,7 +8,7 @@ public static class CommandLine
     public static void Run(string command, string workingDirectory)
     {
         var isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
-        
+
         var shell = isWindows ? "cmd.exe" : "sh";
         var shellArguments = isWindows ? $"/c \"{command}\"" : $"-c \"{command}\"";
 
@@ -27,7 +27,7 @@ public static class CommandLine
         };
 
         process.Start();
-        
+
         while (!process.StandardOutput.EndOfStream)
         {
             var line = process.StandardOutput.ReadLine();
@@ -35,7 +35,7 @@ public static class CommandLine
         }
 
         process.WaitForExit();
-        
+
         if (process.ExitCode != 0)
         {
             throw new Exception(

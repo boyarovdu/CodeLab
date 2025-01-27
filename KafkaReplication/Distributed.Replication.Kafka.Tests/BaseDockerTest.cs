@@ -7,9 +7,8 @@ namespace Distributed.Replication.Kafka.Tests
 {
     public class BaseDockerTest
     {
-        protected virtual string DockerComposeFolderPath => "./relative/path/to/compose/file";
-        protected DockerClient _dockerClient;
-        
+        protected virtual string DockerComposeFolderPath => "./";
+        protected DockerClient DockerClient;
 
         [OneTimeSetUp]
         public void StartDockerCompose()
@@ -17,7 +16,7 @@ namespace Distributed.Replication.Kafka.Tests
             TestContext.Progress.WriteLine($"Starting Docker Compose for {GetType().Name}...");
             CommandLine.Run("docker-compose up -d", DockerComposeFolderPath);
             
-            _dockerClient = new DockerClientConfiguration().CreateClient();
+            DockerClient = new DockerClientConfiguration().CreateClient();
         }
 
         [OneTimeTearDown]
@@ -26,7 +25,7 @@ namespace Distributed.Replication.Kafka.Tests
             TestContext.Progress.WriteLine($"Stopping Docker Compose for {GetType().Name}...");
             CommandLine.Run("docker-compose down", DockerComposeFolderPath);
             
-            _dockerClient.Dispose();
+            DockerClient.Dispose();
         }
     }
 }
