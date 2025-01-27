@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Distributed.Replication.Kafka.Tests;
 
-public class CommandLine
+public static class CommandLine
 {
     public static void Run(string command, string workingDirectory)
     {
