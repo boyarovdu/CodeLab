@@ -7,10 +7,6 @@ namespace Distributed.Replication.Kafka.Tests
 {
     public class BaseDockerTest
     {
-        /// <summary>
-        /// Path to the folder containing the 'docker-compose.yml' for this test class.
-        /// Should be overridden in each test class.
-        /// </summary>
         protected virtual string DockerComposeFolderPath => "./relative/path/to/compose/file";
 
         [OneTimeSetUp]
@@ -48,7 +44,7 @@ namespace Distributed.Replication.Kafka.Tests
             while (!process.StandardOutput.EndOfStream)
             {
                 var line = process.StandardOutput.ReadLine();
-                TestContext.Progress.WriteLine(line); // Output to test console
+                TestContext.Progress.WriteLine(line);
             }
 
             process.WaitForExit();
@@ -64,7 +60,6 @@ namespace Distributed.Replication.Kafka.Tests
     [TestFixture]
     public class MyTestClass2 : BaseDockerTest
     {
-        // Override to provide the relative path for the docker-compose.yml
         protected override string DockerComposeFolderPath => "/home/david/Documents/Cluster";
 
         [Test]
@@ -80,12 +75,6 @@ namespace Distributed.Replication.Kafka.Tests
             TestContext.Progress.WriteLine($"containers: {msg}");
             
             Assert.Pass("TestA executed.");
-        }
-
-        [Test]
-        public void TestB()
-        {
-            Assert.Pass("TestB executed.");
         }
     }
 }
