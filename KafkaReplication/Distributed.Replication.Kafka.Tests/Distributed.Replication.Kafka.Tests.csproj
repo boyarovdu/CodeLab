@@ -24,8 +24,12 @@
 
     <ItemGroup>
       <None Update="Docker\KafkaCluster\docker-compose.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DockerTestWebApp\DockerTestWebApp.csproj" />
     </ItemGroup>
 
 </Project>

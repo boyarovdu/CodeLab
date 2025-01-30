@@ -1,10 +1,11 @@
 services:
 
-  kafka-client:
-    image: kafka-client
+  test-client:
+    image: test-client
+    container_name: test-client
     build:
       context: .
-      dockerfile: ../../../../../../../DockerTestWebApp/Dockerfile
+      dockerfile: DockerTestWebApp/Dockerfile
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -15,7 +16,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181" 
-  
+
   zoonavigator:
     image: elkozmon/zoonavigator
     container_name: zoonavigator
@@ -36,10 +37,10 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
       KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,EXTERNAL_LISTENER://kafka-1:19092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,EXTERNAL_LISTENER://172.28.86.170:19092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,EXTERNAL_LISTENER://localhost:19092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
-      
+  
   kafka-2:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-2
@@ -51,11 +52,10 @@ services:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
       KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,EXTERNAL_LISTENER://kafka-2:19093
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,EXTERNAL_LISTENER://172.28.86.170:19093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,EXTERNAL_LISTENER://localhost:19093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
-      
-      
+  
   kafka-3:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-3
@@ -67,7 +67,6 @@ services:
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
       KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,EXTERNAL_LISTENER://kafka-3:19094
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,EXTERNAL_LISTENER://172.28.86.170:19094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,EXTERNAL_LISTENER://localhost:19094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
-      

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Distributed.Replication.Kaf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Distributed.Replication.Kafka.Console", "Distributed.Replication.Kafka.Console\Distributed.Replication.Kafka.Console.csproj", "{00D3E9D2-28F6-4FB9-BC73-08CCDE2D5446}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerTestWebApp", "DockerTestWebApp\DockerTestWebApp.csproj", "{B0021A39-3A70-45C7-8A31-C115A9ECBF92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,5 +25,9 @@ Global
 		{00D3E9D2-28F6-4FB9-BC73-08CCDE2D5446}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00D3E9D2-28F6-4FB9-BC73-08CCDE2D5446}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00D3E9D2-28F6-4FB9-BC73-08CCDE2D5446}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0021A39-3A70-45C7-8A31-C115A9ECBF92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0021A39-3A70-45C7-8A31-C115A9ECBF92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0021A39-3A70-45C7-8A31-C115A9ECBF92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0021A39-3A70-45C7-8A31-C115A9ECBF92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
