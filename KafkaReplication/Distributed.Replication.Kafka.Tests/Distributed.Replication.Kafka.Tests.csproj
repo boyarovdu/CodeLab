@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Confluent.Kafka" Version="2.8.0" />
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="Docker.DotNet" Version="3.125.15" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
@@ -23,13 +22,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Docker\KafkaCluster\docker-compose.yaml">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
+      <ProjectReference Include="..\DockerTestWebApp\DockerTestWebApp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DockerTestWebApp\DockerTestWebApp.csproj" />
+      <None Update="Docker\docker-compose.yaml">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
