@@ -6,6 +6,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5116",
+      "commandLineArgs": "--bootstrap-servers localhost:19092,localhost:19093,localhost:19094 --type producer",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

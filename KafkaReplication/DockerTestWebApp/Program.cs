@@ -1,30 +1,36 @@
+using Confluent.Kafka;
+using DockerTestWebApp.Startup;
+
 namespace DockerTestWebApp;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
-
-        // Add services to the container.
-
-        builder.Services.AddControllers();
-        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
-
-        var app = builder.Build();
-
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        await Cli.Start(args, (bootstrapServers, type) =>
         {
-            app.MapOpenApi();
-        }
+            var builder = WebApplication.CreateBuilder(args);
 
-        app.UseAuthorization();
+            builder.Services.AddControllers();
+            builder.Services.AddOpenApi();
 
+            if (type == "producer")
+            {
+                builder.Services.AddKafkaProducer(new ProducerConfig{ BootstrapServers = bootstrapServers});    
+            }
 
-        app.MapControllers();
+            var app = builder.Build();
+        
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapOpenApi();
+            }
+        
+            app.UseAuthorization();
 
-        app.Run();
+            app.MapControllers();
+
+            app.Run();
+        });
     }
 }
