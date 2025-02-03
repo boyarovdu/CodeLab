@@ -1,7 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 
-namespace DockerTestWebApp;
+namespace Distributed.Replication.Kafka.TestWebClient;
 
 internal static class Cli
 {

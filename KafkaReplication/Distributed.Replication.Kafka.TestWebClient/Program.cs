@@ -1,8 +1,8 @@
 using Confluent.Kafka;
-using DockerTestWebApp.Middleware;
-using DockerTestWebApp.Startup;
+using Distributed.Replication.Kafka.TestWebClient.Middleware;
+using Distributed.Replication.Kafka.TestWebClient.Startup;
 
-namespace DockerTestWebApp;
+namespace Distributed.Replication.Kafka.TestWebClient;
 
 public class Program
 {

@@ -1,7 +1,7 @@
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DockerTestWebApp.Controllers;
+namespace Distributed.Replication.Kafka.TestWebClient.Controllers;
 
 [ApiController]
 [Route("[controller]")]

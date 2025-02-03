@@ -1,6 +1,6 @@
-using DockerTestWebApp.Middleware;
+using Distributed.Replication.Kafka.TestWebClient.Middleware;
 
-namespace DockerTestWebApp.Startup;
+namespace Distributed.Replication.Kafka.TestWebClient.Startup;
 
 public static class ClientTypeMiddlewareExtensions
 {

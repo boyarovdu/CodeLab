@@ -1,6 +1,6 @@
 using Confluent.Kafka;
 
-namespace DockerTestWebApp.Startup;
+namespace Distributed.Replication.Kafka.TestWebClient.Startup;
 
 public static class KafkaClientBuilderExtensions
 {
@@ -8,7 +8,8 @@ public static class KafkaClientBuilderExtensions
     {
         var config = new ConsumerConfig
         {
-            BootstrapServers = bootstrapServers
+            BootstrapServers = bootstrapServers,
+            GroupId = "Kafka.TestWebClient"
         };
         
         services.AddSingleton(new ConsumerBuilder<string, string>(config).Build());

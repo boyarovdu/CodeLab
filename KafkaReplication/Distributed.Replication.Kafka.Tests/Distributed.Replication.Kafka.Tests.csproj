@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DockerTestWebApp\DockerTestWebApp.csproj" />
+      <ProjectReference Include="..\Distributed.Replication.Kafka.TestWebClient\Distributed.Replication.Kafka.TestWebClient.csproj" />
     </ItemGroup>
 
     <ItemGroup>
