@@ -25,10 +25,4 @@
       <ProjectReference Include="..\Distributed.Replication.Kafka.TestWebClient\Distributed.Replication.Kafka.TestWebClient.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="Docker\docker-compose.yaml">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
 </Project>
