@@ -16,6 +16,6 @@ public class Tests : BaseDockerTest
         
         Console.WriteLine("Produced event to the specified topic");
 
-        TestContext.Progress.WriteLine($"containers: {msg}");
+        await TestContext.Progress.WriteLineAsync($"containers: {msg}");
     }
 }

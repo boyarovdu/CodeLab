@@ -11,19 +11,19 @@ public class BaseDockerTest
     protected DockerClient DockerClient;
 
     [OneTimeSetUp]
-    public void StartDockerCompose()
+    public async Task StartDockerCompose()
     {
-        TestContext.Progress.WriteLine($"Starting Docker Compose for {GetType().Name}...");
-        CommandLine.Run("docker-compose up -d", DockerComposeFolderPath);
+        await TestContext.Progress.WriteLineAsync($"Starting Docker Compose for {GetType().Name}...");
+        await Cmd.ExecAsync(DockerComposeFolderPath, "docker-compose", "up -d");
             
         DockerClient = new DockerClientConfiguration().CreateClient();
     }
 
     [OneTimeTearDown]
-    public void StopDockerCompose()
+    public async Task StopDockerCompose()
     {
-        TestContext.Progress.WriteLine($"Stopping Docker Compose for {GetType().Name}...");
-        CommandLine.Run("docker-compose down", DockerComposeFolderPath);
+        await TestContext.Progress.WriteLineAsync($"Stopping Docker Compose for {GetType().Name}...");
+        await Cmd.ExecAsync(DockerComposeFolderPath, "docker-compose", "down");
             
         DockerClient.Dispose();
     }
