@@ -1,6 +1,6 @@
 using Docker.DotNet.Models;
 
-namespace Distributed.Replication.Kafka.Tests.Builders;
+namespace Distributed.Replication.Kafka.Tests.Helpers;
 
 public class ContainerParamsBuilder
 {

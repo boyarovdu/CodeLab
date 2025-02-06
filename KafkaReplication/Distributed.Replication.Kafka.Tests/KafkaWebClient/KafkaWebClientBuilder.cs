@@ -1,18 +1,14 @@
-namespace Distributed.Replication.Kafka.Tests.Builders;
+using Distributed.Replication.Kafka.Tests.Helpers;
 
-public enum KafkaClientType
-{
-    Producer,
-    Consumer,
-}
+namespace Distributed.Replication.Kafka.Tests.KafkaWebClient;
 
-public static class KafkaTestWebClientBuilder
+public static class KafkaWebClientBuilder
 {
     public static ContainerParamsBuilder WithKafkaTestWebClient(this ContainerParamsBuilder containerParameters,
         KafkaClientType clientType, string kafkaConfig) =>
         containerParameters
-            .WithImage("test-web-client")
-            .WithCommand("dotnet", "Distributed.Replication.Kafka.TestWebClient.dll")
+            .WithImage(Constants.ImageName)
+            .WithCommand("dotnet", Constants.Dll)
             .WithCommand("--client-type", clientType == KafkaClientType.Producer ? "producer" : "consumer")
             .WithCommand("--kafka-config", kafkaConfig);
 }
