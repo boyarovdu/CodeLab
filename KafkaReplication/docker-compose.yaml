@@ -1,3 +1,8 @@
+networks:
+  kafka-network:
+    name: kafka-network
+    driver: bridge
+    
 services:
   
   zookeeper:
@@ -9,6 +14,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181" 
+    networks:
+      - kafka-network
 
   zoonavigator:
     image: elkozmon/zoonavigator
@@ -17,7 +24,8 @@ services:
       - "9000:9000"
     depends_on: 
       - zookeeper
-    network_mode: host
+    networks:
+      - kafka-network
     
   kafka-1:
     image: confluentinc/cp-kafka:latest
@@ -33,6 +41,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,EXTERNAL_LISTENER://localhost:19092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
+    networks:
+      - kafka-network
   
   kafka-2:
     image: confluentinc/cp-kafka:latest
@@ -48,6 +58,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,EXTERNAL_LISTENER://localhost:19093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
+    networks:
+      - kafka-network
   
   kafka-3:
     image: confluentinc/cp-kafka:latest
@@ -63,9 +75,12 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,EXTERNAL_LISTENER://localhost:19094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
+    networks:
+      - kafka-network
       
   test-web-client:
     image: test-web-client
+    container_name: foo
     build:
       context: .
       dockerfile: Distributed.Replication.Kafka.TestWebClient/Dockerfile

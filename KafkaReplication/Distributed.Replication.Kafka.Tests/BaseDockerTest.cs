@@ -1,4 +1,4 @@
-using Distributed.Replication.Kafka.Tests.Helpers;
+using Distributed.Replication.Kafka.Tests.Utils;
 using Docker.DotNet;
 
 namespace Distributed.Replication.Kafka.Tests;

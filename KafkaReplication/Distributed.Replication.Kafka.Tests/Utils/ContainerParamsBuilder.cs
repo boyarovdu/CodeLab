@@ -1,6 +1,6 @@
 using Docker.DotNet.Models;
 
-namespace Distributed.Replication.Kafka.Tests.Helpers;
+namespace Distributed.Replication.Kafka.Tests.Utils;
 
 public class ContainerParamsBuilder
 {
@@ -25,18 +25,24 @@ public class ContainerParamsBuilder
     public ContainerParamsBuilder WithPortBinding(string containerPort, string hostPort)
     {
         _containerParameters.HostConfig.PortBindings ??= new Dictionary<string, IList<PortBinding>>();
+        _containerParameters.ExposedPorts ??= new Dictionary<string, EmptyStruct>();
 
+        if (!_containerParameters.ExposedPorts.ContainsKey(containerPort))
+        {
+            _containerParameters.ExposedPorts[containerPort] = new EmptyStruct();
+        }
+        
         if (!_containerParameters.HostConfig.PortBindings.TryGetValue(containerPort, out IList<PortBinding>? value))
         {
             value = new List<PortBinding>();
             _containerParameters.HostConfig.PortBindings[containerPort] = value;
         }
-
+    
         value.Add(new PortBinding
         {
             HostPort = hostPort
         });
-
+    
         return this;
     }
 
@@ -46,7 +52,13 @@ public class ContainerParamsBuilder
             _containerParameters.Cmd.Add(c);
         return this;
     }
-
+    
+    public ContainerParamsBuilder WithNetwork(string networkName)
+    {
+        _containerParameters.HostConfig.NetworkMode = networkName;
+        return this;
+    }
+    
     public CreateContainerParameters Build()
     {
         return _containerParameters;

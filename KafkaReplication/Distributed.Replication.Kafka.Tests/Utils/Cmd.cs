@@ -1,6 +1,6 @@
 using CliWrap;
 
-namespace Distributed.Replication.Kafka.Tests.Helpers;
+namespace Distributed.Replication.Kafka.Tests.Utils;
 
 public static class Cmd
 {

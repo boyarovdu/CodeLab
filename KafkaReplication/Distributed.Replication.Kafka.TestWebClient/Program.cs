@@ -5,9 +5,7 @@ namespace Distributed.Replication.Kafka.TestWebClient;
 
 public static class Program
 {
-#pragma warning disable CS8618
     public static string Type { get; private set; }
-#pragma warning restore CS8618
 
     public static async Task Main(string[] args)
     {
@@ -28,10 +26,7 @@ public static class Program
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
+            app.MapOpenApi();
 
             app.UseAuthorization();
 
