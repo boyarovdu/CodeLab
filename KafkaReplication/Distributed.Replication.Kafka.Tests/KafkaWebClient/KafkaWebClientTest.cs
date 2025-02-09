@@ -13,7 +13,7 @@ public class KafkaWebClientTest : BaseDockerTest
         
         var @params = new ContainersListParameters { All = true };
         var containers = await DockerClient.Containers.ListContainersAsync(@params);
-        foreach (var container in containers.Where(c => c.Image == ComposeConstants.ImageName))
+        foreach (var container in containers.Where(c => c.Image == ComposeConstants.KafkaWebClient.ImageName))
         {
             await DockerClient.Containers.RemoveContainerAsync(container.ID,
                 new ContainerRemoveParameters { Force = true });
@@ -31,9 +31,9 @@ public class KafkaWebClientTest : BaseDockerTest
             .WithKafkaTestWebClient(
                 clientType: type,
                 kafkaConfig: config)
-            .WithPortBinding(ComposeConstants.Port, port)
+            .WithPortBinding(ComposeConstants.KafkaWebClient.InternalPort, port)
             .WithName(containerName)
-            .WithNetwork(ComposeConstants.Network)
+            .WithNetwork(ComposeConstants.DefaultNetwork)
             .Build());
 
     private async Task<bool> CreateStartContainer(CreateContainerParameters containerParams)
