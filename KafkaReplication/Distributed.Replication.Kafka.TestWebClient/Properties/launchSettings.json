@@ -6,7 +6,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5116",
-      "commandLineArgs": "--kafka-config bootstrap.servers=localhost:19092,localhost:19093,localhost:19094 --kafka-config group.id=test --client-type consumer",
+      "commandLineArgs": "--kafka-config bootstrap.servers=localhost:19092,localhost:19093,localhost:19094 group.id=afdda203-1a1e-4f68-b556-65479cc79967 auto.offset.reset=earliest --client-type consumer",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

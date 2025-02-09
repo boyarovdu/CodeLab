@@ -42,11 +42,13 @@ public static class Program
 
     private static void AddKafkaClient(this IServiceCollection services, string[] kafkaConfig)
     {
+        var healthChecks = services.AddHealthChecks();
+        
         switch (Type)
         {
             case "producer":
                 services.AddKafkaProducer(kafkaConfig);
-                services.AddHealthChecks().AddCheck<ProducerHealthCheck>("Kafka");
+                healthChecks.AddCheck<ProducerHealthCheck>("Kafka");
                 break;
             case "consumer":
                 services.AddKafkaConsumer(kafkaConfig);

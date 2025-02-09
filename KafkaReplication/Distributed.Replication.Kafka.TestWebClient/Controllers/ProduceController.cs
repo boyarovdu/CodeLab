@@ -10,10 +10,9 @@ public class ProduceController(ILogger<ConsumeController> logger, IProducer<stri
     private readonly ILogger<ConsumeController> _logger = logger;
 
     [HttpPost]
-    public IEnumerable<ExampleModel> Post()
+    public async Task<TopicPartitionOffset> Post(string topic, string message)
     {
-        return Enumerable.Range(1, 5)
-            .Select(index => new ExampleModel())
-            .ToArray();
+        var res  = await producer.ProduceAsync(topic, new Message<string, string> {Value = message });
+        return res.TopicPartitionOffset;
     }
 }

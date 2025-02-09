@@ -25,4 +25,8 @@
       <Compile Remove="KafkaClients.cs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Distributed.Replication.Kafka.Dto\Distributed.Replication.Kafka.Dto.csproj" />
+    </ItemGroup>
+
 </Project>

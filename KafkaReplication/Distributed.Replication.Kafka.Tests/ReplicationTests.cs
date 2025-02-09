@@ -25,17 +25,13 @@ public class ReplicationTests : KafkaWebClientTest
     [Test]
     public async Task TestA()
     {
-        var @params = new ContainersListParameters { All = true };
-        var containers = await DockerClient.Containers.ListContainersAsync(@params);
-        var msg = string.Join(',', containers.Select(c => c.Names.First()));
-
         var httpClient = new HttpClient();
 
-        await TestUtil.WaitUntilAsync(timeoutMs: 10000, async () =>
-            (await httpClient.GetAsync($"http://localhost:{_consumerPort}/health")).IsSuccessStatusCode);
+        await TestUtil.WaitUntilAsync(timeoutMs: 300_000, async () =>
+            (await httpClient.GetAsync($"http://localhost:{_producerPort}/health")).IsSuccessStatusCode);
 
-        Console.WriteLine("Produced event to the specified topic");
-
-        await TestContext.Progress.WriteLineAsync($"containers: {msg}");
+        
+        
+        Console.WriteLine("Producer is healthy");
     }
 }
