@@ -12,7 +12,7 @@ public class BaseDockerTest
     public async Task ComposeUp()
     {
         await TestContext.Progress.WriteLineAsync($"Starting Docker Compose for {GetType().Name}...");
-        await Cmd.ExecAsync(DockerComposeFolderPath, "docker-compose", "up -d");
+        await Cmd.ExecAsync(DockerComposeFolderPath, "docker-compose", "up -d --build");
             
         DockerClient = new DockerClientConfiguration().CreateClient();
     }

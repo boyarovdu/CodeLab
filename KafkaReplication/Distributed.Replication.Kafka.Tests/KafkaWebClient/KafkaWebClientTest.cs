@@ -20,13 +20,26 @@ public class KafkaWebClientTest : BaseDockerTest
         }
     }
     
-    protected async Task<bool> StartConsumer(string containerName, string port, string config) =>
+    protected async Task<bool> StartConsumer(string containerName, string port, params string[] config) =>
         await StartKafkaClient(KafkaClientType.Consumer, containerName, port, config);
 
     protected async Task<bool> StartProducer(string containerName, string port, string config) =>
         await StartKafkaClient(KafkaClientType.Producer, containerName, port, config);
 
-    private async Task<bool> StartKafkaClient(KafkaClientType type, string containerName, string port, string config) =>
+    protected static async Task ServiceHealthy(string producerPort, 
+        int timeoutMs = (5 * 60 * 1000),
+        string host = "localhost", 
+        string endpointRelativePath = "health")
+    {
+        using var httpClient = new HttpClient();
+
+        var healthUri = new Uri($"http://{host}:{producerPort}/{endpointRelativePath}");
+        
+        await TestUtil.WaitUntilAsync(timeoutMs, async () =>
+            (await httpClient.GetAsync(healthUri)).IsSuccessStatusCode);
+    }
+    
+    private async Task<bool> StartKafkaClient(KafkaClientType type, string containerName, string port, params string[] config) =>
         await CreateStartContainer(new ContainerParamsBuilder()
             .WithKafkaTestWebClient(
                 clientType: type,

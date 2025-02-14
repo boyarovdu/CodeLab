@@ -1,4 +1,5 @@
 using Confluent.Kafka;
+using Distributed.Replication.Kafka.TestWebClient.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Distributed.Replication.Kafka.TestWebClient.Controllers;
@@ -10,9 +11,9 @@ public class ProduceController(ILogger<ConsumeController> logger, IProducer<stri
     private readonly ILogger<ConsumeController> _logger = logger;
 
     [HttpPost]
-    public async Task<TopicPartitionOffset> Post(string topic, string message)
+    public async Task<TopicPartitionOffset> Post([FromQuery] string topic, [FromBody] ProduceRequest request)
     {
-        var res  = await producer.ProduceAsync(topic, new Message<string, string> {Value = message });
+        var res  = await producer.ProduceAsync(topic, new Message<string, string> {Value = request.Message });
         return res.TopicPartitionOffset;
     }
 }
