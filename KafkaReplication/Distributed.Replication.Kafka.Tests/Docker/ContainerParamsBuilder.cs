@@ -31,18 +31,18 @@ public class ContainerParamsBuilder
         {
             _containerParameters.ExposedPorts[containerPort] = new EmptyStruct();
         }
-        
+
         if (!_containerParameters.HostConfig.PortBindings.TryGetValue(containerPort, out IList<PortBinding>? value))
         {
             value = new List<PortBinding>();
             _containerParameters.HostConfig.PortBindings[containerPort] = value;
         }
-    
+
         value.Add(new PortBinding
         {
             HostPort = hostPort
         });
-    
+
         return this;
     }
 
@@ -52,23 +52,27 @@ public class ContainerParamsBuilder
             _containerParameters.Cmd.Add(c);
         return this;
     }
-    
+
     // public ContainerParamsBuilder WithNetwork(string networkName)
     // {
     //     _containerParameters.HostConfig.NetworkMode = networkName;
     //     return this;
     // }
-    
+
     public ContainerParamsBuilder WithNetworks(params string[] networkNames)
     {
+        _containerParameters.NetworkingConfig ??= new NetworkingConfig
+            { EndpointsConfig = new Dictionary<string, EndpointSettings>() };
+
         foreach (var networkName in networkNames)
         {
             _containerParameters.NetworkingConfig.EndpointsConfig[networkName] = new EndpointSettings();
         }
+
         return this;
     }
 
-    
+
     public CreateContainerParameters Build()
     {
         return _containerParameters;
