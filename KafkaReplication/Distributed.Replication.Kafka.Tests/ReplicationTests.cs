@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 
 using Distributed.Replication.Kafka.Tests.KafkaWebClient;
+using Distributed.Replication.Kafka.Tests.Utils;
 using Distributed.Replication.Kafka.TestWebClient.Models;
 
 namespace Distributed.Replication.Kafka.Tests;
@@ -17,8 +18,11 @@ public class ReplicationTests : KafkaWebClientTest
     [OneTimeSetUp]
     public async Task StartKafkaClients()
     {
-        await StartConsumer("consumer", _consumerPort, $"bootstrap.servers={ComposeConstants.KafkaHosts}",
-            $"group.id={Guid.NewGuid()}");
+        await StartConsumer("consumer", _consumerPort, 
+            $"bootstrap.servers={ComposeConstants.KafkaHosts}",
+            $"group.id={Guid.NewGuid()}", 
+            "auto.offset.reset=earliest");
+        
         await StartProducer("producer", _producerPort, $"bootstrap.servers={ComposeConstants.KafkaHosts}");
         await ServiceHealthy(_producerPort);
     }
@@ -27,25 +31,37 @@ public class ReplicationTests : KafkaWebClientTest
     public async Task TestA()
     {
         var topic = "test-topic";
-        using HttpClient client = new();
+        using HttpClient httpClient = new();
 
-        var subscribeResp = await client.PostAsync(
-            $"http://localhost:{_consumerPort}/consume?topic={topic}",
-            null);
+        _ = await SubscribeAsync(httpClient, _consumerPort, topic);
+        _ = await ProduceAsync(httpClient, _producerPort, topic, "test-message");
         
-        var produceResp = await client.PostAsync(
-            $"http://localhost:{_producerPort}/produce?topic={topic}",
+        var consumeResp = await ConsumeAsync(httpClient, _consumerPort);
+        if (!consumeResp.IsSuccessStatusCode)
+        {
+            throw new Exception("Consume failed");
+        }
+    }
+
+    private async Task<HttpResponseMessage> ConsumeAsync(HttpClient client, string port)
+    {
+        return await client.GetAsync($"http://localhost:{port}/consume");
+    }
+
+    private async Task<HttpResponseMessage> ProduceAsync(HttpClient client, string port, string topic, string message)
+    {
+        return await client.PostAsync(
+            $"http://localhost:{port}/produce?topic={topic}",
             new StringContent(
-                JsonSerializer.Serialize(new ProduceRequest { Message = "test-message" }),
+                JsonSerializer.Serialize(new ProduceRequest { Message = message }),
                 mediaType: new MediaTypeHeaderValue("application/json")
             ));
-        
-        if (subscribeResp.IsSuccessStatusCode)
-        {
-            var consumeResp = await client.GetAsync($"http://localhost:{_consumerPort}/consume");
-            Console.WriteLine(consumeResp.Content.ReadAsStringAsync().GetAwaiter().GetResult());
-        }
+    }
 
-        Console.WriteLine("Producer is healthy");
+    private async Task<HttpResponseMessage> SubscribeAsync(HttpClient client, string port, string topic)
+    {
+        return await client.PostAsync(
+            $"http://localhost:{port}/consume?topic={topic}",
+            null);
     }
 }
