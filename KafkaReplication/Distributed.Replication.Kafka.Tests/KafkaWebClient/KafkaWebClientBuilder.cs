@@ -1,6 +1,12 @@
-using Distributed.Replication.Kafka.Tests.Utils;
+using Distributed.Replication.Kafka.Tests.Docker;
 
 namespace Distributed.Replication.Kafka.Tests.KafkaWebClient;
+
+public enum KafkaClientType
+{
+    Producer,
+    Consumer,
+}
 
 public static class KafkaWebClientBuilder
 {

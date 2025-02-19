@@ -1,6 +1,12 @@
 networks:
-  kafka-network:
-    name: kafka-network
+  europe-west1:
+    name: europe-west1
+    driver: bridge
+  europe-west2:
+    name: europe-west2
+    driver: bridge
+  europe-west3:
+    name: europe-west3
     driver: bridge
     
 services:
@@ -15,7 +21,9 @@ services:
     ports:
       - "2181:2181" 
     networks:
-      - kafka-network
+      - europe-west1
+      - europe-west2
+      - europe-west3
 
   zoonavigator:
     image: elkozmon/zoonavigator
@@ -25,7 +33,9 @@ services:
     depends_on: 
       - zookeeper
     networks:
-      - kafka-network
+      - europe-west1
+      - europe-west2
+      - europe-west3
     
   kafka-1:
     image: confluentinc/cp-kafka:latest
@@ -41,8 +51,11 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,EXTERNAL_LISTENER://localhost:19092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
+      KAFKA_BROKER_RACK: europe-west1
     networks:
-      - kafka-network
+      - europe-west1
+      - europe-west2
+      - europe-west3
   
   kafka-2:
     image: confluentinc/cp-kafka:latest
@@ -58,8 +71,11 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,EXTERNAL_LISTENER://localhost:19093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
+      KAFKA_BROKER_RACK: europe-west2
     networks:
-      - kafka-network
+      - europe-west1
+      - europe-west2
+      - europe-west3
   
   kafka-3:
     image: confluentinc/cp-kafka:latest
@@ -75,8 +91,11 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,EXTERNAL_LISTENER://localhost:19094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
+      KAFKA_BROKER_RACK: europe-west3
     networks:
-      - kafka-network
+      - europe-west1
+      - europe-west2
+      - europe-west3
       
   test-web-client:
     image: test-web-client

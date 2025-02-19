@@ -4,7 +4,7 @@ namespace Distributed.Replication.Kafka.Tests.Utils;
 
 public static class TestUtil
 {
-    public static async Task WaitUntilAsync(int timeoutMs, Func<Task<bool>> asyncCondition, int delay = 100, bool throwException = true)
+    public static async Task<bool> WaitUntilAsync(int timeoutMs, Func<Task<bool>> asyncCondition, int delay = 100, bool throwException = true)
     {
         var stopwatch = Stopwatch.StartNew();
 
@@ -18,12 +18,12 @@ public static class TestUtil
                 {
                     throw new TimeoutException("Condition of the test was not met in the specified time");
                 }
-                return;
+                return false;
             }
 
             try
             {
-                if (await asyncCondition()) return;
+                if (await asyncCondition()) return true;
             }
             catch (Exception e)
             {

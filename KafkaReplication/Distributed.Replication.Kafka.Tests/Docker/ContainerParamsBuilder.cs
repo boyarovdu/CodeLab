@@ -1,6 +1,6 @@
 using Docker.DotNet.Models;
 
-namespace Distributed.Replication.Kafka.Tests.Utils;
+namespace Distributed.Replication.Kafka.Tests.Docker;
 
 public class ContainerParamsBuilder
 {
@@ -53,11 +53,21 @@ public class ContainerParamsBuilder
         return this;
     }
     
-    public ContainerParamsBuilder WithNetwork(string networkName)
+    // public ContainerParamsBuilder WithNetwork(string networkName)
+    // {
+    //     _containerParameters.HostConfig.NetworkMode = networkName;
+    //     return this;
+    // }
+    
+    public ContainerParamsBuilder WithNetworks(params string[] networkNames)
     {
-        _containerParameters.HostConfig.NetworkMode = networkName;
+        foreach (var networkName in networkNames)
+        {
+            _containerParameters.NetworkingConfig.EndpointsConfig[networkName] = new EndpointSettings();
+        }
         return this;
     }
+
     
     public CreateContainerParameters Build()
     {
