@@ -12,7 +12,8 @@ public class ConsumeController(ILogger<ConsumeController> logger, IConsumer<stri
     [HttpPost]
     public void Post(string topic)
     {
-        consumer.Subscribe(topic);
+        var list = new List<string>(consumer.Subscription) { topic };
+        consumer.Subscribe(list);
     }
     
     [HttpDelete]
