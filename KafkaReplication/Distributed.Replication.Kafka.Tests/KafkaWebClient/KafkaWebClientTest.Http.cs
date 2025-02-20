@@ -33,7 +33,7 @@ public partial class KafkaWebClientTest
     }
     
     protected static async Task ServiceHealthy(string producerPort,
-        int timeoutMs = (5 * 60 * 1000),
+        int timeoutMs = (1 * 30 * 1000),
         string host = "localhost",
         string endpointRelativePath = "health")
     {

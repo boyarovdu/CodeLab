@@ -14,8 +14,8 @@ public static class KafkaWebClientBuilder
         KafkaClientType clientType, params string[] kafkaConfig)
     {
         var containerParams = containerParameters
-            .WithImage(ComposeConstants.KafkaWebClient.ImageName)
-            .WithCommand("dotnet", ComposeConstants.KafkaWebClient.AssemblyName)
+            .WithImage(TestEnvironment.KafkaWebClient.ImageName)
+            .WithCommand("dotnet", TestEnvironment.KafkaWebClient.AssemblyName)
             .WithCommand("--client-type", clientType == KafkaClientType.Producer ? "producer" : "consumer");
 
         foreach (var kafkaSetting in kafkaConfig)

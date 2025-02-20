@@ -1,14 +1,3 @@
-networks:
-  europe-west1:
-    name: europe-west1
-    driver: bridge
-  europe-west2:
-    name: europe-west2
-    driver: bridge
-  europe-west3:
-    name: europe-west3
-    driver: bridge
-    
 services:
   
   zookeeper:
@@ -21,10 +10,9 @@ services:
     ports:
       - "2181:2181" 
     networks:
-      - europe-west1
-      - europe-west2
-      - europe-west3
-
+      - internal
+      - public
+      
   zoonavigator:
     image: elkozmon/zoonavigator
     container_name: zoonavigator
@@ -33,69 +21,68 @@ services:
     depends_on: 
       - zookeeper
     networks:
-      - europe-west1
-      - europe-west2
-      - europe-west3
-    
+      - internal
+      - public
+      
   kafka-1:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-1
     ports:
       - "19092:19092"
+      - "29092:29092"
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
-      KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,EXTERNAL_LISTENER://kafka-1:19092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,EXTERNAL_LISTENER://localhost:19092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-1:9092,PUBLIC_LISTENER://0.0.0.0:29092,EXTERNAL_LISTENER://0.0.0.0:19092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-1.internal:9092,PUBLIC_LISTENER://kafka-1.public:29092,EXTERNAL_LISTENER://localhost:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,PUBLIC_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
-      KAFKA_BROKER_RACK: europe-west1
+      KAFKA_BROKER_RACK: public
     networks:
-      - europe-west1
-      - europe-west2
-      - europe-west3
-  
+      - internal
+      - public
+      
   kafka-2:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-2
     ports:
       - "19093:19093"
+      - "29093:29093"
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
-      KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,EXTERNAL_LISTENER://kafka-2:19093
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,EXTERNAL_LISTENER://localhost:19093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-2:9092,PUBLIC_LISTENER://0.0.0.0:29093,EXTERNAL_LISTENER://0.0.0.0:19093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-2.internal:9092,PUBLIC_LISTENER://kafka-2.public:29093,EXTERNAL_LISTENER://localhost:19093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,PUBLIC_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
-      KAFKA_BROKER_RACK: europe-west2
+      KAFKA_BROKER_RACK: public
     networks:
-      - europe-west1
-      - europe-west2
-      - europe-west3
-  
+      - internal
+      - public
+      
   kafka-3:
     image: confluentinc/cp-kafka:latest
     container_name: kafka-3
     ports:
       - "19094:19094"
+      - "29094:29094"
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
-      KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,EXTERNAL_LISTENER://kafka-3:19094
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,EXTERNAL_LISTENER://localhost:19094
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL_LISTENER://kafka-3:9092,PUBLIC_LISTENER://0.0.0.0:29094,EXTERNAL_LISTENER://0.0.0.0:19094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL_LISTENER://kafka-3.internal:9092,PUBLIC_LISTENER://kafka-3.public:29094,EXTERNAL_LISTENER://localhost:19094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_LISTENER:PLAINTEXT,PUBLIC_LISTENER:PLAINTEXT,EXTERNAL_LISTENER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_LISTENER
-      KAFKA_BROKER_RACK: europe-west3
+      KAFKA_BROKER_RACK: public
     networks:
-      - europe-west1
-      - europe-west2
-      - europe-west3
+      - internal
+      - public
       
   test-web-client:
     image: test-web-client
@@ -103,3 +90,12 @@ services:
     build:
       context: .
       dockerfile: Distributed.Replication.Kafka.TestWebClient/Dockerfile
+      
+networks:
+  public:
+    name: public
+    driver: bridge
+    attachable: true
+  internal:
+    name: internal
+    driver: bridge

@@ -22,25 +22,25 @@ public class ReplicationTests : KafkaWebClientTest
     [OneTimeSetUp]
     public async Task StartKafkaClients()
     {
-        await KafkaAdminClient.CreateTopicAsync(_topic, replicationFactor: 2);
-        var partition = KafkaAdminClient.GetPartitionMetadata(_topic);
-        var replicaId = partition.Replicas.Except([partition.Leader]).First();
+        var partition = (await KafkaAdminClient.CreateTopicAsync(_topic, replicationFactor: 2))[0];
+        _leader = partition.Leader;
+        _follower = partition.Replicas.Except([partition.Leader]).First();
 
         await StartProducer("producer", _producerPort,
-            $"bootstrap.servers={ComposeConstants.KafkaCluster.InternalListeners}",
-            $"client.rack=europe-west{partition.Leader}",
-            $"acks=0");
+            [TestEnvironment.Network.Internal],
+            [$"bootstrap.servers={TestEnvironment.KafkaCluster.InternalListeners}",
+            $"acks=all"]);
 
         await StartConsumer("consumer", _consumerPort,
-            $"bootstrap.servers={ComposeConstants.KafkaCluster.InternalListeners}",
-            $"group.id={consumerGroup}",
-            $"client.rack=europe-west{replicaId}",
-            "auto.offset.reset=earliest");
+            [TestEnvironment.Network.Public],
+            [
+                $"bootstrap.servers={TestEnvironment.KafkaCluster.PublicListeners}",
+                $"group.id={consumerGroup}",
+                $"client.rack={TestEnvironment.Network.Public}",
+                "auto.offset.reset=earliest"
+            ]);
 
         await ServiceHealthy(_producerPort);
-
-        _leader = partition.Leader;
-        _follower = replicaId;
     }
 
     [Test]

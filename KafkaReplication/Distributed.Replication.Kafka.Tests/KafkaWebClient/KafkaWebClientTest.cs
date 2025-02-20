@@ -27,7 +27,7 @@ public partial class KafkaWebClientTest : BaseDockerTest
     private void InitKafkaAdminClient() =>
         KafkaAdminClient = new AdminClientBuilder(new AdminClientConfig
         {
-            BootstrapServers = ComposeConstants.KafkaCluster.ExternalListeners
+            BootstrapServers = TestEnvironment.KafkaCluster.ExternalListeners
         }).Build();
 }
 
