@@ -5,12 +5,10 @@ namespace Distributed.Replication.Kafka.Tests.KafkaWebClient;
 
 public partial class KafkaWebClientTest
 {
-    protected async Task<bool>
-        StartConsumer(string containerName, string port, string[] networks, string[] config) =>
+    protected async Task<bool> StartConsumer(string containerName, string port, string[] networks, string[] config) =>
         await StartKafkaClient(KafkaClientType.Consumer, containerName, port, networks, config);
 
-    protected async Task<bool> StartProducer(string containerName, string port, string[] networks,
-        string[] clientConfig) =>
+    protected async Task<bool> StartProducer(string containerName, string port, string[] networks, string[] clientConfig) =>
         await StartKafkaClient(KafkaClientType.Producer, containerName, port, networks,
             clientConfig);
 
@@ -35,6 +33,29 @@ public partial class KafkaWebClientTest
         {
             await DockerClient.Containers.RemoveContainerAsync(container.ID,
                 new ContainerRemoveParameters { Force = true });
+        }
+    }
+
+    public async Task DisconnectAsync(string network, string[] containers)
+    {
+        foreach (var container in containers)
+        {
+            await DockerClient.Networks.DisconnectNetworkAsync(network, new NetworkDisconnectParameters
+            {
+                Force = true,
+                Container = container
+            });    
+        }
+    }
+    
+    public async Task ConnectAsync(string network, string[] containers)
+    {
+        foreach (var container in containers)
+        {
+            await DockerClient.Networks.ConnectNetworkAsync(network, new NetworkConnectParameters
+            {
+                Container = container
+            });    
         }
     }
 }

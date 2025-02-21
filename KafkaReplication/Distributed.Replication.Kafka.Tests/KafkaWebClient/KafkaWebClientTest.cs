@@ -6,7 +6,7 @@ public partial class KafkaWebClientTest : BaseDockerTest
 {
     protected IAdminClient KafkaAdminClient { get; private set; }
 
-    [OneTimeSetUp]
+    [SetUp]
     public async Task SetUp()
     {
         await ForceRemoveKafkaClients();
@@ -14,7 +14,7 @@ public partial class KafkaWebClientTest : BaseDockerTest
         InitHttpClient();
     }
 
-    [OneTimeTearDown]
+    [TearDown]
     public async Task TearDown()
     {
         // TODO: remove unused volumes

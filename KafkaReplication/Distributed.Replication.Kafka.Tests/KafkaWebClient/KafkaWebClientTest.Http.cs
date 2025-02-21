@@ -48,6 +48,7 @@ public partial class KafkaWebClientTest
     private void InitHttpClient()
     {
         _httpClient = new HttpClient();
+        _httpClient.Timeout = TimeSpan.FromMinutes(1);
     }
     
     private void DisposeHttpClient()
