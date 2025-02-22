@@ -53,12 +53,6 @@ public class ContainerParamsBuilder
         return this;
     }
 
-    // public ContainerParamsBuilder WithNetwork(string networkName)
-    // {
-    //     _containerParameters.HostConfig.NetworkMode = networkName;
-    //     return this;
-    // }
-
     public ContainerParamsBuilder WithNetworks(params string[] networkNames)
     {
         _containerParameters.NetworkingConfig ??= new NetworkingConfig

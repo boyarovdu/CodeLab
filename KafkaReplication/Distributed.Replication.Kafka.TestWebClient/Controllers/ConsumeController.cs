@@ -12,8 +12,11 @@ public class ConsumeController(ILogger<ConsumeController> logger, IConsumer<stri
     [HttpPost]
     public void Post(string topic)
     {
-        var list = new List<string>(consumer.Subscription) { topic };
-        consumer.Subscribe(list);
+        if (!consumer.Subscription.Contains(topic))
+        {
+            var list = new List<string>(consumer.Subscription) { topic };
+            consumer.Subscribe(list);
+        }
     }
     
     [HttpDelete]
@@ -28,7 +31,7 @@ public class ConsumeController(ILogger<ConsumeController> logger, IConsumer<stri
         // Terrible approach for real app, but works great for my use case
         var consumed = consumer.Consume(5_000);
 
-        if (consumed is { IsPartitionEOF: false })
+        if(consumed is { IsPartitionEOF: false })
         {
             return consumed;
         }

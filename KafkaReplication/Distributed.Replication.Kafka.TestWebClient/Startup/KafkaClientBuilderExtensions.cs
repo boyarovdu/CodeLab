@@ -16,7 +16,7 @@ public static class KafkaClientBuilderExtensions
     public static void AddKafkaConsumer(this IServiceCollection services, IDictionary<string, string> settings) =>
         services.AddSingleton(provider =>
         {
-            var logger = provider.GetService<ILogger>();
+            var logger = provider.GetService<ILogger<IConsumer<string, string>>>();
 
             var consumer = new ConsumerBuilder<string, string>(settings)
                 .SetErrorHandler((_, error) => logger.LogError($"Kafka consumer error: {JsonSerializer.Serialize(error)}"))
@@ -25,14 +25,23 @@ public static class KafkaClientBuilderExtensions
 
             return consumer;
         });
+
+    public static void AddKafkaProducer(this IServiceCollection services, IDictionary<string, string> settings) =>
+        services.AddSingleton(provider =>
+        {
+            var logger = provider.GetService<ILogger<IProducer<string, string>>>();
+
+            var producer = new ProducerBuilder<string, string>(settings)
+                .SetErrorHandler((_, error) => logger.LogError($"Kafka producer error: {JsonSerializer.Serialize(error)}"))
+                .SetLogHandler((_, log) => logger.LogInformation($"Kafka producer log: {JsonSerializer.Serialize(log)}"))
+                .Build();
+
+            return producer;
+        });
     
-
-    public static void AddKafkaConsumer(this IServiceCollection services, string[] settings) => 
-        services.AddKafkaConsumer(ParseSettings(settings));
-
-    public static void AddKafkaProducer(this IServiceCollection services, IDictionary<string, string> settings) => 
-        services.AddSingleton(new ProducerBuilder<string, string>(settings).Build());
-
     public static void AddKafkaProducer(this IServiceCollection services, string[] settings) => 
         services.AddKafkaProducer(ParseSettings(settings));
+    
+    public static void AddKafkaConsumer(this IServiceCollection services, string[] settings) => 
+        services.AddKafkaConsumer(ParseSettings(settings));
 }

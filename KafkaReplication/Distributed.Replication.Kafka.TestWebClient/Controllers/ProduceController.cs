@@ -13,7 +13,10 @@ public class ProduceController(ILogger<ConsumeController> logger, IProducer<stri
     [HttpPost]
     public async Task<TopicPartitionOffset> Post([FromQuery] string topic, [FromBody] ProduceRequest request)
     {
-        var res  = await producer.ProduceAsync(topic, new Message<string, string> {Value = request.Message });
+        var res = await producer.ProduceAsync(topic, 
+            new Message<string, string> { Value = request.Message },
+            HttpContext.RequestAborted);
+        
         return res.TopicPartitionOffset;
     }
 }

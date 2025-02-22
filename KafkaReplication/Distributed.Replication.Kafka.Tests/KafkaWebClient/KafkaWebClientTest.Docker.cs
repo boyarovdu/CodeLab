@@ -26,10 +26,18 @@ public partial class KafkaWebClientTest
     private async Task ForceRemoveKafkaClients()
     {
         await TestContext.Progress.WriteLineAsync($"Removing containers hosting Kafka clients for {GetType().Name}...");
+        
+        var listParams = new ContainersListParameters
+        {
+            All = true,
+            Filters = new Dictionary<string, IDictionary<string, bool>>
+            {
+                { "ancestor", new Dictionary<string, bool> { { TestEnvironment.KafkaWebClient.ImageName, true } } }
+            }
+        };
 
-        var listParams = new ContainersListParameters { All = true };
         var containers = await DockerClient.Containers.ListContainersAsync(listParams);
-        foreach (var container in containers.Where(c => c.Image == TestEnvironment.KafkaWebClient.ImageName))
+        foreach (var container in containers)
         {
             await DockerClient.Containers.RemoveContainerAsync(container.ID,
                 new ContainerRemoveParameters { Force = true });
