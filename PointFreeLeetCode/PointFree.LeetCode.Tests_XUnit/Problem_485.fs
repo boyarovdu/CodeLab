@@ -15,6 +15,6 @@ let ``Implementation is correct`` (array: int array) =
     let r = s.FindMaxConsecutiveOnes array
 
     [| s.FindMaxConsecutiveOnes_dp array
-       Problem_485.maxConsecutiveOnes1 array
-       Problem_485.maxConsecutiveOnes2 array |]
+       Problem_485.maxConsecutiveOnes1 (Array.toList array)
+       Problem_485.maxConsecutiveOnes2 (Array.toList array) |]
     |> Array.forall ((=) r)

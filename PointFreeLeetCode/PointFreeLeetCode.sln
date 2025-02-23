@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointFree.LeetCode_CSharp",
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PointFree.LeetCode.Tests_XUnit", "PointFree.LeetCode.Tests_XUnit\PointFree.LeetCode.Tests_XUnit.fsproj", "{980A79B3-A54C-4337-9458-FCC877F5C911}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointFree.LeetCode.Benchmark", "PointFree.LeetCode.Benchmark\PointFree.LeetCode.Benchmark.csproj", "{CC29A121-3937-4FA4-8AE8-486018FD3F9C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +24,5 @@ Global
 		{980A79B3-A54C-4337-9458-FCC877F5C911}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{980A79B3-A54C-4337-9458-FCC877F5C911}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{980A79B3-A54C-4337-9458-FCC877F5C911}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC29A121-3937-4FA4-8AE8-486018FD3F9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -16,5 +16,5 @@ type NonEmptyArray =
 let ``Implementation is correct`` (array: int array) =
     let s = Problem_674()
     
-    s.FindLengthOfLCIS(array) = Problem_674.findLengthOfLCIS array
+    s.FindLengthOfLCIS(array) = Problem_674.findLengthOfLCIS (Array.toList array)
     
