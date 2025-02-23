@@ -16,7 +16,7 @@ type NotEmptyPositiveIntsArray =
     static member Array() =
         NotEmptyPositiveIntsArray.Int().Generator
         |> Gen.arrayOf
-        |> Gen.filter (fun arr -> arr.Length >= 3 && arr.Length <= 1000)
+        |> Gen.filter (fun arr -> arr.Length >= 1 && arr.Length <= 1000)
         |> Arb.fromGen
 
 [<Property(Arbitrary = [| typeof<NotEmptyPositiveIntsArray> |])>]
