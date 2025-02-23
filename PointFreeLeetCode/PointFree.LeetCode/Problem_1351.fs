@@ -5,7 +5,7 @@
 module Problem_1351 =
     let flip = Combinators.C
         
-    let countNegatives2: int array array -> int =
+    let countNegatives: int array array -> int =
         Array.concat
         >> Array.filter (flip (<) 0)
         >> Array.length

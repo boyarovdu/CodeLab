@@ -33,4 +33,4 @@ type sortedMatrix =
 [<Property(Arbitrary = [| typeof<sortedMatrix> |])>]
 let ``Implementation is correct`` (array: int array array) =
     let s = Problem_1351()
-    s.CountNegatives array = Problem_1351.countNegatives2 array
+    s.CountNegatives array = Problem_1351.countNegatives array
