@@ -2,6 +2,7 @@
 
 let curry f a b = f (a,b)
 let uncurry f (a, b) = f a b
+let psi f g x y = f (g x) (g y) // Psi combinator
 
 (* ----------------------------------------------------------------------------
  ---- The following source code was copied from -------------------------------
