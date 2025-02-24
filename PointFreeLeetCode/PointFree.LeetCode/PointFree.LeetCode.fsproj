@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="List.fs" />
+        <Compile Include="Combinators.fs" />
+        <Compile Include="Problem_485.fs" />
+        <Compile Include="Problem_532.fs" />
+        <Compile Include="Problem_674.fs" />
+        <Compile Include="Problem_905.fs" />
+        <Compile Include="Problem_1351.fs" />
+        <Compile Include="Problem_1365.fs" />
+        <Compile Include="Problem_1394.fs" />
+        <Compile Include="Problem_1550.fs" />
+        <Compile Include="Problem_1624.fs" />
+    </ItemGroup>
+
+</Project>

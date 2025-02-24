@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+        <GenerateProgramFile>false</GenerateProgramFile>
+        <IsTestProject>true</IsTestProject>
+        <RootNamespace>Tacit.LeetCode.Tests_XUnit</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Example.fs" />
+        <Compile Include="Problem_485.fs" />
+        <Compile Include="Problem_532.fs" />
+        <Compile Include="Problem_674.fs" />
+        <Compile Include="Problem_905.fs" />
+        <Compile Include="Problem_1351.fs" />
+        <Compile Include="Problem_1365.fs" />
+        <Compile Include="Problem_1394.fs" />
+        <Compile Include="Problem_1550.fs" />
+        <Compile Include="Problem_1624.fs" />
+        <Compile Include="Program.fs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="FsCheck" Version="3.0.0" />
+        <PackageReference Include="FsCheck.Xunit" Version="3.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageReference Include="xunit" Version="2.5.3"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PointFree.LeetCode\PointFree.LeetCode.fsproj" />
+      <ProjectReference Include="..\PointFree.LeetCode_CSharp\PointFree.LeetCode_CSharp.csproj" />
+    </ItemGroup>
+
+</Project>
