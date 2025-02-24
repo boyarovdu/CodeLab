@@ -30,6 +30,7 @@ public class ReplicationTests : KafkaWebClientTest
                 "auto.offset.reset=earliest"
             ]);
 
+        TestContext.Progress.WriteLine("Waiting when producer is healthy.");
         await ServiceHealthy(_producerPort);
     }
 
@@ -37,6 +38,7 @@ public class ReplicationTests : KafkaWebClientTest
     public async Task Replica_removed_from_ISR_when_unavailable()
     {
         var topicName = "test-topic";
+        TestContext.Progress.WriteLine($"Creating topic {topicName}");
         var topicMetadata = (await KafkaAdminClient.CreateTopicAsync(topicName, replicationFactor: 2));
 
         var leaderId = topicMetadata.Partitions[0].Leader;
@@ -50,23 +52,27 @@ public class ReplicationTests : KafkaWebClientTest
 
         // Replica removed from ISR after 10 seconds(default value)
         // replica.lag.time.max.ms - setting that defines after what period of time replica is being removed from ISR
-        await TestContext.Progress.WriteLineAsync("Waiting when replica removed from ISR.");
+        TestContext.Progress.WriteLine("Waiting when replica removed from ISR.");
         await TestUtil.WaitUntilAsync(
             timeoutMs: 5 * 60_000,
             condition: () =>
-                KafkaAdminClient.GetTopicMetadata(topicName).Partitions[0].InSyncReplicas.Contains(followerId) == false,
-            delay: 1000);
+            {
+                var inSyncReplicas = KafkaAdminClient.GetTopicMetadata(topicName).Partitions[0].InSyncReplicas;
+                TestContext.Progress.WriteLine($"Replicas: {string.Join(", ", topicMetadata)}");
+                return inSyncReplicas.Contains(followerId) == false;
+            },
+            delay: KafkaMetdataRefreshIntervalMs);
 
         // Producer won't fail to produce, regardless of replication factor 2 for the topic and strong durability guarantees(acks=all) of the producer 
         // This is because min.insync.replicas was not adjusted and its default value is 1
-        await TestContext.Progress.WriteLineAsync("Producing message.");
+        TestContext.Progress.WriteLine("Producing message.");
         var produceResponse = await ProduceAsync(_producerPort, topicName, "test-message");
         Assert.That(produceResponse.IsSuccessStatusCode);
 
         // The consumer, depending on what broker it is connected to, may not receive message while replica cannot connect to the leader
-        await TestContext.Progress.WriteLineAsync("Waiting when consumer receives message.");
+        TestContext.Progress.WriteLine("Waiting when consumer receives message.");
         var consumeResp = await ConsumeAsync(_consumerPort);
-        await TestContext.Progress.WriteLineAsync(consumeResp.IsSuccessStatusCode
+        TestContext.Progress.WriteLine(consumeResp.IsSuccessStatusCode
             ? "Consumer received message."
             : "Consumer did not receive message.");
         
@@ -76,7 +82,19 @@ public class ReplicationTests : KafkaWebClientTest
 
         if (!consumeResp.IsSuccessStatusCode)
         {
-            // After replica connected back - consumer MUST certainly receive the message
+            // Replica must be added back to ISR after restoring the network
+            TestContext.Progress.WriteLine("Waiting when replica added back to ISR.");
+            await TestUtil.WaitUntilAsync(
+                timeoutMs: 5 * 60_000,
+                condition: () =>
+                {
+                    var inSyncReplicas = KafkaAdminClient.GetTopicMetadata(topicName).Partitions[0].InSyncReplicas;
+                    TestContext.Progress.WriteLine($"Replicas: {string.Join(", ", topicMetadata)}");
+                    return inSyncReplicas.Contains(followerId);
+                },
+                delay: KafkaMetdataRefreshIntervalMs);
+            
+            // After replica connected back - consumer MUST receive the message
             await TestContext.Progress.WriteLineAsync("Waiting when consumer receives message.");
             consumeResp = await ConsumeAsync(_consumerPort);
             Assert.That(consumeResp.IsSuccessStatusCode);

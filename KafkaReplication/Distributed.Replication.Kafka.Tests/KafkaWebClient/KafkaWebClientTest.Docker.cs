@@ -25,8 +25,6 @@ public partial class KafkaWebClientTest
 
     private async Task ForceRemoveKafkaClients()
     {
-        await TestContext.Progress.WriteLineAsync($"Removing containers hosting Kafka clients for {GetType().Name}...");
-        
         var listParams = new ContainersListParameters
         {
             All = true,
@@ -39,12 +37,13 @@ public partial class KafkaWebClientTest
         var containers = await DockerClient.Containers.ListContainersAsync(listParams);
         foreach (var container in containers)
         {
+            TestContext.Progress.WriteLine($"Removing container '{container.Names[0]}' hosting Kafka client");
             await DockerClient.Containers.RemoveContainerAsync(container.ID,
                 new ContainerRemoveParameters { Force = true });
         }
     }
 
-    public async Task DisconnectAsync(string network, string[] containers)
+    protected async Task DisconnectAsync(string network, string[] containers)
     {
         foreach (var container in containers)
         {
@@ -56,7 +55,7 @@ public partial class KafkaWebClientTest
         }
     }
     
-    public async Task ConnectAsync(string network, string[] containers)
+    protected async Task ConnectAsync(string network, string[] containers)
     {
         foreach (var container in containers)
         {

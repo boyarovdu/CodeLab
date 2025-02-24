@@ -8,20 +8,20 @@ public class BaseDockerTest
 {
     protected virtual string DockerComposeFolderPath => "./";
     protected DockerClient DockerClient { get; private set; }
-
-    [SetUp]
+    
+    [OneTimeSetUp]
     public async Task ComposeUp()
     {
-        await TestContext.Progress.WriteLineAsync($"Starting Docker Compose for {GetType().Name}...");
+        TestContext.Progress.WriteLine($"Starting Docker Compose for {GetType().Name}...");
         await Cmd.ExecAsync(DockerComposeFolderPath, "docker-compose", "up -d --build");
             
         DockerClient = new DockerClientConfiguration().CreateClient();
     }
 
-    [TearDown]
+    [OneTimeTearDown]
     public async Task ComposeDown()
     {   
-        await TestContext.Progress.WriteLineAsync($"Stopping Docker Compose for {GetType().Name}...");
+        TestContext.Progress.WriteLine($"Stopping Docker Compose for {GetType().Name}...");
         await Cmd.ExecAsync(DockerComposeFolderPath, "docker-compose", "down -v");
             
         DockerClient.Dispose();
