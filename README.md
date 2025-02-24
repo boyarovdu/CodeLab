@@ -14,4 +14,4 @@ This is sandbox for educational code projects in .NET. For most of the projects,
 
 6. [Demystifying Bloom Filters: Practical Guide in .NET](https://www.linkedin.com/pulse/demystifying-bloom-filters-practical-guide-net-david-boiarov-upe7e/?trackingId=MRBmOgvdcX13JA9GhXP6zQ%3D%3D) covers [BloomFilter.sln](https://github.com/boyarovdu/CodeLab/tree/main/BloomFilters) 
 
-7. PointFreeLeetCode.sln - article is being prepared
+7. Article is being prepared for [PointFreeLeetCode.sln](https://github.com/boyarovdu/CodeLab/tree/main/PointFreeLeetCode)  
