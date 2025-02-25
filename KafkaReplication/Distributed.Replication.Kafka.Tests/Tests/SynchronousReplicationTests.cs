@@ -35,7 +35,7 @@ public class SynchronousReplicationTests : KafkaWebClientTest
     }
 
     [Test]
-    public async Task AcksAllDoesntGuaranteeDeliveryWhenMinInSyncReplicasNotAdjusted()
+    public async Task Acks_all_doesnt_guarantee_delivery_when_min_in_sync_replicas_not_adjusted()
     {
         var topicName = "test-topic";
         TestContext.Progress.WriteLine($"Creating topic {topicName}");
@@ -102,7 +102,7 @@ public class SynchronousReplicationTests : KafkaWebClientTest
     }
 
     [Test]
-    public async Task AcksAllGuaranteesDeliveryWhenMinInSyncReplicasAdjusted()
+    public async Task Acks_all_guarantees_delivery_when_min_in_sync_replicas_adjusted()
     {
         var topicName = "test-topic";
         TestContext.Progress.WriteLine($"Creating topic {topicName}");
@@ -147,7 +147,7 @@ public class SynchronousReplicationTests : KafkaWebClientTest
         await ProduceAsync(ProducerPort, topicName, "test-message");
         
         // Consumer receive the message successfully
-        await TestContext.Progress.WriteLineAsync("Waiting when consumer receives message.");
+        TestContext.Progress.WriteLine("Waiting when consumer receives message.");
         var consumeResp = await ConsumeAsync(ConsumerPort);
         Assert.That(consumeResp.IsSuccessStatusCode);
     }
