@@ -8,13 +8,15 @@ public partial class KafkaWebClientTest
     protected async Task<bool> StartConsumer(string containerName, string port, string[] networks, string[] config) =>
         await StartKafkaClient(KafkaClientType.Consumer, containerName, port, networks, config);
 
-    protected async Task<bool> StartProducer(string containerName, string port, string[] networks, string[] clientConfig) =>
+    protected async Task<bool> StartProducer(string containerName, string port, string[] networks,
+        string[] clientConfig) =>
         await StartKafkaClient(KafkaClientType.Producer, containerName, port, networks,
             clientConfig);
 
     private async Task<bool> StartKafkaClient(KafkaClientType type, string containerName, string port,
-        string[] networks, string[] clientConfig) =>
-        await CreateStartContainer(new ContainerParamsBuilder()
+        string[] networks, string[] clientConfig)
+    {
+        return await CreateStartContainer(new ContainerParamsBuilder()
             .WithKafkaTestWebClient(
                 clientType: type,
                 kafkaConfig: clientConfig)
@@ -22,6 +24,7 @@ public partial class KafkaWebClientTest
             .WithName(containerName)
             .WithNetworks(networks)
             .Build());
+    }
 
     private async Task ForceRemoveKafkaClients()
     {
@@ -37,9 +40,9 @@ public partial class KafkaWebClientTest
         var containers = await DockerClient.Containers.ListContainersAsync(listParams);
         foreach (var container in containers)
         {
-            TestContext.Progress.WriteLine($"Removing container '{container.Names[0]}' hosting Kafka client");
             await DockerClient.Containers.RemoveContainerAsync(container.ID,
                 new ContainerRemoveParameters { Force = true });
+            TestContext.Progress.WriteLine($"Removed container '{container.Names[0]}' hosting Kafka client");
         }
     }
 
@@ -51,10 +54,10 @@ public partial class KafkaWebClientTest
             {
                 Force = true,
                 Container = container
-            });    
+            });
         }
     }
-    
+
     protected async Task ConnectAsync(string network, string[] containers)
     {
         foreach (var container in containers)
@@ -62,7 +65,7 @@ public partial class KafkaWebClientTest
             await DockerClient.Networks.ConnectNetworkAsync(network, new NetworkConnectParameters
             {
                 Container = container
-            });    
+            });
         }
     }
 }

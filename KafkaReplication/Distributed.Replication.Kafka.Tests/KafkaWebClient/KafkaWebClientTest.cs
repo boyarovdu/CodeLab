@@ -9,17 +9,17 @@ public partial class KafkaWebClientTest : BaseDockerTest
     protected const int KafkaMetdataRefreshIntervalMs = 5000;
 
     [OneTimeSetUp]
-    public void InitAdminClients()
+    public async Task InitClients()
     {
-        TestContext.Progress.WriteLine($"Starting initialization of Kafka and Docker admin clients");
-        InitKafkaAdminClient();
+        TestContext.Progress.WriteLine($"Starting initialization of admin clients");
+        await InitKafkaAdminClient();
         InitHttpClient();
     }
 
     [OneTimeTearDown]
     public void DisposeClients()
     {
-        TestContext.Progress.WriteLine($"Disposing Kafka and Docker admin clients");
+        TestContext.Progress.WriteLine($"Disposing admin clients");
         KafkaAdminClient.Dispose();
         DisposeHttpClient();
     }
@@ -27,9 +27,10 @@ public partial class KafkaWebClientTest : BaseDockerTest
     [TearDown]
     public async Task TearDown()
     {
-        TestContext.Progress.WriteLine($"Removing containers hosting Kafka clients and restoring Kafka cluster network");
         // TODO: remove unused volumes
+        TestContext.Progress.WriteLine($"Removing containers hosting Kafka clients");
         await ForceRemoveKafkaClients();
+        TestContext.Progress.WriteLine($"Restoring kafka cluster networks");
         await RestoreKafkaClusterNetwork();
     }
 
@@ -40,15 +41,23 @@ public partial class KafkaWebClientTest : BaseDockerTest
         await ForceRemoveKafkaClients();
     }
 
-    private void InitKafkaAdminClient()
+    private async Task InitKafkaAdminClient()
     {
         KafkaAdminClient = new AdminClientBuilder(new AdminClientConfig
         {
             BootstrapServers = TestEnvironment.KafkaCluster.ExternalListeners,
             TopicMetadataRefreshIntervalMs = KafkaMetdataRefreshIntervalMs,
-            TopicMetadataRefreshSparse = false,
-            MetadataMaxAgeMs = KafkaMetdataRefreshIntervalMs * 2,
+            // TopicMetadataRefreshSparse = false,
+            // MetadataMaxAgeMs = KafkaMetdataRefreshIntervalMs * 2,
         }).Build();
+
+        TestContext.Progress.WriteLine($"Waiting when all brokers are registered in Kafka cluster.");
+        await TestUtil.WaitUntilAsync(
+            timeoutMs: 5 * 60_000,
+            condition: () =>
+                KafkaAdminClient.GetMetadata(TimeSpan.FromSeconds(10)).Brokers.Count ==
+                TestEnvironment.KafkaCluster.BrokersCount,
+            delay: KafkaMetdataRefreshIntervalMs);
     }
 
     private async Task RestoreKafkaClusterNetwork()
@@ -73,7 +82,8 @@ public partial class KafkaWebClientTest : BaseDockerTest
         foreach (var network in kafkaNetworks)
         {
             if (container.NetworkSettings.Networks.ContainsKey(network)) continue;
-            await DockerClient.Networks.ConnectNetworkAsync(network, new NetworkConnectParameters { Container = container.ID });
+            await DockerClient.Networks.ConnectNetworkAsync(network,
+                new NetworkConnectParameters { Container = container.ID });
             TestContext.Progress.WriteLine($"Added network '{network}' to kafka container '{container.Names[0]}'");
         }
     }

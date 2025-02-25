@@ -15,6 +15,8 @@ internal static class TestEnvironment
         public const string Kafka1 = $"{KafkaContainerPrefix}1";
         public const string Kafka2 = $"{KafkaContainerPrefix}2";
         public const string Kafka3 = $"{KafkaContainerPrefix}3";
+        
+        public const int BrokersCount = 3;
 
         public static string GetContainerByBrokerId(int brokerId)
         { 

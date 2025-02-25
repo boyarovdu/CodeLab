@@ -50,6 +50,12 @@ public class ReplicationTests : KafkaWebClientTest
         await DisconnectAsync(TestEnvironment.Network.Internal,
             [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
 
+        // Producer won't fail to produce, regardless of replication factor 2 for the topic and strong durability guarantees(acks=all) of the producer 
+        // This is because min.insync.replicas was not adjusted and its default value is 1
+        TestContext.Progress.WriteLine("Producing message.");
+        var produceResponse = await ProduceAsync(_producerPort, topicName, "test-message");
+        Assert.That(produceResponse.IsSuccessStatusCode);
+        
         // Replica removed from ISR after 10 seconds(default value)
         // replica.lag.time.max.ms - setting that defines after what period of time replica is being removed from ISR
         TestContext.Progress.WriteLine("Waiting when replica removed from ISR.");
@@ -62,12 +68,6 @@ public class ReplicationTests : KafkaWebClientTest
                 return inSyncReplicas.Contains(followerId) == false;
             },
             delay: KafkaMetdataRefreshIntervalMs);
-
-        // Producer won't fail to produce, regardless of replication factor 2 for the topic and strong durability guarantees(acks=all) of the producer 
-        // This is because min.insync.replicas was not adjusted and its default value is 1
-        TestContext.Progress.WriteLine("Producing message.");
-        var produceResponse = await ProduceAsync(_producerPort, topicName, "test-message");
-        Assert.That(produceResponse.IsSuccessStatusCode);
 
         // The consumer, depending on what broker it is connected to, may not receive message while replica cannot connect to the leader
         TestContext.Progress.WriteLine("Waiting when consumer receives message.");
