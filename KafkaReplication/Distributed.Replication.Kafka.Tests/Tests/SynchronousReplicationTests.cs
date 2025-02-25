@@ -4,25 +4,25 @@ using Distributed.Replication.Kafka.Tests.KafkaWebClient;
 namespace Distributed.Replication.Kafka.Tests;
 
 [TestFixture]
-public class ReplicationTests : KafkaWebClientTest
+public class SynchronousReplicationTests : KafkaWebClientTest
 {
     protected override string DockerComposeFolderPath =>
         "../../../../"; // way up from the test project to compose file folder
 
-    private readonly string _producerPort = "5117";
-    private readonly string _consumerPort = "5118";
+    private const string ProducerPort = "5117";
+    private const string ConsumerPort = "5118";
 
     [SetUp]
     public async Task StartKafkaClients()
     {
-        await StartProducer("producer", _producerPort,
+        await StartProducer("producer", ProducerPort,
             [TestEnvironment.Network.Internal],
             [
                 $"bootstrap.servers={TestEnvironment.KafkaCluster.InternalListeners}",
                 $"acks=all"
             ]);
 
-        await StartConsumer("consumer", _consumerPort,
+        await StartConsumer("consumer", ConsumerPort,
             [TestEnvironment.Network.Public],
             [
                 $"bootstrap.servers={TestEnvironment.KafkaCluster.PublicListeners}",
@@ -31,11 +31,11 @@ public class ReplicationTests : KafkaWebClientTest
             ]);
 
         TestContext.Progress.WriteLine("Waiting when producer is healthy.");
-        await ServiceHealthy(_producerPort);
+        await ServiceHealthy(ProducerPort);
     }
 
     [Test]
-    public async Task Replica_removed_from_ISR_when_unavailable()
+    public async Task AcksAllDoesntGuaranteeDeliveryWhenMinInSyncReplicasNotAdjusted()
     {
         var topicName = "test-topic";
         TestContext.Progress.WriteLine($"Creating topic {topicName}");
@@ -44,7 +44,7 @@ public class ReplicationTests : KafkaWebClientTest
         var leaderId = topicMetadata.Partitions[0].Leader;
         var followerId = topicMetadata.Partitions[0].InSyncReplicas.Except([leaderId]).First();
 
-        _ = await SubscribeAsync(_consumerPort, topicName);
+        _ = await SubscribeAsync(ConsumerPort, topicName);
 
         // Replica is disconnected so it cannot acknowledge partition leader about receiving the message
         await DisconnectAsync(TestEnvironment.Network.Internal,
@@ -53,9 +53,9 @@ public class ReplicationTests : KafkaWebClientTest
         // Producer won't fail to produce, regardless of replication factor 2 for the topic and strong durability guarantees(acks=all) of the producer 
         // This is because min.insync.replicas was not adjusted and its default value is 1
         TestContext.Progress.WriteLine("Producing message.");
-        var produceResponse = await ProduceAsync(_producerPort, topicName, "test-message");
+        var produceResponse = await ProduceAsync(ProducerPort, topicName, "test-message");
         Assert.That(produceResponse.IsSuccessStatusCode);
-        
+
         // Replica removed from ISR after 10 seconds(default value)
         // replica.lag.time.max.ms - setting that defines after what period of time replica is being removed from ISR
         TestContext.Progress.WriteLine("Waiting when replica removed from ISR.");
@@ -71,11 +71,11 @@ public class ReplicationTests : KafkaWebClientTest
 
         // The consumer, depending on what broker it is connected to, may not receive message while replica cannot connect to the leader
         TestContext.Progress.WriteLine("Waiting when consumer receives message.");
-        var consumeResp = await ConsumeAsync(_consumerPort);
+        var consumeResp = await ConsumeAsync(ConsumerPort);
         TestContext.Progress.WriteLine(consumeResp.IsSuccessStatusCode
             ? "Consumer received message."
             : "Consumer did not receive message.");
-        
+
         // Connecting replica back
         await ConnectAsync(TestEnvironment.Network.Internal,
             [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
@@ -93,11 +93,62 @@ public class ReplicationTests : KafkaWebClientTest
                     return inSyncReplicas.Contains(followerId);
                 },
                 delay: KafkaMetdataRefreshIntervalMs);
-            
+
             // After replica connected back - consumer MUST receive the message
             await TestContext.Progress.WriteLineAsync("Waiting when consumer receives message.");
-            consumeResp = await ConsumeAsync(_consumerPort);
+            consumeResp = await ConsumeAsync(ConsumerPort);
             Assert.That(consumeResp.IsSuccessStatusCode);
         }
+    }
+
+    [Test]
+    public async Task AcksAllGuaranteesDeliveryWhenMinInSyncReplicasAdjusted()
+    {
+        var topicName = "test-topic";
+        TestContext.Progress.WriteLine($"Creating topic {topicName}");
+
+        // Combination of min.insync.replicas = 2 and replicationFactor = 2 provides strong consistency among the replicas
+        // Together with producers configured with acks=all, it will provide the highest message delivery guarantees at the cost of performance
+        var topicMetadata = await KafkaAdminClient.CreateTopicAsync(topicName, replicationFactor: 2,
+            config: new() { ["min.insync.replicas"] = "2" });
+
+        var leaderId = topicMetadata.Partitions[0].Leader;
+        var followerId = topicMetadata.Partitions[0].InSyncReplicas.Except([leaderId]).First();
+
+        _ = await SubscribeAsync(ConsumerPort, topicName);
+
+        // Replica is disconnected so it cannot acknowledge partition leader about receiving the message
+        await DisconnectAsync(TestEnvironment.Network.Internal,
+            [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
+
+        // Producer fails with error, because message could not be synced with required quorum of 2 replicas set in min.insync.replicas
+        // In such a way code that produces the message will be notified about the failure and will proceed with failover logic
+        TestContext.Progress.WriteLine("Producing message.");
+        Assert.ThrowsAsync<TaskCanceledException>(async () =>
+            await ProduceAsync(ProducerPort, topicName, "test-message"));
+
+        // Connecting replica back
+        await ConnectAsync(TestEnvironment.Network.Internal,
+            [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
+        
+        // Replica must be added back to ISR after restoring the network
+        TestContext.Progress.WriteLine("Waiting when replica added back to ISR.");
+        await TestUtil.WaitUntilAsync(
+            timeoutMs: 5 * 60_000,
+            condition: () =>
+            {
+                var inSyncReplicas = KafkaAdminClient.GetTopicMetadata(topicName).Partitions[0].InSyncReplicas;
+                TestContext.Progress.WriteLine($"Replicas: {string.Join(", ", topicMetadata)}");
+                return inSyncReplicas.Contains(followerId);
+            },
+            delay: KafkaMetdataRefreshIntervalMs);
+
+        // Producer won't fail this time because message can be replicated to required amount of replicas
+        await ProduceAsync(ProducerPort, topicName, "test-message");
+        
+        // Consumer receive the message successfully
+        await TestContext.Progress.WriteLineAsync("Waiting when consumer receives message.");
+        var consumeResp = await ConsumeAsync(ConsumerPort);
+        Assert.That(consumeResp.IsSuccessStatusCode);
     }
 }

@@ -8,35 +8,26 @@ public partial class KafkaWebClientTest : BaseDockerTest
     protected IAdminClient KafkaAdminClient { get; private set; }
     protected const int KafkaMetdataRefreshIntervalMs = 5000;
 
-    [OneTimeSetUp]
+    [SetUp]
     public async Task InitClients()
     {
         TestContext.Progress.WriteLine($"Starting initialization of admin clients");
         await InitKafkaAdminClient();
         InitHttpClient();
-    }
-
-    [OneTimeTearDown]
-    public void DisposeClients()
-    {
-        TestContext.Progress.WriteLine($"Disposing admin clients");
-        KafkaAdminClient.Dispose();
-        DisposeHttpClient();
-    }
-
-    [TearDown]
-    public async Task TearDown()
-    {
-        // TODO: remove unused volumes
+        
         TestContext.Progress.WriteLine($"Removing containers hosting Kafka clients");
         await ForceRemoveKafkaClients();
         TestContext.Progress.WriteLine($"Restoring kafka cluster networks");
         await RestoreKafkaClusterNetwork();
     }
 
-    [SetUp]
-    public async Task SetUp()
+    [TearDown]
+    public async Task DisposeClients()
     {
+        TestContext.Progress.WriteLine($"Disposing admin clients");
+        KafkaAdminClient.Dispose();
+        DisposeHttpClient();
+
         TestContext.Progress.WriteLine($"Removing containers hosting Kafka clients");
         await ForceRemoveKafkaClients();
     }
@@ -60,7 +51,7 @@ public partial class KafkaWebClientTest : BaseDockerTest
             delay: KafkaMetdataRefreshIntervalMs);
     }
 
-    private async Task RestoreKafkaClusterNetwork()
+    protected async Task RestoreKafkaClusterNetwork()
     {
         string[] kafkaNetworks = [TestEnvironment.Network.Internal, TestEnvironment.Network.Public];
 
