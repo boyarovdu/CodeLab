@@ -16,9 +16,12 @@ internal static class TestEnvironment
         public const string Kafka2 = $"{KafkaContainerPrefix}2";
         public const string Kafka3 = $"{KafkaContainerPrefix}3";
         
+        public const string Zookeeper = "zookeeper";
+        public const string Zoonavigator = "zoonavigator";
+        
         public const int BrokersCount = 3;
 
-        public static string GetContainerByBrokerId(int brokerId)
+        public static string GetContainerNameByBrokerId(int brokerId)
         { 
             return $"{KafkaContainerPrefix}{brokerId}";
         }
@@ -28,11 +31,6 @@ internal static class TestEnvironment
     {
         public const string Internal = "internal";
         public const string Public = "public";
-
-        public static string[] GetAllNetworks()
-        {
-            return [Internal, Public];
-        }
     }
 
     internal static class KafkaWebClient
@@ -40,5 +38,6 @@ internal static class TestEnvironment
         public const string ImageName = "test-web-client";
         public const string AssemblyName = "Distributed.Replication.Kafka.TestWebClient.dll";
         public const string InternalPort = "8080";
+        public const string Foo = "foo";
     }
 }

@@ -15,6 +15,14 @@ public class SynchronousReplicationTests : KafkaWebClientTest
     [SetUp]
     public async Task StartKafkaClients()
     {
+        TestContext.Progress.WriteLine("Waiting when all brokers are healthy.");
+        await TestUtil.WaitUntilAsync(
+            timeoutMs: 5 * 60_000,
+            condition: () =>
+                KafkaAdminClient.GetMetadata(TimeSpan.FromSeconds(10)).Brokers.Count ==
+                TestEnvironment.KafkaCluster.BrokersCount,
+            delay: KafkaMetdataRefreshIntervalMs);
+        
         await StartProducer("producer", ProducerPort,
             [TestEnvironment.Network.Internal],
             [
@@ -48,7 +56,7 @@ public class SynchronousReplicationTests : KafkaWebClientTest
 
         // Replica is disconnected so it cannot acknowledge partition leader about receiving the message
         await DisconnectAsync(TestEnvironment.Network.Internal,
-            [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
+            [TestEnvironment.KafkaCluster.GetContainerNameByBrokerId(followerId)]);
 
         // Producer won't fail to produce, regardless of replication factor 2 for the topic and strong durability guarantees(acks=all) of the producer 
         // This is because min.insync.replicas was not adjusted and its default value is 1
@@ -78,7 +86,7 @@ public class SynchronousReplicationTests : KafkaWebClientTest
 
         // Connecting replica back
         await ConnectAsync(TestEnvironment.Network.Internal,
-            [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
+            [TestEnvironment.KafkaCluster.GetContainerNameByBrokerId(followerId)]);
 
         if (!consumeResp.IsSuccessStatusCode)
         {
@@ -119,7 +127,7 @@ public class SynchronousReplicationTests : KafkaWebClientTest
 
         // Replica is disconnected so it cannot acknowledge partition leader about receiving the message
         await DisconnectAsync(TestEnvironment.Network.Internal,
-            [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
+            [TestEnvironment.KafkaCluster.GetContainerNameByBrokerId(followerId)]);
 
         // Producer fails with error, because message could not be synced with required quorum of 2 replicas set in min.insync.replicas
         // In such a way code that produces the message will be notified about the failure and will proceed with failover logic
@@ -129,7 +137,7 @@ public class SynchronousReplicationTests : KafkaWebClientTest
 
         // Connecting replica back
         await ConnectAsync(TestEnvironment.Network.Internal,
-            [TestEnvironment.KafkaCluster.GetContainerByBrokerId(followerId)]);
+            [TestEnvironment.KafkaCluster.GetContainerNameByBrokerId(followerId)]);
         
         // Replica must be added back to ISR after restoring the network
         TestContext.Progress.WriteLine("Waiting when replica added back to ISR.");

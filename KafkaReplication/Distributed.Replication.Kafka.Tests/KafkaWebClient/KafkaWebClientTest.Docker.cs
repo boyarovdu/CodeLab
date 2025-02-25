@@ -16,14 +16,17 @@ public partial class KafkaWebClientTest
     private async Task<bool> StartKafkaClient(KafkaClientType type, string containerName, string port,
         string[] networks, string[] clientConfig)
     {
-        return await CreateStartContainer(new ContainerParamsBuilder()
+        var containerParams = new ContainerParamsBuilder()
             .WithKafkaTestWebClient(
                 clientType: type,
                 kafkaConfig: clientConfig)
             .WithPortBinding(TestEnvironment.KafkaWebClient.InternalPort, port)
             .WithName(containerName)
             .WithNetworks(networks)
-            .Build());
+            .Build();
+        
+        var container = await DockerClient.Containers.CreateContainerAsync(containerParams);
+        return await DockerClient.Containers.StartContainerAsync(container.ID, new());
     }
 
     private async Task ForceRemoveKafkaClients()
